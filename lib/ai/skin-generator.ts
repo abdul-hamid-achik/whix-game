@@ -105,7 +105,7 @@ export class SkinGenerator {
     skinData: SkinData, 
     partnerClass: string, 
     partnerTraits: string[], 
-    partnerName?: string
+    _partnerName?: string
   ): string {
     const basePrompt = this.getBasePrompt(skinData);
     const rarityModifier = this.getRarityModifier(skinData.rarity);

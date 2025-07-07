@@ -1,4 +1,4 @@
-import { db } from '@/lib/db/drizzle';
+import { db } from '@/lib/db';
 import { skins, playerSkins, skinGachaPulls, players } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { skinGenerator } from '@/lib/ai/skin-generator';
@@ -84,7 +84,7 @@ export class SkinGachaSystem {
         .limit(1);
 
       let generatedImage = null;
-      let isNew = existingSkin.length === 0;
+      const isNew = existingSkin.length === 0;
 
       if (isNew) {
         // Generate new skin image for this partner
@@ -196,7 +196,7 @@ export class SkinGachaSystem {
     return availableSkins[randomIndex];
   }
 
-  private async getPartnerForSkinGeneration(partnerId: string) {
+  private async getPartnerForSkinGeneration(_partnerId: string) {
     // This would fetch partner data - for now return mock data
     // In real implementation, join with partners table
     return {
@@ -206,7 +206,7 @@ export class SkinGachaSystem {
     };
   }
 
-  async getPlayerSkins(playerId: string, partnerId?: string) {
+  async getPlayerSkins(playerId: string, _partnerId?: string) {
     let query = db.select({
       playerSkin: playerSkins,
       skin: skins
@@ -215,8 +215,8 @@ export class SkinGachaSystem {
     .leftJoin(skins, eq(playerSkins.skinId, skins.id))
     .where(eq(playerSkins.playerId, playerId));
 
-    if (partnerId) {
-      query = query.where(eq(playerSkins.partnerId, partnerId));
+    if (_partnerId) {
+      query = query.where(eq(playerSkins.partnerId, _partnerId));
     }
 
     return await query;

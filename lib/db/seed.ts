@@ -4,8 +4,8 @@ import { seed, reset } from 'drizzle-seed';
 import * as schema from './schema';
 import { PARTNER_CLASSES } from '../game/classes';
 import { NEURODIVERGENT_TRAITS } from '../game/traits';
-import { MISSION_TYPES } from '../game/missions';
-import { nanoid } from 'nanoid';
+// import { MISSION_TYPES } from '../game/missions';
+// import { nanoid } from 'nanoid';
 import { config } from 'dotenv';
 
 // Load environment variables
@@ -19,9 +19,9 @@ const sql = neon(process.env.DATABASE_URL);
 const db = drizzle(sql);
 
 // Utility function to generate random enum values
-const getRandomEnum = <T extends string>(enumValues: T[]): T => {
-  return enumValues[Math.floor(Math.random() * enumValues.length)];
-};
+// const getRandomEnum = <T extends string>(enumValues: T[]): T => {
+//   return enumValues[Math.floor(Math.random() * enumValues.length)];
+// };
 
 // Predefined data for seeding
 const STORY_CHAPTERS = [

@@ -8,14 +8,15 @@ import { ContentMetadata } from '@/lib/cms/content-types';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { type: string } }
+  { params }: { params: Promise<{ type: string }> }
 ) {
   try {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
     const query = searchParams.get('q');
     const limit = searchParams.get('limit');
-    const contentType = params.type as ContentMetadata['type'];
+    const resolvedParams = await params;
+    const contentType = resolvedParams.type as ContentMetadata['type'];
 
     // Validate content type
     const validTypes = ['character', 'level', 'chapter', 'map', 'item', 'dialogue'];

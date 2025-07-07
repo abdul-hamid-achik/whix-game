@@ -40,11 +40,12 @@ export function ImageGenerator({ onImageGenerated }: ImageGeneratorProps) {
     class: '',
     traits: '',
   });
-  const [levelData, setLevelData] = useState({
-    name: '',
-    environment: '',
-    difficulty: 'medium',
-  });
+  // Level data for future implementation
+  // const [levelData, setLevelData] = useState({
+  //   name: '',
+  //   environment: '',
+  //   difficulty: 'medium',
+  // });
   const { toast } = useToast();
 
   const handleGenerateImage = async () => {
@@ -198,7 +199,7 @@ export function ImageGenerator({ onImageGenerated }: ImageGeneratorProps) {
       link.href = URL.createObjectURL(blob);
       link.download = filename;
       link.click();
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to download image",

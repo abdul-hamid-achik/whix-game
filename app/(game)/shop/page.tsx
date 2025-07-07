@@ -93,14 +93,14 @@ export default function ShopPage() {
           {/* Tips Tab */}
           <TabsContent value="tips" className="space-y-4">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {Object.entries(STRIPE_PRODUCTS.tips).map(([key, product]) => (
+              {Object.entries(STRIPE_PRODUCTS.tips).map(([_key, product]) => (
                 <motion.div
                   key={product.id}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Card className={product.popular ? 'ring-2 ring-primary' : ''}>
-                    {product.popular && (
+                  <Card className={'popular' in product && product.popular ? 'ring-2 ring-primary' : ''}>
+                    {'popular' in product && product.popular && (
                       <Badge className="absolute -top-2 right-4">Popular</Badge>
                     )}
                     <CardHeader>
@@ -111,9 +111,9 @@ export default function ShopPage() {
                       <CardDescription>{product.description}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      {product.bonus && (
+                      {'bonus' in product && product.bonus && (
                         <Badge variant="secondary" className="w-full justify-center">
-                          {product.bonus}
+                          {'bonus' in product ? product.bonus : ''}
                         </Badge>
                       )}
                       <Button
@@ -137,14 +137,14 @@ export default function ShopPage() {
           {/* Star Fragments Tab */}
           <TabsContent value="fragments" className="space-y-4">
             <div className="grid md:grid-cols-3 gap-4">
-              {Object.entries(STRIPE_PRODUCTS.starFragments).map(([key, product]) => (
+              {Object.entries(STRIPE_PRODUCTS.starFragments).map(([_key, product]) => (
                 <motion.div
                   key={product.id}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Card className={product.popular ? 'ring-2 ring-primary' : ''}>
-                    {product.popular && (
+                  <Card className={'popular' in product && product.popular ? 'ring-2 ring-primary' : ''}>
+                    {'popular' in product && product.popular && (
                       <Badge className="absolute -top-2 right-4">Popular</Badge>
                     )}
                     <CardHeader>
@@ -155,9 +155,9 @@ export default function ShopPage() {
                       <CardDescription>{product.description}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      {product.bonus && (
+                      {'bonus' in product && product.bonus && (
                         <Badge variant="secondary" className="w-full justify-center">
-                          {product.bonus}
+                          {'bonus' in product ? product.bonus : ''}
                         </Badge>
                       )}
                       <Button
@@ -182,14 +182,14 @@ export default function ShopPage() {
           {/* Bundles Tab */}
           <TabsContent value="bundles" className="space-y-4">
             <div className="grid md:grid-cols-3 gap-4">
-              {Object.entries(STRIPE_PRODUCTS.bundles).map(([key, product]) => (
+              {Object.entries(STRIPE_PRODUCTS.bundles).map(([_key, product]) => (
                 <motion.div
                   key={product.id}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Card className={product.popular ? 'ring-2 ring-primary' : ''}>
-                    {product.popular && (
+                  <Card className={'popular' in product && product.popular ? 'ring-2 ring-primary' : ''}>
+                    {'popular' in product && product.popular && (
                       <Badge className="absolute -top-2 right-4">Best Value</Badge>
                     )}
                     <CardHeader>
@@ -201,16 +201,16 @@ export default function ShopPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-2 text-sm">
-                        {product.contents.tips && (
+                        {'tips' in product.contents && product.contents.tips && (
                           <div className="flex items-center gap-2">
                             <Coins className="w-4 h-4 text-yellow-500" />
-                            <span>{product.contents.tips.toLocaleString()} Tips</span>
+                            <span>{'tips' in product.contents ? product.contents.tips.toLocaleString() : 0} Tips</span>
                           </div>
                         )}
-                        {product.contents.starFragments && (
+                        {'starFragments' in product.contents && product.contents.starFragments && (
                           <div className="flex items-center gap-2">
                             <Star className="w-4 h-4 text-purple-500" />
-                            <span>{product.contents.starFragments} Star Fragments</span>
+                            <span>{'starFragments' in product.contents ? product.contents.starFragments : 0} Star Fragments</span>
                           </div>
                         )}
                         {product.contents.guaranteedRarePartner && (
@@ -273,7 +273,7 @@ export default function ShopPage() {
           {/* Cosmetics Tab */}
           <TabsContent value="cosmetics" className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
-              {Object.entries(STRIPE_PRODUCTS.cosmetics).map(([key, product]) => (
+              {Object.entries(STRIPE_PRODUCTS.cosmetics).map(([_key, product]) => (
                 <motion.div
                   key={product.id}
                   whileHover={{ scale: 1.02 }}

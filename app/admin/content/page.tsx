@@ -16,7 +16,6 @@ import {
   Map, 
   Package, 
   BookOpen,
-  BarChart3,
   CheckCircle,
   AlertCircle,
   RefreshCw
