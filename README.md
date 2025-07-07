@@ -1,6 +1,6 @@
 # WHIX: Gig Economy Dystopia
 
-A cyberpunk-themed game where neurodivergent traits are superpowers in a dystopian gig economy. Fight against corporate exploitation while managing a team of unique partners in Polanco.
+A Soviet-Aztec themed game where neurodivergent traits are superpowers in a dystopian gig economy. Fight against corporate exploitation while managing a team of unique partners in Polanco.
 
 🎮 **Play Now:** [whix-game.vercel.app](https://whix-game.vercel.app)
 
@@ -12,7 +12,7 @@ A cyberpunk-themed game where neurodivergent traits are superpowers in a dystopi
 - **Visual Novel Storytelling**: Rich narrative with branching dialogue paths
 - **Turn-Based Combat**: Strategic 5x5 grid battles utilizing partner abilities
 - **Mission System**: Daily missions, weekly challenges, and special events
-- **Cyberpunk Aesthetic**: Neon-soaked UI with glitch effects and pixel art
+- **Soviet-Aztec Aesthetic**: Unique blend of Soviet brutalism and Aztec mysticism with stone textures and red/gold color schemes
 
 ## 🎯 Game Concept
 
@@ -24,7 +24,7 @@ Play as a rebel coordinator, recruiting partners and managing deliveries while s
 
 - **Framework**: Next.js 15 with App Router
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS with custom cyberpunk theme system
+- **Styling**: Tailwind CSS with custom Soviet-Aztec theme system
 - **State Management**: Zustand with Immer
 - **Database**: PostgreSQL with Drizzle ORM
 - **Game Engine**: Pixi.js for combat visualization
@@ -118,6 +118,27 @@ The game uses a markdown-based CMS for managing:
 
 Content files are located in the `/content` directory.
 
+## 🚧 Remaining Features to Implement
+
+The following features from the UI refactor are still pending implementation:
+
+### High Priority
+- **Mobile/Tablet Responsive Design**: The game needs responsive layouts for smaller screens
+- **Advanced Visual Effects**: Implement scanlines, glitch effects, and other Soviet-Aztec themed visual enhancements
+- **Immersive Loading/Login Screens**: Create thematic loading screens with Soviet-Aztec motifs
+- **Corporate Login Screen Simulation**: Implement a mock WHIX corporate login interface
+
+### Completed Features ✅
+- ✅ Fixed all TypeScript `any` types with proper Zod schemas
+- ✅ Accessibility features (keyboard navigation with hotkeys-js, screen reader support)
+- ✅ Arena mode for partner testing
+- ✅ Performance tracking and leaderboards
+- ✅ Transition animations between game states
+- ✅ Random event generation system
+- ✅ Design tokens system integrated with Tailwind
+- ✅ Color-blind friendly palette options
+- ✅ Customizable UI scaling
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
@@ -129,7 +150,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - Inspired by the neurodivergent community and their unique strengths
-- Built with love for cyberpunk aesthetics and narrative games
+- Built with love for unique Soviet-Aztec aesthetics and narrative games
 - Special thanks to all contributors and playtesters
 
 ---
