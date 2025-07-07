@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { CharacterRarity } from './gacha';
+import { rarityEnum } from '@/lib/db/schema';
+
+// Type for character rarity
+type CharacterRarity = typeof rarityEnum.enumValues[number] | 'mythic';
 
 // Character visual attributes for image generation
 export const CharacterVisualAttributesSchema = z.object({

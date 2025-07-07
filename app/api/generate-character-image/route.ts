@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getImageGenerationService } from '@/lib/services/imageGenerationService';
-import { CharacterRarity } from '@/lib/game/gacha';
+import { Rarity } from '@/lib/game/classes';
 
 // Request validation schema
 const GenerateImageRequestSchema = z.object({
   characterId: z.string(),
   name: z.string(),
-  rarity: z.enum(['common', 'rare', 'epic', 'legendary', 'mythic']),
+  rarity: z.enum(['common', 'rare', 'epic', 'legendary']),
   customAttributes: z.object({
     bodyType: z.enum(['slim', 'average', 'stocky', 'athletic']).optional(),
     skinTone: z.enum(['pale', 'light', 'medium', 'tan', 'dark', 'deep']).optional(),
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     const generatedImage = await imageService.generateCharacterImage(
       characterId,
       name,
-      rarity as CharacterRarity,
+      rarity,
       customAttributes
     );
     
@@ -81,7 +81,6 @@ export async function PUT(request: NextRequest) {
         rare: z.number().optional(),
         epic: z.number().optional(),
         legendary: z.number().optional(),
-        mythic: z.number().optional()
       }).optional()
     });
     
@@ -101,7 +100,7 @@ export async function PUT(request: NextRequest) {
     // Generate batch
     const generatedImages = await imageService.batchGenerateCharacters(
       count,
-      rarityWeights as Record<CharacterRarity, number> | undefined
+      rarityWeights as Record<Rarity, number> | undefined
     );
     
     return NextResponse.json({

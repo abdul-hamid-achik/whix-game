@@ -224,11 +224,11 @@ export class ContentManager {
         id: char.id,
         name: char.name,
         class: char.class,
-        rarity: char.stats?.level ? this.getLevelBasedRarity(char.stats.level) : 'common',
+        rarity: 'common',
         traits: char.traits || [],
-        level: char.stats?.level || 1,
+        level: 1,
         stats: char.stats || {},
-        abilities: char.abilities || []
+        abilities: []
       })),
       traits: traits.map(trait => ({
         id: trait.id,
@@ -244,9 +244,9 @@ export class ContentManager {
         difficulty: level.difficulty,
         unlockLevel: level.requirements?.level || 1,
         rewards: level.rewards || { tips: 0, experience: 0 },
-        hazards: level.hazards || [],
+        hazards: [],
         opportunities: [],
-        roguelikeElements: level.roguelikeElements || {}
+        roguelikeElements: {}
       })),
       items: items.map(item => ({
         id: item.id,

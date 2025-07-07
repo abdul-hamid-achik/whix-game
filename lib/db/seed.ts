@@ -124,7 +124,31 @@ const SAMPLE_CHARACTERS = [
       accessory: 'data-scanner'
     },
     backstory: 'Former corporate employee who found freedom in the gig economy.',
-    personalityTraits: ['determined', 'loyal', 'tech-savvy']
+    personalityTraits: ['determined', 'loyal', 'tech-savvy'],
+    stalkerMechanics: {
+      isTargeted: true,
+      stalkerType: 'the_watcher',
+      stalkerLevel: 18,
+      lastKnownSafe: null,
+      patternsIdentified: ['delivery_routes', 'rest_stops', 'social_meetings'],
+      vulnerabilityScore: 73
+    },
+    conflictResolutionAbilities: [
+      {
+        abilityId: 'pattern_chaos',
+        name: 'Break Prediction Patterns',
+        requiredTrait: 'hyperfocus',
+        masteryLevel: 75,
+        description: 'Use hyperfocus to deliberately break behavioral patterns and confuse surveillance algorithms'
+      },
+      {
+        abilityId: 'pattern_recognition_counter',
+        name: 'Predict the Predictor',
+        requiredTrait: 'pattern_recognition',
+        masteryLevel: 68,
+        description: 'Recognize meta-patterns in stalker behavior to anticipate and evade surveillance'
+      }
+    ]
   },
   {
     name: 'Marcus Chen',
@@ -150,7 +174,23 @@ const SAMPLE_CHARACTERS = [
       accessory: 'quantum-processor'
     },
     backstory: 'Former university researcher who turned to freelance analysis.',
-    personalityTraits: ['analytical', 'perfectionist', 'introverted']
+    personalityTraits: ['analytical', 'perfectionist', 'introverted'],
+    conflictResolutionAbilities: [
+      {
+        abilityId: 'systematic_counter_hack',
+        name: 'Logical Counter-Attack',
+        requiredTrait: 'systematic_thinking',
+        masteryLevel: 82,
+        description: 'Turn intrusion methods against attackers using systematic analysis'
+      },
+      {
+        abilityId: 'systematic_deprogramming',
+        name: 'Logical Deconstruction',
+        requiredTrait: 'systematic_thinking',
+        masteryLevel: 78,
+        description: 'Expose logical flaws in psychological conditioning through analytical breakdown'
+      }
+    ]
   },
   {
     name: 'Elena Vasquez',
@@ -176,7 +216,23 @@ const SAMPLE_CHARACTERS = [
       accessory: 'mood-reader'
     },
     backstory: 'Former diplomat who specializes in high-stakes negotiations.',
-    personalityTraits: ['charismatic', 'empathetic', 'strategic']
+    personalityTraits: ['charismatic', 'empathetic', 'strategic'],
+    conflictResolutionAbilities: [
+      {
+        abilityId: 'trauma_recognition',
+        name: 'Recognize Hidden Trauma',
+        requiredTrait: 'enhanced_senses',
+        masteryLevel: 85,
+        description: 'Read micro-expressions and body language to identify psychological manipulation victims'
+      },
+      {
+        abilityId: 'empathetic_negotiation',
+        name: 'Emotional Bridge Building',
+        requiredTrait: 'enhanced_senses',
+        masteryLevel: 79,
+        description: 'Use enhanced emotional perception to find common ground in hostile situations'
+      }
+    ]
   }
 ];
 
@@ -314,6 +370,152 @@ const SAMPLE_MAPS = [
         explorationRewards: ['data-fragments', 'processing-power', 'system-access'],
         proceduralElements: ['shifting-pathways', 'recursive-loops']
       }
+    }
+  }
+];
+
+const SPECIAL_ENEMIES = [
+  {
+    id: 'the_watcher',
+    name: 'Marcus Dietrich - The Watcher',
+    type: 'persistent_stalker',
+    level: 18,
+    description: 'A former WHIX behavioral analyst whose obsession with tracking patterns crossed into personal fixation.',
+    stats: {
+      health: 150,
+      attack: 95,
+      defense: 60,
+      speed: 80,
+      prediction: 89
+    },
+    abilities: [
+      'predictive_strike',
+      'surveillance_network',
+      'behavioral_lock',
+      'neural_feedback'
+    ],
+    stalkerMechanics: {
+      trackingRange: 3,
+      predictionAccuracy: 89,
+      optimalDistance: 4,
+      detectionTriggers: ['direct_line_of_sight_5s', 'dead_end_locations', 'pattern_deviation'],
+      weaknesses: ['random_behavior', 'pure_emotion', 'signal_interference']
+    },
+    loot: [
+      'watcher-surveillance-files',
+      'behavioral-prediction-algorithms',
+      'modified-neural-tracking-interface'
+    ]
+  },
+  {
+    id: 'vera_kozlova_broken',
+    name: 'Vera Kozlova',
+    type: 'tragic_ally',
+    level: 16,
+    description: 'A shattered courier whose kindness has been weaponized against her through systematic conditioning.',
+    stats: {
+      health: 120,
+      attack: 45,
+      defense: 30,
+      social: 95,
+      trauma_response: 85
+    },
+    conflictResolutions: [
+      'corporate_camouflage',
+      'trauma_recognition_ability',
+      'learned_helplessness',
+      'desperate_courage'
+    ],
+    psychologicalProfile: {
+      traumaBonding: true,
+      learnedHelplessness: true,
+      hypervigilance: true,
+      dissociation: true
+    }
+  },
+  {
+    id: 'director_chen',
+    name: 'Director Chen',
+    type: 'corporate_antagonist',
+    level: 25,
+    description: 'The architect of WHIX\'s psychological warfare programs.',
+    stats: {
+      health: 200,
+      attack: 70,
+      defense: 85,
+      manipulation: 95,
+      corporate_authority: 100
+    },
+    abilities: [
+      'corporate_intimidation',
+      'psychological_pressure',
+      'conditioning_override',
+      'resource_deployment'
+    ]
+  }
+];
+
+const STALKER_SAFE_ZONES = [
+  {
+    id: 'crowded_market_15_8',
+    name: 'Neon Market Hub',
+    coordinates: { x: 15, y: 8 },
+    radius: 3,
+    type: 'signal_noise',
+    description: 'Crowded markets create too much data noise for precise tracking'
+  },
+  {
+    id: 'underground_tunnel_18_15',
+    name: 'Metro Tunnel Network',
+    coordinates: { x: 18, y: 15 },
+    radius: 4,
+    type: 'signal_interference',
+    description: 'Underground infrastructure blocks neural interface signals'
+  },
+  {
+    id: 'resistance_safehouse_10_5',
+    name: 'Hidden Resistance Base',
+    coordinates: { x: 10, y: 5 },
+    radius: 2,
+    type: 'analog_security',
+    description: 'Resistance safe houses use analog security systems'
+  }
+];
+
+const CONFLICT_RESOLUTION_SCENARIOS = [
+  {
+    id: 'watcher_stalking_scenario',
+    title: 'The Watcher\'s Pursuit',
+    type: 'surveillance_pressure',
+    triggerConditions: {
+      storyFlags: ['cathedral_conspiracy_discovered'],
+      locations: ['street', 'public_area'],
+      characters: ['tania-volkov']
+    },
+    availableResolutions: [
+      'pattern_chaos',
+      'pattern_recognition_counter'
+    ],
+    consequences: {
+      success: { humanity: 10, experience: 200, tips: 500 },
+      failure: { humanity: -5, stress: 30, stalker_escalation: true }
+    }
+  },
+  {
+    id: 'vera_conditioning_scenario',
+    title: 'Vera\'s Broken State',
+    type: 'psychological_manipulation',
+    triggerConditions: {
+      locations: ['corporate', 'whix_facility'],
+      randomChance: 0.3
+    },
+    availableResolutions: [
+      'trauma_recognition',
+      'systematic_deprogramming'
+    ],
+    consequences: {
+      success: { humanity: 15, experience: 300, tips: 750, ally_rescued: 'vera_kozlova' },
+      failure: { humanity: -10, stress: 25, vera_further_conditioned: true }
     }
   }
 ];
@@ -553,6 +755,21 @@ async function seedGameData() {
     console.log(`- Sample Characters: ${SAMPLE_CHARACTERS.length}`);
     console.log(`- Level Definitions: ${SAMPLE_LEVELS.length}`);
     console.log(`- Map Data: ${SAMPLE_MAPS.length}`);
+    console.log(`- Special Enemies: ${SPECIAL_ENEMIES.length}`);
+    console.log(`- Stalker Safe Zones: ${STALKER_SAFE_ZONES.length}`);
+    console.log(`- Conflict Resolution Scenarios: ${CONFLICT_RESOLUTION_SCENARIOS.length}`);
+    
+    console.log('\n🔍 Stalker Mechanics Implemented:');
+    console.log('- The Watcher: Persistent stalker with neural tracking');
+    console.log('- Pattern prediction algorithms with 89% accuracy');
+    console.log('- Safe zones with signal interference protection');
+    console.log('- Roguelike restart on detection for Tanya');
+    
+    console.log('\n⚔️ Conflict Resolution Mechanics:');
+    console.log('- Trait-based non-combat resolutions');
+    console.log('- Character-specific abilities for different conflicts');
+    console.log('- Psychological manipulation detection and counters');
+    console.log('- Story-driven alternative combat outcomes');
     
   } catch (error) {
     console.error('❌ Error seeding database:', error);

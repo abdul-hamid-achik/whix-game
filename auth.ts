@@ -8,26 +8,7 @@ import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
-// Extend the session to include custom fields
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-      email?: string | null;
-      name?: string | null;
-      isGuest: boolean;
-      guestId?: string;
-    }
-  }
-  
-  interface User {
-    id: string;
-    email?: string | null;
-    name?: string | null;
-    isGuest: boolean;
-    guestId?: string;
-  }
-}
+// Custom fields are extended in types/next-auth.d.ts
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -74,7 +55,7 @@ export const config: NextAuthConfig = {
             email,
             password: hashedPassword,
             name,
-            isGuest: false,
+            role: 'free',
             createdAt: new Date(),
             updatedAt: new Date()
           }).returning();
@@ -147,16 +128,15 @@ export const config: NextAuthConfig = {
   
   pages: {
     signIn: "/auth/signin",
-    signUp: "/auth/signup",
     error: "/auth/error",
   },
   
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (user) {
-        token.id = user.id;
+        token.id = user.id!;
         token.role = user.role;
-        token.guestId = user.guestId;
+        token.guestId = user.guestId || undefined;
       }
       
       // Handle user update (guest to registered conversion)

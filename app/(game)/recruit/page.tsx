@@ -8,21 +8,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useGameStore } from '@/lib/stores/gameStore';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { generatePartner, generateMultiplePulls, applyPitySystem } from '@/lib/game/partnerGenerator';
+import { useStoryStore } from '@/lib/stores/storyStore';
+import { ClientGachaSystem } from '@/lib/cms/client-gacha-system';
+import { ClientContentAdapter } from '@/lib/cms/client-content-adapter';
 import { cn } from '@/lib/utils';
+import { StoredPartner } from '@/lib/schemas/game-schemas';
 
 export default function RecruitPage() {
   const [isAnimating, setIsAnimating] = useState(false);
-  const [pulledPartners, setPulledPartners] = useState<any[]>([]);
+  const [pulledPartners, setPulledPartners] = useState<StoredPartner[]>([]);
   const [showResults, setShowResults] = useState(false);
   
-  const { currentTips, spendTips } = useGameStore();
-  const { addPartner, recordPull, pullsSinceEpic, pullsSinceLegendary } = usePartnerStore();
+  const { currentTips, spendTips, level } = useGameStore();
+  const { addPartner, recordPull, pullsSinceEpic, pullsSinceLegendary, partners } = usePartnerStore();
+  const { completedChapters, storyFlags } = useStoryStore();
   
-  const SINGLE_PULL_COST = 100;
-  const MULTI_PULL_COST = 900;
+  const SINGLE_PULL_COST = ClientGachaSystem.getCost('single');
+  const MULTI_PULL_COST = ClientGachaSystem.getCost('multi');
   
   const handlePull = async (pullType: 'single' | 'multi') => {
-    const cost = pullType === 'single' ? SINGLE_PULL_COST : MULTI_PULL_COST;
+    const cost = ClientGachaSystem.getCost(pullType);
     
     if (!spendTips(cost)) {
       return; // Not enough tips
@@ -35,23 +40,54 @@ export default function RecruitPage() {
     // Simulate pull animation delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    let partners;
-    if (pullType === 'single') {
-      const pityRarity = applyPitySystem(pullsSinceEpic, pullsSinceLegendary);
-      const partner = generatePartner(pityRarity);
-      partners = [partner];
-    } else {
-      partners = generateMultiplePulls(10, true);
+    try {
+      // Get owned character IDs for duplicate prevention
+      const ownedCharacterIds = partners
+        .filter(p => p.isContentBased && p.contentId)
+        .map(p => p.contentId!);
+      
+      // Use content-based gacha system
+      const gachaPull = await ClientGachaSystem.pullGacha(
+        pullType,
+        pullsSinceEpic,
+        pullsSinceLegendary,
+        ownedCharacterIds,
+        [...completedChapters, ...storyFlags],
+        level
+      );
+      
+      // Convert content partners to stored partners and add to store
+      const pulledPartners = gachaPull.results.map(result => {
+        const contentPartner = result.partner;
+        return ClientContentAdapter.convertToStoredPartner(contentPartner);
+      });
+      
+      // Record pull for pity system
+      recordPull(pulledPartners.map(p => p.rarity));
+      
+      // Add partners to store
+      pulledPartners.forEach(partner => addPartner(partner));
+      
+      setPulledPartners(pulledPartners);
+      setShowResults(true);
+    } catch (error) {
+      console.error('Gacha pull failed:', error);
+      // Fallback to old system if content system fails
+      let partners;
+      if (pullType === 'single') {
+        const pityRarity = applyPitySystem(pullsSinceEpic, pullsSinceLegendary);
+        const partner = generatePartner(pityRarity);
+        partners = [partner];
+      } else {
+        partners = generateMultiplePulls(10, true);
+      }
+      
+      recordPull(partners.map(p => p.rarity));
+      const storedPartners = partners.map(partner => addPartner(partner));
+      setPulledPartners(storedPartners);
+      setShowResults(true);
     }
     
-    // Record pull for pity system
-    recordPull(partners.map(p => p.rarity));
-    
-    // Add partners to store
-    partners.forEach(partner => addPartner(partner));
-    
-    setPulledPartners(partners);
-    setShowResults(true);
     setIsAnimating(false);
   };
   

@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Map, Info } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Map as MapIcon, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChapterMapView } from '@/components/game/ChapterMapView';
 import { useChapterMapStore } from '@/lib/stores/chapterMapStore';
 import { useGameStore } from '@/lib/stores/gameStore';
+import { useUIStore, GameState } from '@/lib/stores/uiStore';
 import { NodeType } from '@/lib/game/chapterMap';
 
 export default function StoryMapPage() {
@@ -26,14 +27,24 @@ export default function StoryMapPage() {
   } = useChapterMapStore();
   
   const { earnTips, gainExperience } = useGameStore();
+  const { setState } = useUIStore();
   const [selectedChapter, setSelectedChapter] = useState(currentChapter);
 
   useEffect(() => {
-    // Initialize first chapter if no map exists
+    // Set UI state to adventure map
+    setState(GameState.ADVENTURE_MAP);
+    
+    // Force initialize chapter 1 and debug
+    console.log('🗺️ Map Page: currentMap:', currentMap);
+    console.log('🗺️ Map Page: currentChapter:', currentChapter);
+    
     if (!currentMap) {
+      console.log('🗺️ Initializing chapter 1...');
       initializeChapter(1);
+    } else {
+      console.log('🗺️ Map exists, nodes count:', currentMap.nodes instanceof Map ? currentMap.nodes.size : Object.keys(currentMap.nodes || {}).length);
     }
-  }, [currentMap, initializeChapter]);
+  }, [currentMap, initializeChapter, currentChapter, setState]);
 
   const handleChapterSelect = (chapter: number) => {
     setSelectedChapter(chapter);
@@ -124,7 +135,7 @@ export default function StoryMapPage() {
       experience: 200 * currentChapter
     };
     
-    addTips(chapterRewards.tips);
+    earnTips(chapterRewards.tips);
     gainExperience(chapterRewards.experience);
     
     // Show completion dialog
@@ -145,7 +156,7 @@ export default function StoryMapPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-4xl font-bold flex items-center gap-2">
-              <Map className="w-8 h-8" />
+              <MapIcon className="w-8 h-8" />
               Story Map
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
@@ -153,9 +164,19 @@ export default function StoryMapPage() {
             </p>
           </div>
           
-          <div className="text-right">
+          <div className="text-right space-y-2">
             <p className="text-sm text-gray-500">Overall Progress</p>
             <p className="text-2xl font-bold text-primary">{totalProgress}%</p>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => {
+                console.log('🔄 Force regenerating map...');
+                initializeChapter(currentChapter);
+              }}
+            >
+              🔄 Regenerate Map
+            </Button>
           </div>
         </div>
         
@@ -186,7 +207,7 @@ export default function StoryMapPage() {
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Map container */}
           <div className="lg:col-span-3">
-            <Card className="h-[600px] overflow-hidden">
+            <Card className="h-[600px] overflow-hidden crt-effect scanlines">
               <ChapterMapView
                 map={currentMap}
                 onNodeClick={handleNodeClick}

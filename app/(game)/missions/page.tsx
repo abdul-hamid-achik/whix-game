@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Package, Users, Brain, Search, Clock, 
@@ -36,6 +36,21 @@ const difficultyColors = {
   expert: 'bg-red-500',
   nightmare: 'bg-purple-500',
 };
+
+// Client-only date component to prevent hydration mismatch
+function ClientDate({ date }: { date: string | Date | number }) {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  if (!mounted) {
+    return <span>Loading...</span>;
+  }
+  
+  return <span>{new Date(date).toLocaleDateString()}</span>;
+}
 
 export default function MissionsPage() {
   const { level } = useGameStore();
@@ -255,7 +270,7 @@ export default function MissionsPage() {
                   <CardHeader>
                     <CardTitle>Mission in Progress</CardTitle>
                     <CardDescription>
-                      Started {new Date(mission.startedAt).toLocaleString()}
+                      Started <ClientDate date={mission.startedAt} />
                     </CardDescription>
                   </CardHeader>
                   <CardContent>

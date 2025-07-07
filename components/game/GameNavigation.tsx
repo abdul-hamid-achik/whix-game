@@ -14,17 +14,28 @@ import {
   Settings,
   LogOut,
   Map,
-  Shield
+  Shield,
+  type LucideIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { PixelArtIcon } from '@/components/pixel-art/PixelArtIcon';
 
-const regularNavItems = [
+interface NavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  pixelIcon: string;
+  color: string;
+  badge?: string;
+  pulse?: boolean;
+}
+
+const regularNavItems: NavItem[] = [
   {
-    href: '/dashboard',
-    label: 'Dashboard',
+    href: '/hub',
+    label: 'Courier Hub',
     icon: Home,
     pixelIcon: 'home',
     color: 'from-blue-400 to-cyan-500',
@@ -76,7 +87,7 @@ const regularNavItems = [
   },
 ];
 
-const adminNavItems = [
+const adminNavItems: NavItem[] = [
   {
     href: '/admin/content',
     label: 'Content',
@@ -124,7 +135,7 @@ export function GameNavigation() {
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="p-4 border-b">
-          <Link href="/dashboard" className="block">
+          <Link href="/hub" className="block">
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

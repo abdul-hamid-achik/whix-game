@@ -2,21 +2,9 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { devtools, persist } from 'zustand/middleware';
 import { GeneratedPartner } from '../game/partnerGenerator';
-import { TraitMastery } from '../game/traits';
-
-interface StoredPartner extends GeneratedPartner {
-  experience: number;
-  currentEnergy: number;
-  maxEnergy: number;
-  bondLevel: number;
-  isInjured: boolean;
-  injuryRecoveryTime?: number;
-  traitMastery: Record<string, TraitMastery>;
-  equipment: {
-    accessory?: string;
-    booster?: string;
-  };
-}
+import { ContentPartner } from '../cms/content-partner-adapter';
+import { CharacterUnlockSystem, CharacterUnlockCondition } from '../systems/character-unlock-system';
+import { StoredPartner } from '../schemas/game-schemas';
 
 interface PartnerState {
   // Partner Management
@@ -24,13 +12,18 @@ interface PartnerState {
   activeTeam: string[]; // Partner IDs
   selectedPartnerId: string | null;
   
+  // Character Unlocking
+  unlockedCharacters: string[]; // Character IDs from content
+  pendingUnlocks: CharacterUnlockCondition[]; // Characters ready to unlock
+  
   // Pity System
   pullsSinceEpic: number;
   pullsSinceLegendary: number;
   totalPulls: number;
   
   // Actions
-  addPartner: (partner: GeneratedPartner) => StoredPartner;
+  addPartner: (partner: GeneratedPartner | ContentPartner) => StoredPartner;
+  addContentPartner: (partner: ContentPartner) => StoredPartner;
   removePartner: (partnerId: string) => void;
   setActiveTeam: (partnerIds: string[]) => void;
   selectPartner: (partnerId: string | null) => void;
@@ -51,6 +44,11 @@ interface PartnerState {
   resetPity: (type: 'epic' | 'legendary') => void;
   getPityRate: () => { epic: number; legendary: number };
   
+  // Character Unlocking
+  checkForUnlocks: (gameState: { level: number; completedChapters: string[]; totalTipsEarned: number; missionsCompleted: number; storyFlags: string[] }) => void;
+  unlockCharacter: (characterId: string) => void;
+  getNextUnlocks: (gameState: { level: number; completedChapters: string[]; totalTipsEarned: number; missionsCompleted: number; storyFlags: string[] }) => Array<CharacterUnlockCondition & { progress: number }>;
+  
   // Utility
   getPartnerById: (partnerId: string) => StoredPartner | undefined;
   getActivePartners: () => StoredPartner[];
@@ -65,6 +63,8 @@ export const usePartnerStore = create<PartnerState>()(
         partners: [],
         activeTeam: [],
         selectedPartnerId: null,
+        unlockedCharacters: ['kira-chen', 'alex-rivera', 'sam-torres'], // Starter characters
+        pendingUnlocks: [],
         pullsSinceEpic: 0,
         pullsSinceLegendary: 0,
         totalPulls: 0,
@@ -79,9 +79,37 @@ export const usePartnerStore = create<PartnerState>()(
             bondLevel: 0,
             isInjured: false,
             traitMastery: {
-              [partner.primaryTrait]: 'bronze',
-              ...(partner.secondaryTrait && { [partner.secondaryTrait]: 'bronze' }),
-              ...(partner.tertiaryTrait && { [partner.tertiaryTrait]: 'bronze' }),
+              [partner.primaryTrait]: { level: 1, experience: 0, unlocked: true },
+              ...(partner.secondaryTrait && { [partner.secondaryTrait]: { level: 1, experience: 0, unlocked: true } }),
+              ...(partner.tertiaryTrait && { [partner.tertiaryTrait]: { level: 1, experience: 0, unlocked: true } }),
+            },
+            equipment: {},
+          };
+          
+          set((state) => {
+            state.partners.push(storedPartner);
+            
+            // Auto-add to team if space available
+            if (state.activeTeam.length < 3) {
+              state.activeTeam.push(storedPartner.id);
+            }
+          });
+          
+          return storedPartner;
+        },
+        
+        addContentPartner: (partner) => {
+          const storedPartner: StoredPartner = {
+            ...partner,
+            experience: 0,
+            currentEnergy: 100,
+            maxEnergy: 100,
+            bondLevel: 0,
+            isInjured: false,
+            traitMastery: {
+              [partner.primaryTrait]: { level: 1, experience: 0, unlocked: true },
+              ...(partner.secondaryTrait && { [partner.secondaryTrait]: { level: 1, experience: 0, unlocked: true } }),
+              ...(partner.tertiaryTrait && { [partner.tertiaryTrait]: { level: 1, experience: 0, unlocked: true } }),
             },
             equipment: {},
           };
@@ -185,10 +213,10 @@ export const usePartnerStore = create<PartnerState>()(
           const partner = state.partners.find(p => p.id === partnerId);
           if (partner && partner.traitMastery[trait]) {
             const currentMastery = partner.traitMastery[trait];
-            if (currentMastery === 'bronze') {
-              partner.traitMastery[trait] = 'silver';
-            } else if (currentMastery === 'silver') {
-              partner.traitMastery[trait] = 'gold';
+            // Upgrade trait mastery level
+            if (currentMastery.level < 3) {
+              currentMastery.level += 1;
+              currentMastery.experience = 0; // Reset experience on level up
             }
           }
         }),
@@ -226,6 +254,30 @@ export const usePartnerStore = create<PartnerState>()(
             epic: Math.min(pullsSinceEpic / 50, 1),
             legendary: Math.min(pullsSinceLegendary / 90, 1),
           };
+        },
+        
+        // Character Unlocking
+        checkForUnlocks: (gameState) => set((state) => {
+          const newUnlocks = CharacterUnlockSystem.checkUnlocks(gameState)
+            .filter(unlock => !state.unlockedCharacters.includes(unlock.characterId));
+          
+          state.pendingUnlocks = newUnlocks;
+        }),
+        
+        unlockCharacter: (characterId) => set((state) => {
+          if (!state.unlockedCharacters.includes(characterId)) {
+            state.unlockedCharacters.push(characterId);
+          }
+          
+          // Remove from pending unlocks
+          state.pendingUnlocks = state.pendingUnlocks.filter(
+            unlock => unlock.characterId !== characterId
+          );
+        }),
+        
+        getNextUnlocks: (gameState) => {
+          const { unlockedCharacters } = get();
+          return CharacterUnlockSystem.getNextUnlocks(unlockedCharacters, gameState);
         },
         
         // Utility

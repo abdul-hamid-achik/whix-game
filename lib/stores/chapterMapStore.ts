@@ -161,13 +161,22 @@ export const useChapterMapStore = create<ChapterMapState>()(
           if (str) {
             const state = JSON.parse(str);
             // Convert arrays back to Maps
-            if (state.state.chapterMaps) {
+            if (state.state && state.state.chapterMaps) {
+              // Handle both array format (serialized) and object format
+              const chapterMapsData = Array.isArray(state.state.chapterMaps) 
+                ? state.state.chapterMaps 
+                : Object.entries(state.state.chapterMaps);
+                
               state.state.chapterMaps = new Map(
-                state.state.chapterMaps.map((item: any) => [
-                  item[0],
+                chapterMapsData.map((item: any) => [
+                  parseInt(item[0]), // Ensure key is number
                   {
                     ...item[1],
-                    nodes: new Map(item[1].nodes)
+                    nodes: new Map(
+                      Array.isArray(item[1].nodes) 
+                        ? item[1].nodes 
+                        : Object.entries(item[1].nodes || {})
+                    )
                   }
                 ])
               );

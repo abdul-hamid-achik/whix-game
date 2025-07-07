@@ -13,7 +13,13 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCharacterImageStore } from '@/lib/stores/characterImageStore';
-import { CharacterRarity } from '@/lib/game/gacha';
+// Define CharacterRarity enum locally
+enum CharacterRarity {
+  COMMON = 'common',
+  RARE = 'rare', 
+  EPIC = 'epic',
+  LEGENDARY = 'legendary'
+}
 import { cn } from '@/lib/utils';
 
 const RARITY_COLORS = {
@@ -26,7 +32,7 @@ const RARITY_COLORS = {
 
 export function CharacterImageGenerator() {
   const {
-    _imagePools,
+    imagePools: _imagePools,
     isGenerating,
     setGenerating,
     addToPool,
@@ -35,7 +41,7 @@ export function CharacterImageGenerator() {
     generationHistory
   } = useCharacterImageStore();
   
-  const [selectedRarity, setSelectedRarity] = useState<CharacterRarity>('common');
+  const [selectedRarity, setSelectedRarity] = useState<CharacterRarity>(CharacterRarity.COMMON);
   const [batchSize, setBatchSize] = useState(5);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);

@@ -81,7 +81,7 @@ const BASE_REWARDS = {
 // Generate a random node based on position
 function generateNode(x: number, y: number, type: NodeType, difficulty: number = 1): MapNode {
   const id = `node_${x}_${y}`;
-  const baseReward = BASE_REWARDS[type] || { tips: 0, experience: 0 };
+  const baseReward = (BASE_REWARDS as any)[type] || { tips: 0, experience: 0 };
   
   return {
     id,
@@ -161,7 +161,7 @@ function generateNodeTitle(type: NodeType): string {
     ]
   };
   
-  const typeTitles = titles[type] || ['Unknown Encounter'];
+  const typeTitles = (titles as any)[type] || ['Unknown Encounter'];
   return typeTitles[Math.floor(Math.random() * typeTitles.length)];
 }
 
@@ -178,7 +178,7 @@ function generateNodeDescription(type: NodeType): string {
     [NodeType.BOSS]: 'Face a powerful enemy in this climactic battle'
   };
   
-  return descriptions[type] || 'Explore this location';
+  return (descriptions as any)[type] || 'Explore this location';
 }
 
 // Generate a chapter map
@@ -190,6 +190,8 @@ export function generateChapterMap(
 ): ChapterMap {
   const nodes = new Map<string, MapNode>();
   const _gridSize = width * height;
+  
+  console.log(`🗺️ Generating chapter ${chapterNumber} map: ${width}x${height}`);
   
   // Create start node at bottom
   const startNode = generateNode(Math.floor(width / 2), height - 1, NodeType.START, 0);
@@ -321,6 +323,9 @@ export function generateChapterMap(
     }
   }
   
+  console.log(`🗺️ Generated map with ${nodes.size} nodes`);
+  console.log('🗺️ Node types:', Array.from(nodes.values()).map(n => `${n.id}:${n.type}`));
+  
   return {
     id: `chapter_${chapterNumber}`,
     chapterNumber,
@@ -415,14 +420,14 @@ function getChapterTime(chapter: number): ChapterMap['timeOfDay'] {
 
 // Update node status
 export function updateNodeStatus(map: ChapterMap, nodeId: string, status: NodeStatus): ChapterMap {
-  const node = map.nodes.get(nodeId);
+  const node = getNode(map.nodes, nodeId);
   if (node) {
     node.status = status;
     
     // Update connected nodes to available if this node is completed
     if (status === NodeStatus.COMPLETED) {
       node.connections.forEach(connId => {
-        const connNode = map.nodes.get(connId);
+        const connNode = getNode(map.nodes, connId);
         if (connNode && connNode.status === NodeStatus.LOCKED) {
           connNode.status = NodeStatus.AVAILABLE;
         }
@@ -434,8 +439,8 @@ export function updateNodeStatus(map: ChapterMap, nodeId: string, status: NodeSt
 
 // Move to a new node
 export function moveToNode(map: ChapterMap, nodeId: string): ChapterMap {
-  const node = map.nodes.get(nodeId);
-  const currentNode = map.currentNodeId ? map.nodes.get(map.currentNodeId) : null;
+  const node = getNode(map.nodes, nodeId);
+  const currentNode = map.currentNodeId ? getNode(map.nodes, map.currentNodeId) : null;
   
   if (node && node.status === NodeStatus.AVAILABLE) {
     // Update current node
@@ -449,7 +454,7 @@ export function moveToNode(map: ChapterMap, nodeId: string): ChapterMap {
     
     // Update connected nodes
     node.connections.forEach(connId => {
-      const connNode = map.nodes.get(connId);
+      const connNode = getNode(map.nodes, connId);
       if (connNode && connNode.status === NodeStatus.LOCKED) {
         connNode.status = NodeStatus.AVAILABLE;
       }
@@ -461,17 +466,29 @@ export function moveToNode(map: ChapterMap, nodeId: string): ChapterMap {
 
 // Check if player can reach the end
 export function canReachEnd(map: ChapterMap): boolean {
-  const endNode = map.nodes.get(map.endNodeId);
+  const endNode = getNode(map.nodes, map.endNodeId);
   return endNode ? endNode.status === NodeStatus.AVAILABLE : false;
+}
+
+// Helper function to get node from map (handles both Map and object)
+function getNode(nodes: Map<string, MapNode> | Record<string, MapNode>, nodeId: string): MapNode | undefined {
+  return nodes instanceof Map ? nodes.get(nodeId) : nodes[nodeId];
+}
+
+// Helper function to get all node values (handles both Map and object)
+function getNodeValues(nodes: Map<string, MapNode> | Record<string, MapNode>): MapNode[] {
+  return nodes instanceof Map ? Array.from(nodes.values()) : Object.values(nodes);
 }
 
 // Get current progress percentage
 export function getMapProgress(map: ChapterMap): number {
-  const totalNodes = Array.from(map.nodes.values()).filter(n => 
+  const nodeValues = getNodeValues(map.nodes);
+    
+  const totalNodes = nodeValues.filter(n => 
     n.type !== NodeType.EMPTY && n.type !== NodeType.BLOCKED
   ).length;
   
-  const completedNodes = Array.from(map.nodes.values()).filter(n => 
+  const completedNodes = nodeValues.filter(n => 
     n.status === NodeStatus.COMPLETED
   ).length;
   

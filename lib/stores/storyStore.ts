@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { devtools, persist } from 'zustand/middleware';
+import { StoryRequirement, StoryRequirementSchema } from '@/lib/schemas/game-schemas';
 
 interface StoryState {
   // Story Progress
@@ -38,7 +39,7 @@ interface StoryState {
   unlockCharacter: (characterId: string) => void;
   
   // Utility
-  canMakeChoice: (requirement: any) => boolean;
+  canMakeChoice: (requirement: StoryRequirement) => boolean;
   getStoryProgress: () => number;
 }
 
@@ -120,25 +121,29 @@ export const useStoryStore = create<StoryState>()(
         canMakeChoice: (requirement) => {
           if (!requirement) return true;
           
+          // Validate requirement with Zod
+          const validatedRequirement = StoryRequirementSchema.parse(requirement);
+          if (!validatedRequirement) return true;
+          
           const state = get();
           
           // Check previous choice requirement
-          if (requirement.previousChoice) {
-            const [dialogueId, choiceId] = requirement.previousChoice.split(':');
+          if (validatedRequirement.previousChoice) {
+            const [dialogueId, choiceId] = validatedRequirement.previousChoice.split(':');
             if (state.dialogueChoices[dialogueId] !== choiceId) {
               return false;
             }
           }
           
           // Check flag requirement
-          if (requirement.flag && !state.hasFlag(requirement.flag)) {
+          if (validatedRequirement.flag && !state.hasFlag(validatedRequirement.flag)) {
             return false;
           }
           
           // Check relationship requirement
-          if (requirement.relationship) {
-            const [characterId, minValue] = requirement.relationship.split(':');
-            if (state.getRelationship(characterId) < parseInt(minValue)) {
+          if (validatedRequirement.relationship) {
+            const { character, minimum } = validatedRequirement.relationship;
+            if (state.getRelationship(character) < minimum) {
               return false;
             }
           }

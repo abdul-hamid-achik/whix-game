@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
               default:
                 return imageGenerator.generateImage({
                   prompt: `${levelName} ${assetType}, ${environment} environment`,
-                  style: 'kingdom-rush-style',
+                  style: 'pixel-art' as const,
                 });
             }
           })

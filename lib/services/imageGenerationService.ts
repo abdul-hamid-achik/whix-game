@@ -5,13 +5,13 @@ import {
   createCharacterImagePrompt,
   generateCharacterSeed
 } from '@/lib/game/imageGeneration';
-import { CharacterRarity } from '@/lib/game/gacha';
+import { Rarity } from '@/lib/game/classes';
 import { z } from 'zod';
 
 // Configuration for image generation
 const IMAGE_CONFIG = {
-  width: 512, // Will be displayed smaller but generated larger for quality
-  height: 512,
+  width: 1024, // OpenAI DALL-E 3 supported sizes: 1024x1024, 1024x1792, 1792x1024
+  height: 1024,
   model: 'dall-e-3',
   quality: 'standard' as const,
   style: 'natural' as const,
@@ -67,7 +67,7 @@ export class CharacterImageGenerationService {
   async generateCharacterImage(
     characterId: string,
     name: string,
-    rarity: CharacterRarity,
+    rarity: Rarity,
     customAttributes?: Partial<CharacterVisualAttributes>
   ): Promise<GeneratedCharacterImage> {
     try {
@@ -178,7 +178,7 @@ export class CharacterImageGenerationService {
   // Batch generate multiple characters
   async batchGenerateCharacters(
     count: number,
-    rarityWeights?: Record<CharacterRarity, number>
+    rarityWeights?: Record<Rarity, number>
   ): Promise<GeneratedCharacterImage[]> {
     const results: GeneratedCharacterImage[] = [];
     
@@ -187,8 +187,7 @@ export class CharacterImageGenerationService {
       common: 50,
       rare: 30,
       epic: 15,
-      legendary: 4,
-      mythic: 1
+      legendary: 5
     };
     
     // Generate characters
@@ -215,14 +214,14 @@ export class CharacterImageGenerationService {
   }
   
   // Select rarity based on weights
-  private selectRarityByWeight(weights: Record<CharacterRarity, number>): CharacterRarity {
+  private selectRarityByWeight(weights: Record<Rarity, number>): Rarity {
     const totalWeight = Object.values(weights).reduce((sum, weight) => sum + weight, 0);
     let random = Math.random() * totalWeight;
     
     for (const [rarity, weight] of Object.entries(weights)) {
       random -= weight;
       if (random <= 0) {
-        return rarity as CharacterRarity;
+        return rarity as Rarity;
       }
     }
     
@@ -230,13 +229,12 @@ export class CharacterImageGenerationService {
   }
   
   // Generate random courier names
-  private generateRandomName(rarity: CharacterRarity): string {
-    const prefixes = {
+  private generateRandomName(rarity: Rarity): string {
+    const prefixes: Record<Rarity, string[]> = {
       common: ['Rookie', 'Street', 'Quick', 'Swift'],
       rare: ['Elite', 'Pro', 'Express', 'Rapid'],
       epic: ['Master', 'Shadow', 'Ghost', 'Phantom'],
-      legendary: ['Legendary', 'Mythical', 'Supreme', 'Ultimate'],
-      mythic: ['Eternal', 'Cosmic', 'Infinite', 'Divine']
+      legendary: ['Legendary', 'Mythical', 'Supreme', 'Ultimate']
     };
     
     const suffixes = [

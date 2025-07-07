@@ -17,23 +17,37 @@ gameplay_mechanics:
   - "neural-conditioning-effects" 
   - "female-solidarity-choices"
 scenes:
-  - id: "morning-conditioning"
-    type: "cutscene"
-    location: "WHIX Executive Conditioning Center"
+  - id: "tania-resistance-preparation"
+    type: "internal_monologue"
+    location: "WHIX Executive Conditioning Center - Pre-Session"
     description: |
-      [Tania sits in a sterile white room. Director Chen circles her like a predator, neural conditioning equipment humming]
+      [Tania sits in the white room, but her mind is active, preparing for the conditioning session]
       
-      Chen: "Your metrics show concerning patterns, Tania. Empathy spikes. Resistance indicators. We need deeper optimization."
+      Tania: [Internal voice] "Day twelve of 'optimization.' They think they're rewriting my mind, but they don't understand how pattern recognition really works."
       
-      [The conditioning chair restraints click shut]
+      [She activates the mental techniques she's developed - compartmentalization, memory protection, false compliance]
       
-      Tania: "Miguel... I need to help Miguel. He's struggling with the new quotas—"
+      Tania: "Every session, they map my neural responses. But they can't map what I don't let them see. The dead man's switch message to Miguel. The data I've been collecting. The resistance contacts I've memorized."
       
-      Chen: [Touching Tania's shoulder possessively] "Such beautiful concern. But misdirected. Miguel will serve better once you're fully optimized. Think of it as... recruiting through example."
+      [Director Chen enters with the neural conditioning equipment]
+      
+      Chen: "Good morning, Tania. Your metrics from yesterday's session show concerning patterns. Empathy spikes. Resistance indicators. We need deeper optimization."
+      
+      Tania: [Outward compliance, inner defiance] "I understand, Director. I want to be optimized. I want to help WHIX succeed."
+      
+      [The conditioning chair restraints click shut, but Tania has prepared for this]
+      
+      Tania: [Internal] "Let them think they're winning. Every minute they waste on me is a minute Miguel has to figure out the truth."
+      
+      Chen: [Touching Tania's shoulder possessively] "Such beautiful progress. Your cooperation will demonstrate the benefits to other partners. Miguel, for instance."
+      
+      Tania: [Feigning innocent confusion] "Miguel? Is he being considered for optimization too?"
+      
+      Chen: "The expansion requires more partners. Young, anxious minds are particularly... moldable. Your transformation will encourage his voluntary participation."
       
       [Neural interface descends, begins its invasive scan]
       
-      Chen: "The expansion requires more partners. Young, impressionable minds like Miguel's. Your conditioning will demonstrate the benefits of... cooperation."
+      Tania: [Internal resistance] "Over my dead fucking body."
 
   - id: "stalker-introduction"
     type: "stealth_encounter"
@@ -162,17 +176,35 @@ scenes:
       
       Chen: "Our female assets are particularly effective. Tania's pattern recognition, properly channeled through submission protocols, will identify recruitment targets with 94% accuracy."
 
-  - id: "safe-house-discovery"
-    type: "temporary_refuge"
+  - id: "tania-active-sabotage"
+    type: "resistance_operation"
     location: "Abandoned Subway Station"
     description: |
       [Tania finds an old resistance safe house. Graffiti covers the walls: "DIGNITY IS NOT NEGOTIABLE" and "THEY CANNOT HARVEST WHAT WE FREELY GIVE"]
       
-      The Watcher's signal vanishes here. Old analog equipment provides momentary safety. She finds a working terminal, begins typing a message to Miguel:
+      The Watcher's signal vanishes here. Old analog equipment provides momentary safety. But Tania isn't just hiding - she's working.
       
-      "The expansion is real. They're using us as recruitment tools. The uniforms, the harassment, the conditioning - it's all designed to break our solidarity. Miguel, don't trust them when they offer you advancement. They want to use our friendship against us both."
+      [She connects her neural interface to an ancient computer terminal, careful to maintain her conditioning facade]
       
-      [Footsteps echo above. The safety is temporary]
+      Tania: [To herself] "If they want to use my pattern recognition to map other neurodivergent individuals, I'll give them patterns. Just not the ones they're expecting."
+      
+      [She begins injecting false data into WHIX's recruitment algorithms - corrupted profiles that will protect vulnerable individuals]
+      
+      Tania: "Every name I alter, every profile I corrupt, every safety route I encode... it's not much, but it's resistance."
+      
+      [She records an encrypted message to Miguel]
+      
+      Tania: "Miguel, the expansion is real. They're using us as recruitment tools, but I'm fighting back from the inside. The conditioning is strong, but my hyperfocus gives me windows of clarity they can't control."
+      
+      [She uploads resistance contact codes to a hidden partition of her neural interface]
+      
+      Tania: "The uniforms, the harassment, the psychological pressure - it's all designed to break our solidarity. But they made one mistake. They think optimization means compliance. They don't understand that some of us were born to find patterns in chaos."
+      
+      [Footsteps echo above. Time is running out]
+      
+      Tania: "I'm encoding this message with the safety protocols we developed in Chapter 1. Miguel, if you're getting this, it means my resistance is still active. Don't trust them when they offer you advancement. And if I seem different when you see me next... look for the patterns they can't erase."
+      
+      [She destroys the evidence of her sabotage and returns to her conditioning persona just as corporate security arrives]
 
   - id: "ekaterina-resistance"
     type: "solidarity_moment"

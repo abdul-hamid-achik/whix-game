@@ -1,9 +1,9 @@
 import { db } from '@/lib/db';
-import { players, partners, skins } from '@/lib/db/schema';
+import { players, partners } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-import { generateCharacter, CharacterRarity } from '@/lib/game/gacha';
+import { generatePartner } from '@/lib/game/partnerGenerator';
+import { Rarity } from '@/lib/game/classes';
 import { getImageGenerationService } from './imageGenerationService';
-import { nanoid } from 'nanoid';
 
 interface SessionInitResult {
   playerId: string;
@@ -16,12 +16,11 @@ export class SessionInitializationService {
   private imageService = getImageGenerationService();
   
   // Minimum pool sizes per rarity
-  private readonly MIN_POOL_SIZES: Record<CharacterRarity, number> = {
+  private readonly MIN_POOL_SIZES: Record<Rarity, number> = {
     common: 10,
     rare: 5,
     epic: 3,
-    legendary: 2,
-    mythic: 1
+    legendary: 2
   };
   
   // Initial characters for new players
@@ -89,7 +88,7 @@ export class SessionInitializationService {
     const characters = [];
     
     // Generate one guaranteed rare character
-    const rareCharacter = generateCharacter('rare');
+    const rareCharacter = generatePartner('rare');
     characters.push({
       ...rareCharacter,
       playerId,
@@ -112,7 +111,7 @@ export class SessionInitializationService {
     
     // Generate two common characters
     for (let i = 0; i < 2; i++) {
-      const character = generateCharacter('common');
+      const character = generatePartner('common');
       characters.push({
         ...character,
         playerId,
@@ -153,49 +152,10 @@ export class SessionInitializationService {
     return totalGenerated;
   }
   
-  private async generateStarterSkins(playerId: string): Promise<number> {
-    const starterSkins = [
-      {
-        id: nanoid(),
-        playerId,
-        type: 'outfit' as const,
-        category: 'delivery_uniform' as const,
-        name: 'Basic WHIX Uniform',
-        description: 'Standard issue delivery uniform. Slightly worn.',
-        rarity: 'common' as const,
-        imageUrl: '/images/skins/basic-uniform.png',
-        attributes: {
-          stamina: 5,
-          focus: 0,
-          perception: 0,
-          logic: 0
-        },
-        isEquipped: true,
-        isStarter: true
-      },
-      {
-        id: nanoid(),
-        playerId,
-        type: 'vehicle' as const,
-        category: 'courier_bike' as const,
-        name: 'Rusty Delivery Bike',
-        description: 'It gets you there... eventually.',
-        rarity: 'common' as const,
-        imageUrl: '/images/skins/rusty-bike.png',
-        attributes: {
-          stamina: 10,
-          focus: 0,
-          perception: 0,
-          logic: 0
-        },
-        isEquipped: true,
-        isStarter: true
-      }
-    ];
-    
-    await db.insert(skins).values(starterSkins);
-    
-    return starterSkins.length;
+  private async generateStarterSkins(_playerId: string): Promise<number> {
+    // For now, return 0 since we haven't implemented the skin system yet
+    // TODO: Implement starter skin generation when skin system is ready
+    return 0;
   }
   
   // Convert guest to registered user

@@ -12,7 +12,9 @@ declare module "next-auth" {
 
   interface User extends DefaultUser {
     role: string
-    guestId?: string
+    guestId?: string | null
+    /** @deprecated Use role === 'free' && guestId instead */
+    isGuest?: boolean
   }
 }
 

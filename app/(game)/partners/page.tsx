@@ -162,7 +162,7 @@ export default function PartnersPage() {
                               {NEURODIVERGENT_TRAITS[selectedPartner.primaryTrait as keyof typeof NEURODIVERGENT_TRAITS]?.description}
                             </div>
                             <Badge variant="outline" className="mt-1 text-xs">
-                              {selectedPartner.traitMastery?.[selectedPartner.primaryTrait] || 'Bronze'} Mastery
+                              Level {selectedPartner.traitMastery?.[selectedPartner.primaryTrait]?.level || 1} Mastery
                             </Badge>
                           </div>
                         </div>
@@ -175,7 +175,7 @@ export default function PartnersPage() {
                                 {NEURODIVERGENT_TRAITS[selectedPartner.secondaryTrait as keyof typeof NEURODIVERGENT_TRAITS]?.name}
                               </div>
                               <Badge variant="outline" className="mt-1 text-xs">
-                                {selectedPartner.traitMastery?.[selectedPartner.secondaryTrait] || 'Bronze'} Mastery
+                                Level {selectedPartner.traitMastery?.[selectedPartner.secondaryTrait]?.level || 1} Mastery
                               </Badge>
                             </div>
                           </div>

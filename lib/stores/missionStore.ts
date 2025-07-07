@@ -70,11 +70,13 @@ export const useMissionStore = create<MissionState>()(
       currentMissionId: null,
       lastDailyRefresh: 0,
       lastWeeklyRefresh: 0,
-      missionSeed: Date.now(),
+      missionSeed: typeof window !== 'undefined' ? Date.now() : 0,
       missionStats: {},
       
       // Mission Generation
       generateDailyMissions: (playerLevel) => set((state) => {
+        if (typeof window === 'undefined') return; // Skip on server
+        
         const now = Date.now();
         const oneDayMs = 24 * 60 * 60 * 1000;
         
@@ -89,6 +91,8 @@ export const useMissionStore = create<MissionState>()(
       }),
       
       generateWeeklyMission: (playerLevel) => set((state) => {
+        if (typeof window === 'undefined') return; // Skip on server
+        
         const now = Date.now();
         const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
         
@@ -101,6 +105,8 @@ export const useMissionStore = create<MissionState>()(
       }),
       
       refreshAvailableMissions: (playerLevel) => set((state) => {
+        if (typeof window === 'undefined') return; // Skip on server
+        
         const missionTypes: MissionType[] = [
           'standard_delivery',
           'customer_negotiation',
@@ -128,7 +134,7 @@ export const useMissionStore = create<MissionState>()(
         set((state) => {
           const progress: MissionProgress = {
             missionId,
-            startedAt: Date.now(),
+            startedAt: typeof window !== 'undefined' ? Date.now() : 0,
             objectiveProgress: {},
             partnersUsed: partnerIds,
             isActive: true,

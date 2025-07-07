@@ -27,13 +27,19 @@ scenes:
       
       Tania: [Static-filled transmission] "Miguel... if you get this... don't trust WHIX recruitment offers. Chen is... [interference] ...using me to recruit you. The expansion... they want your anxiety patterns..."
       
-      [Image flashes through the static - Tania in revealing corporate uniform, eyes hollow]
+      [Image flashes through the static - Tania in revealing corporate uniform, eyes hollow, but fighting to maintain contact]
       
-      Tania: "I'm fighting the conditioning but... [signal cutting out] ...48 hours until final optimization. The resistance... Ekaterina knows... find Father Santiago..."
+      Tania: "I'm fighting the conditioning but... [signal cutting out] ...48 hours until final optimization. Miguel, I need you to know - our friendship, our partnership in Chapter 1, it was real. They can't take that away, no matter what they do to my mind."
+      
+      [Her voice becomes desperate, more personal]
+      
+      Tania: "Remember the alley? When you realized your anxiety was strength? Hold onto that. When they try to recruit you, remember that we figured out their surveillance together. Your mind is not broken, Miguel. It's exactly what it needs to be."
       
       [Message ends abruptly. Miguel's delivery notification chimes: "Priority Package - Ramirez Residence - Birthday Celebration"]
       
-      Miguel: [To himself] "Tania... what have they done to you?"
+      Miguel: [Voice breaking] "Tania... I'll find you. I promise."
+      
+      [He wipes tears from his eyes, steeling himself for the delivery. But the weight of potentially losing his best friend makes everything feel heavier]
 
   - id: "blocked-street"
     type: "obstacle_encounter"
@@ -82,17 +88,19 @@ scenes:
       
       Alejandro: [Whispering] "Are you here for my birthday? Nobody else came. Mami and Papi are too angry."
       
-      Miguel: [Kneeling down] "Hey there, champion. I'm Miguel. I'm just trying to deliver a package, but... are you okay?"
+      Miguel: [Kneeling down] "Hey there, campeón. I'm Miguel. I'm just trying to deliver a package, but... you okay, kid?"
       
       Alejandro: [Clutching broken action figure] "Papi broke my robot when he threw his drink. Mami says it's because they don't have money but Papi buys his medicine every day."
       
       [The child's innocence cuts through Miguel's anxiety. In the background, the fighting escalates]
       
-      Carmen: [Screaming] "¡Get out! You're just like your father - weak and useless!"
+      Carmen: [Screaming] "¡Lárgate! You're just like your father - weak and useless! ¡Pinche borracho!"
       
-      Eduardo: [Drunk] "I work sixteen hours a day for WHIX! Nothing's ever enough!"
+      Eduardo: [Drunk, defensive] "I work sixteen fucking hours a day for WHIX! ¡Nada es suficiente! Nothing's ever enough for you!"
       
-      Alejandro: [To Miguel] "Will you help them stop fighting? Today was supposed to be special."
+      Alejandro: [To Miguel, voice small] "Will you help them stop fighting? Today was supposed to be special. It's my birthday."
+      
+      Miguel: [Heart breaking] "Shit, kid. Yeah, it's your birthday. That should be special." [He looks at the chaos around them] "Let me see what I can do, okay?"
 
   - id: "family-intervention"
     type: "conflict_resolution"

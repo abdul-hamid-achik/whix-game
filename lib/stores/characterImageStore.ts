@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { GeneratedCharacterImage } from '@/lib/services/imageGenerationService';
-import { CharacterRarity } from '@/lib/game/gacha';
+import { Rarity } from '@/lib/game/classes';
 
 interface CharacterImagePool {
   [rarity: string]: GeneratedCharacterImage[];
@@ -20,11 +20,11 @@ interface CharacterImageStore {
   // Actions
   addGeneratedImage: (image: GeneratedCharacterImage) => void;
   addToPool: (image: GeneratedCharacterImage) => void;
-  getFromPool: (rarity: CharacterRarity) => GeneratedCharacterImage | null;
+  getFromPool: (rarity: Rarity) => GeneratedCharacterImage | null;
   assignImageToCharacter: (characterId: string, image: GeneratedCharacterImage) => void;
   getCharacterImage: (characterId: string) => GeneratedCharacterImage | undefined;
-  getPoolStats: () => Record<CharacterRarity, number>;
-  clearPool: (rarity?: CharacterRarity) => void;
+  getPoolStats: () => Record<Rarity, number>;
+  clearPool: (rarity?: Rarity) => void;
   
   // Batch operations
   addBatchToPool: (images: GeneratedCharacterImage[]) => void;
@@ -32,8 +32,8 @@ interface CharacterImageStore {
   // Generation tracking
   isGenerating: boolean;
   setGenerating: (generating: boolean) => void;
-  generationQueue: Array<{ characterId: string; name: string; rarity: CharacterRarity }>;
-  addToQueue: (item: { characterId: string; name: string; rarity: CharacterRarity }) => void;
+  generationQueue: Array<{ characterId: string; name: string; rarity: Rarity }>;
+  addToQueue: (item: { characterId: string; name: string; rarity: Rarity }) => void;
   removeFromQueue: (characterId: string) => void;
 }
 
@@ -44,8 +44,7 @@ export const useCharacterImageStore = create<CharacterImageStore>()(
         common: [],
         rare: [],
         epic: [],
-        legendary: [],
-        mythic: []
+        legendary: []
       },
       
       characterImages: new Map(),
@@ -58,7 +57,7 @@ export const useCharacterImageStore = create<CharacterImageStore>()(
       })),
       
       addToPool: (image) => set((state) => {
-        const rarity = image.attributes.rarity as CharacterRarity;
+        const rarity = image.attributes.rarity as Rarity;
         const pool = state.imagePools[rarity] || [];
         
         // Check for duplicates
@@ -110,16 +109,15 @@ export const useCharacterImageStore = create<CharacterImageStore>()(
       
       getPoolStats: () => {
         const state = get();
-        const stats: Record<CharacterRarity, number> = {
+        const stats: Record<Rarity, number> = {
           common: 0,
           rare: 0,
           epic: 0,
-          legendary: 0,
-          mythic: 0
+          legendary: 0
         };
         
         Object.entries(state.imagePools).forEach(([rarity, pool]) => {
-          stats[rarity as CharacterRarity] = pool.length;
+          stats[rarity as Rarity] = pool.length;
         });
         
         return stats;
@@ -151,7 +149,7 @@ export const useCharacterImageStore = create<CharacterImageStore>()(
         const newPools = { ...state.imagePools };
         
         images.forEach(image => {
-          const rarity = image.attributes.rarity as CharacterRarity;
+          const rarity = image.attributes.rarity as Rarity;
           if (!newPools[rarity]) {
             newPools[rarity] = [];
           }
@@ -178,19 +176,30 @@ export const useCharacterImageStore = create<CharacterImageStore>()(
     }),
     {
       name: 'character-image-storage',
-      // Custom serialization for Map
-      serialize: (state) => {
-        return JSON.stringify({
-          ...state,
-          characterImages: Array.from(state.characterImages.entries())
-        });
-      },
-      deserialize: (str) => {
-        const parsed = JSON.parse(str);
-        return {
-          ...parsed,
-          characterImages: new Map(parsed.characterImages)
-        };
+      storage: {
+        getItem: (name) => {
+          const str = localStorage.getItem(name);
+          if (!str) return null;
+          const parsed = JSON.parse(str);
+          return {
+            state: {
+              ...parsed.state,
+              characterImages: new Map(parsed.state.characterImages || [])
+            },
+            version: parsed.version
+          };
+        },
+        setItem: (name, value) => {
+          const stringified = JSON.stringify({
+            state: {
+              ...value.state,
+              characterImages: Array.from(value.state.characterImages.entries())
+            },
+            version: value.version
+          });
+          localStorage.setItem(name, stringified);
+        },
+        removeItem: (name) => localStorage.removeItem(name)
       }
     }
   )

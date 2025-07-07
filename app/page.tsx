@@ -58,7 +58,7 @@ export default function LandingPage() {
             transition={{ duration: 0.5 }}
             className="text-center max-w-4xl mx-auto"
           >
-            {/* Game Logo/Title with cyberpunk aesthetic */}
+            {/* Game Logo/Title with neura-tech aesthetic */}
             <div className="mb-6">
               <h1 className="text-6xl md:text-8xl font-bold mb-2">
                 <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">

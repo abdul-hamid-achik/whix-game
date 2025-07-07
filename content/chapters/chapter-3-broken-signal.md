@@ -20,7 +20,7 @@ scenes:
       
       Before he can respond, the device screams with feedback. Sparks fly from the neural ports. The screen goes dead.
       
-      WHIX-AI: "CRITICAL ERROR. UNAUTHORIZED COMMUNICATION ATTEMPT DETECTED. DEVICE LOCKDOWN INITIATED."
+      WHIX-ITZTLI: "ERROR CRÍTICO. INTENTO DE COMUNICACIÓN NO AUTORIZADO DETECTADO. BLOQUEO DE DISPOSITIVO INICIADO."
       
       [A delivery request pops up on the emergency backup display]
       
@@ -28,31 +28,43 @@ scenes:
 
   - id: "central-square-chaos"
     type: "exploration"
-    location: "Central Square - Edge of Labyrinthine District"
+    location: "Zócalo Central - Edge of Distrito Laberíntico"
     description: |
-      Central Square throbs with angry voices. What started as an organized protest about the random curfews has devolved into chaos. 
+      The Zócalo throbs with angry voices beneath the massive statue of Cuauhtémoc holding a neural interface instead of a spear. What started as an organized protest about the random curfews has devolved into chaos. 
       
-      Main protesters hold signs: "CONSISTENT CURFEW TIMES NOW!" and "STOP THE RANDOM LOCKDOWNS!"
+      Main protesters hold signs: "¡HORARIOS DE TOQUE DE QUEDA CONSISTENTES YA!" and "¡PAREN LOS CIERRES ALEATORIOS!"
       
       But scattered throughout, other voices create a cacophony:
-      "MY NEIGHBOR'S DOG IS TOO LOUD!"
-      "BRING BACK REAL COCA-COLA!"
-      "THE PIGEONS ARE GOVERNMENT DRONES!"
+      "¡EL PERRO DE MI VECINO HACE MUCHO RUIDO!"
+      "¡QUEREMOS COCA-COLA REAL, NO SINTÉTICA!"
+      "¡LAS PALOMAS SON DRONES DEL GOBIERNO!"
       
-      The legitimate message drowns in the noise. Miguel realizes he needs to navigate this mess to find Father Santiago - and fix his device to respond to Tania.
+      The legitimate message drowns in the noise. Miguel realizes he needs to navigate this mess to find Padre Santiago - and fix his device to respond to Tania.
 
   - id: "finding-ricardo"
     type: "partner_encounter"
     location: "Makeshift Tech Repair Stand"
     new_partner: "Ricardo 'Tech' Morales"
     description: |
-      Near an overturned WHIX delivery cart, a young man has set up an impromptu repair station. His movements are precise, repetitive - he disassembles and reassembles devices without looking, hands moving in perfect patterns.
+      Near an overturned WHIX delivery cart, a young man has set up an impromptu repair station. His movements are precise, repetitive - he disassembles and reassembles devices without looking, hands moving in perfect patterns. But there's something desperate in his efficiency.
       
       "Don't touch anything," he says without looking up. "Your neural interface is broadcasting distress signals. Corporate malware triggered by unauthorized communication. Seen it twelve times today. Pattern suggests coordinated suppression."
       
-      His workspace is organized chaos - parts sorted by function, size, and failure probability. Classic signs of systemizing thinking.
+      His workspace is organized chaos - parts sorted by function, size, and failure probability. But Miguel notices a small photo tucked behind the circuit boards: a young boy, maybe eight, with the same intense focus as Ricardo.
       
       "Ricardo Morales. 'Tech' to everyone. I can fix your device, but you'll owe me. Not tips - information. Why did WHIX burn out your comms trying to stop that message?"
+      
+      Miguel: "Someone I care about is in trouble. What's with the picture?"
+      
+      Ricardo: [His hands pause for a microsecond] "My nephew. Tomás. He's like me - sees patterns in everything, remembers every detail. His mom thinks it's just 'being smart.' She doesn't understand that WHIX has been tracking kids like him since kindergarten."
+      
+      [He continues working, but there's emotion in his voice now]
+      
+      Ricardo: "They call it 'early cognitive assessment.' But I've seen the data. They're building recruitment pipelines, starting with children. Tomás scored in the 99th percentile for pattern recognition. He'll be on their priority list in ten years."
+      
+      Miguel: "That's why you're helping people?"
+      
+      Ricardo: "That's why I'm learning everything about their systems. Every device I fix, every malware signature I catalog, every security protocol I crack - it's all preparation. When they come for him, I'll be ready."
 
   - id: "protest-conversations"
     type: "investigation"
@@ -89,17 +101,21 @@ scenes:
     type: "story_encounter"
     location: "Hidden Alcove - Central Square"
     description: |
-      Father Santiago is nothing like Mendoza. His robes are patched, worn. His eyes are kind but tired. He's distributing actual food - not synthetic proteins - to protesters.
+      Father Santiago is nothing like Mendoza. His robes are patched, worn, and smell like cooking oil and incense. His weathered hands distribute actual food - beans, rice, tortillas - not synthetic proteins. This is a priest who knows hunger.
       
-      "You have my package? Ah, medical supplies. The real kind, not WHIX-approved placebos."
+      "¿Tienes mi paquete, mijo? Ah, medical supplies. The real kind, not WHIX-approved placebos."
       
-      He hands you a credit chip with an enormous tip.
+      He presses a credit chip into Miguel's hand along with a warm tamale wrapped in foil.
       
-      "I know who you are, Miguel. Tania spoke of you before... before they took her mind. I'm not with the Cathedral's corruption. Some of us remember what faith meant before the merger."
+      "I know who you are, Miguel Santos. Tania spoke of you before... before they took her beautiful mind. She said you were like her - someone who sees patterns others miss."
       
-      He leans closer.
+      He leans closer, his voice dropping to street-level Spanish mixed with English.
       
-      "The random curfews? They're testing response patterns. The Labyrinthine District's unique layout makes it perfect for behavioral experiments. They want to see how chaos affects productivity, how unpredictability breaks community bonds."
+      "Listen, hermano. The random curfews? They're testing response patterns. Esta gente in the Labyrinthine District, they're like lab rats in a maze. WHIX wants to see how chaos affects productivity, how unpredictability breaks community bonds."
+      
+      [He gestures to the protesters around them]
+      
+      "My grandmother always said 'La unión hace la fuerza' - unity makes strength. But you can't have unity when nobody knows what time curfew is, when families can't plan, when neighbors can't trust each other to be home."
 
   - id: "tania-connection"
     type: "dialogue"

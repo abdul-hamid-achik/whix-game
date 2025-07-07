@@ -266,10 +266,10 @@ export function ImageGenerator({ onImageGenerated }: ImageGeneratorProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="pixel-art">Pixel Art</SelectItem>
-                      <SelectItem value="fantasy-portrait">Fantasy Portrait</SelectItem>
-                      <SelectItem value="medieval-background">Medieval Background</SelectItem>
-                      <SelectItem value="kingdom-rush-style">Kingdom Rush Style</SelectItem>
-                      <SelectItem value="roguelike-dungeon">Roguelike Dungeon</SelectItem>
+                      <SelectItem value="cyberpunk-portrait">Cyberpunk Portrait</SelectItem>
+                      <SelectItem value="dystopian-background">Dystopian Background</SelectItem>
+                      <SelectItem value="aztec-soviet-style">Aztec Soviet Style</SelectItem>
+                      <SelectItem value="urban-delivery">Urban Delivery</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

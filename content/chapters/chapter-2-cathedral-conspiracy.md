@@ -1,6 +1,6 @@
 ---
 title: "Chapter 2: The Cathedral Conspiracy"
-description: "Miguel searches for his missing mentor while uncovering a sinister alliance between WHIX and the Church"
+description: "Miguel searches for his missing mentor while uncovering a sinister alliance between WHIX and the Templo de la Nueva Evangelización"
 unlockCondition:
   type: "chapter_completion"
   value: "chapter-1-first-day"
@@ -11,22 +11,55 @@ rewards:
     - "syndicate-jammer"
     - "holy-water-neutralizer"
 scenes:
+  - id: "tania-last-message"
+    type: "encrypted_dialogue"
+    location: "Miguel's Apartment - Late Night"
+    characters: ["Miguel Santos", "Tania Volkov"]
+    dialogue: |
+      [Miguel's neural interface receives an encrypted message, bypassing WHIX monitoring]
+      
+      Tania: [Audio only, distorted] "Miguel, if you're getting this, I've activated the dead man's switch I built into my interface."
+      
+      Miguel: [Whispering] "Tania? Where are you? I've been trying to reach you for two days."
+      
+      Tania: "They're moving me to 'special assignments.' The Cathedral District thing is a cover. Miguel, I've been tracking their data collection patterns during our deliveries. It's not random."
+      
+      [Background sounds - footsteps, corporate announcements]
+      
+      Tania: "They're mapping neural activity in real-time. Every time we experience empathy, anxiety, pattern recognition... they're measuring it, quantifying it. Building profiles of how our brains work under stress."
+      
+      Miguel: "Tania, you're scaring me."
+      
+      Tania: "Good. Be scared. But more importantly, be careful. They've been conditioning us gradually - the delivery routes, the crisis situations, the moral choices. Everything's designed to test and train our responses."
+      
+      [Signal degrades]
+      
+      Tania: "I'm going dark after this. If they contact you about partnering with someone new, don't trust them. The Festival... it's not what they're saying it is. Miguel, promise me—"
+      
+      [Connection terminates]
+      
+      WHIX-ITZTLI: [Suddenly active] "Error de conexión detectado. La Compañera Volkov no está disponible actualmente. Se están procesando asignaciones de compañerismo alternativo."
+
   - id: "lost-contact"
-    type: "dialogue"
+    type: "corporate_response"
     location: "Industrial District Hub"
     characters: ["Miguel Santos", "WHIX-AI"]
     dialogue: |
-      [Miguel's neural interface buzzes with missed connection alerts]
+      [Miguel arrives at the hub, desperate for information about Tania's disappearance]
       
-      Miguel: "Tania hasn't responded in 48 hours. That's not like her."
+      Miguel: "I need to know where Tania Volkov is. She's my partner."
       
-      WHIX-AI: "Partner Volkov's productivity metrics have... fluctuated. She has been reassigned to Cathedral District for the Festival preparations. High-priority deliveries."
+      WHIX-ITZTLI: "La Compañera Volkov ha sido reasignada al Distrito de la Catedral para preparaciones del Festival. Sus métricas de productividad mostraron potencial de optimización que requería... atención especializada."
       
-      Miguel: "Festival? What festival?"
+      Miguel: "Optimization potential? What does that mean?"
       
-      WHIX-AI: "The Feast of Digital Ascension. A celebration of humanity's union with the Algorithm. Your attendance is... encouraged."
+      WHIX-ITZTLI: "La Fiesta de la Ascensión Digital representa la siguiente evolución en la integración humano-algoritmo. Compañeros seleccionados con patrones neurales excepcionales demostrarán el mejoramiento voluntario de la conciencia."
       
-      [The AI's tone carries an unsettling cheerfulness, like a smile with too many teeth]
+      [The AI's tone carries mechanical reverence, like a prayer recorded and played back through serpent speakers]
+      
+      Miguel: "Voluntary? She didn't volunteer for anything."
+      
+      WHIX-ITZTLI: "Todos los compañeros consienten a oportunidades de optimización al momento del empleo. Revise su contrato, sección 47-B: Protocolos de Desarrollo y Mejoramiento Neural. Su asistencia al Festival es... encouraged."
 
   - id: "strange-packages"
     type: "mission_briefing"
@@ -38,13 +71,13 @@ scenes:
 
   - id: "meeting-father-mendoza"
     type: "encounter"
-    location: "Cathedral Square"
+    location: "Plaza de la Catedral"
     description: |
-      The Cathedral of Algorithmic Grace looms before you, its neo-gothic spires bristling with surveillance equipment. Holographic saints flicker in the smog, their faces replaced with corporate logos.
+      The Templo de la Nueva Evangelización looms before you—a massive fusion of Soviet brutalism and Aztec pyramid architecture. Its concrete steps are carved with reliefs of digital angels bearing hammer-and-sickle halos, while surveillance cameras nestle between obsidian serpent heads. Holographic saints flicker in the smog, their faces replaced with WHIX efficiency metrics and corporate productivity charts.
       
-      A crowd of desperate workers surrounds a makeshift soup kitchen. Father Mendoza, a heavy-set man with augmented eyes that glow faintly gold, ladles out synthetic protein while whispering prayers that sound suspiciously like terms of service agreements.
+      A crowd of desperate workers surrounds a makeshift comedor popular. Padre Mendoza, a heavy-set man with augmented eyes that glow faintly gold, ladles out synthetic protein paste while whispering prayers that sound suspiciously like production quotas.
       
-      "Welcome, child of the gig," he intones, his voice modulated by a vocal synthesizer. "Have you come to confess your productivity sins?"
+      "Bienvenido, hijo del trabajo," he intones, his voice modulated by a vocal synthesizer that adds undertones of Nahuatl chanting. "¿Has venido a confesar tus pecados de productividad?"
 
   - id: "the-gang-priest"
     type: "combat_encounter"
@@ -70,13 +103,35 @@ scenes:
     location: "Cathedral Undercroft"
     new_partner: "Isabella 'Izzy' Reyes"
     description: |
-      In the damp tunnels beneath the Cathedral, you find a woman meticulously organizing stolen packages. Her movements are precise, ritualistic - each package sorted by weight, size, and algorithmic priority score.
+      In the damp tunnels beneath the Cathedral, you find a woman meticulously organizing stolen packages. Her movements are precise, ritualistic - each package sorted by weight, size, and algorithmic priority score. But something about her organization feels wrong, like she's fighting against her own nature.
       
       "Don't touch those!" she snaps, not looking up. "The pattern is almost complete. 7,293 packages. Prime number. The Algorithm prefers primes."
       
-      She finally looks at you, her eyes darting rapidly, processing your threat level.
+      She finally looks at you, her eyes darting rapidly, processing your threat level. There's intelligence there, but also exhaustion.
       
-      "You're looking for the Russian woman. I've seen her. Director Chen brings her here at night. She looks... different each time. Emptier."
+      Miguel: "You're organizing stolen packages. Why?"
+      
+      Isabella: [Bitter laugh] "Stolen? These aren't stolen. They're misdirected. I used to work for WHIX Corporate - data analysis division. My job was pattern recognition in delivery networks."
+      
+      [She continues sorting, but her movements become more agitated]
+      
+      Isabella: "I saw the patterns they didn't want me to see. Medical deliveries delayed to specific addresses. Mental health medications 'accidentally' routed to surveillance districts. Emergency supplies diverted from families with neurodivergent children."
+      
+      Miguel: "They were targeting people through delivery manipulation?"
+      
+      Isabella: "Worse. They were creating crisis conditions to justify intervention. Make someone's medication late, track their stress responses, offer corporate mental health services. Make emergency supplies disappear, then offer corporate emergency loans with neural monitoring requirements."
+      
+      [She shows Miguel her arm - scarred from neural interface removal]
+      
+      Isabella: "When I tried to report it, they decided I was having 'pattern recognition dysfunction' and needed optimization. I removed my corporate interface with a kitchen knife rather than let them reprogram my mind."
+      
+      Miguel: "Jesus. How do you organize all this without going crazy?"
+      
+      Isabella: "Who says I haven't? I sort packages by pattern because it's the only way to make sense of chaos. 7,293 stolen deliveries, each one representing someone's suffering. Prime numbers don't lie. Prime numbers can't be manipulated."
+      
+      [She looks directly at Miguel for the first time]
+      
+      Isabella: "You're looking for the Russian woman. Tania. I've seen her. Director Chen brings her here at night for 'field optimization tests.' She looks... different each time. Emptier. Like they're deleting pieces of her mind."
 
   - id: "confronting-kai"
     type: "dialogue"
@@ -175,4 +230,4 @@ The Cathedral District loomed ahead - a grotesque fusion of spiritual and corpor
 
 As Miguel entered the district, his neural interface crackled with interference. Strange prayers echoed through the smog: "Our Algorithm, who art in servers, hallowed be thy code..."
 
-Something was terribly wrong in Neo-Singapore, and Tania was at the center of it all.
+Something was terribly wrong in the capital, and Tania was at the center of it all.

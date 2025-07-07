@@ -4,18 +4,18 @@ class: "executive_manipulator"
 type: "boss"
 level: 18
 traits:
-  - "cognitive_exploitation"
-  - "emotional_parasitism"
-  - "algorithmic_supremacy"
-personality: "Cold corporate predator who specializes in 'optimizing' neurodivergent workers"
+  - "surveillance_profiling"
+  - "psychological_manipulation"
+  - "gentrification_coordination"
+personality: "Cold corporate predator who specializes in surveillance capitalism and community displacement"
 backstory: |
-  Lisa Chen rose through WHIX's ranks by perfecting the art of exploiting neurodivergent talent. With a doctorate in "Cognitive Asset Management" from the Singapore Corporate University, she views human minds as resources to be mined.
+  Lisa Chen rose through WHIX's ranks by perfecting the art of surveillance-enabled gentrification. With a doctorate in "Behavioral Data Mining" from the Singapore Corporate University, she views human communities as resources to be exploited and displaced.
   
-  Her department, "Partner Behavioral Optimization," has the highest productivity rates in WHIX - and the highest burnout rates. She's particularly skilled at identifying neurodivergent individuals with valuable traits, then using a combination of false empathy, gaslighting, and neurochemical manipulation to extract maximum value before discarding them.
+  Her department, "Community Intelligence Operations," has the highest displacement rates in WHIX - and the most efficient gentrification conversion metrics. She's particularly skilled at identifying communities with valuable real estate potential, then using comprehensive surveillance data to engineer social and economic pressure for systematic displacement.
   
-  "Your hyperfocus is beautiful," she tells her victims. "Let me help you channel it properly."
+  "Your community patterns are beautiful," she tells her surveillance targets. "Let me help you optimize your living situation."
   
-  Her obsession with Tania stems from recognizing a pattern recognition ability that could revolutionize WHIX's predictive algorithms. She's been slowly conditioning Tania through a careful program of praise, isolation, and selective brain chemistry alterations.
+  Her obsession with Tania stems from recognizing a pattern recognition ability that could revolutionize WHIX's community profiling algorithms. She's been slowly training Tania through a careful program of manipulation education, community isolation, and psychological conditioning to become the perfect surveillance operative.
 stats:
   health: 500
   attack: 90
@@ -38,10 +38,10 @@ abilities:
     damage: 100
     effect: "Reduces all target's stats by 20% for 3 turns"
     cooldown: 4
-  - name: "Cognitive Asset Extraction"
-    description: "Attempts to steal neurodivergent abilities"
+  - name: "Behavioral Data Extraction"
+    description: "Attempts to steal personal information and vulnerabilities"
     damage: 80
-    effect: "If target has neurodivergent traits, copies one ability for rest of battle"
+    effect: "If target has personal data, copies one vulnerability for rest of battle"
     cooldown: 5
   - name: "Optimization Override"
     description: "Forces 'productivity mode' on all enemies"

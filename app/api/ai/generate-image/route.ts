@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 const generateImageSchema = z.object({
   prompt: z.string().min(1, 'Prompt is required'),
-  style: z.enum(['pixel-art', 'fantasy-portrait', 'medieval-background', 'kingdom-rush-style', 'roguelike-dungeon']).optional(),
+  style: z.enum(['pixel-art', 'cyberpunk-portrait', 'dystopian-background', 'aztec-soviet-style', 'urban-delivery']).optional(),
   size: z.enum(['256x256', '512x512', '1024x1024', '1024x1792', '1792x1024']).optional(),
   count: z.number().min(1).max(4).optional(),
   quality: z.enum(['standard', 'hd']).optional(),

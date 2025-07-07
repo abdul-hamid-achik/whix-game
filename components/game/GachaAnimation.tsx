@@ -4,7 +4,18 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { Sparkles, Star, Zap } from 'lucide-react';
-import { Character } from '@/lib/game/gacha';
+import { Rarity } from '@/lib/game/classes';
+// Define Character interface locally
+interface Character {
+  id: string;
+  name: string;
+  rarity: string;
+  imageUrl?: string;
+  description?: string;
+  class?: string;
+  personality?: string;
+  primaryTrait?: string;
+}
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -48,7 +59,7 @@ export function GachaAnimation({ character, onComplete }: GachaAnimationProps) {
   const { getCharacterImage, assignImageToCharacter, getFromPool } = useCharacterImageStore();
   const [characterImage, setCharacterImage] = useState<string | null>(null);
   
-  const rarityConfig = RARITY_COLORS[character.rarity];
+  const rarityConfig = RARITY_COLORS[character.rarity as keyof typeof RARITY_COLORS] || RARITY_COLORS.common;
   
   useEffect(() => {
     // Try to get existing image or pull from pool
@@ -56,7 +67,7 @@ export function GachaAnimation({ character, onComplete }: GachaAnimationProps) {
     
     if (!image) {
       // Try to get from pool
-      const poolImage = getFromPool(character.rarity);
+      const poolImage = getFromPool(character.rarity as Rarity);
       if (poolImage) {
         assignImageToCharacter(character.id, poolImage);
         image = poolImage;

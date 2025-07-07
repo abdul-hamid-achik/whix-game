@@ -36,19 +36,19 @@ const NODE_ICONS = {
   [NodeType.EMPTY]: null
 };
 
-// Node colors based on type
+// Pixel art style node colors with 8-bit aesthetic
 const NODE_COLORS = {
-  [NodeType.START]: 'bg-green-600 hover:bg-green-700',
-  [NodeType.DELIVERY]: 'bg-blue-600 hover:bg-blue-700',
-  [NodeType.COMBAT]: 'bg-red-600 hover:bg-red-700',
-  [NodeType.PUZZLE]: 'bg-purple-600 hover:bg-purple-700',
-  [NodeType.SOCIAL]: 'bg-yellow-600 hover:bg-yellow-700',
-  [NodeType.REST]: 'bg-emerald-600 hover:bg-emerald-700',
-  [NodeType.SHOP]: 'bg-orange-600 hover:bg-orange-700',
-  [NodeType.STORY]: 'bg-indigo-600 hover:bg-indigo-700',
-  [NodeType.BOSS]: 'bg-red-800 hover:bg-red-900',
-  [NodeType.END]: 'bg-cyan-600 hover:bg-cyan-700',
-  [NodeType.BLOCKED]: 'bg-gray-700',
+  [NodeType.START]: 'bg-green-500 hover:bg-green-400 border-green-300',
+  [NodeType.DELIVERY]: 'bg-blue-500 hover:bg-blue-400 border-blue-300',
+  [NodeType.COMBAT]: 'bg-red-500 hover:bg-red-400 border-red-300',
+  [NodeType.PUZZLE]: 'bg-purple-500 hover:bg-purple-400 border-purple-300',
+  [NodeType.SOCIAL]: 'bg-yellow-500 hover:bg-yellow-400 border-yellow-300',
+  [NodeType.REST]: 'bg-emerald-500 hover:bg-emerald-400 border-emerald-300',
+  [NodeType.SHOP]: 'bg-orange-500 hover:bg-orange-400 border-orange-300',
+  [NodeType.STORY]: 'bg-indigo-500 hover:bg-indigo-400 border-indigo-300',
+  [NodeType.BOSS]: 'bg-red-700 hover:bg-red-600 border-red-500',
+  [NodeType.END]: 'bg-cyan-500 hover:bg-cyan-400 border-cyan-300',
+  [NodeType.BLOCKED]: 'bg-gray-600 border-gray-500',
   [NodeType.EMPTY]: 'bg-transparent'
 };
 
@@ -69,6 +69,11 @@ interface ChapterMapViewProps {
 
 export function ChapterMapView({ map, onNodeClick }: ChapterMapViewProps) {
   const [selectedNode, setSelectedNode] = useState<MapNode | null>(null);
+  
+  // Debug logging
+  console.log('🎮 ChapterMapView received map:', map);
+  console.log('🎮 Map nodes:', map.nodes);
+  console.log('🎮 Nodes count:', map.nodes instanceof Map ? map.nodes.size : Object.keys(map.nodes || {}).length);
   const [viewOffset, setViewOffset] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const mapRef = useRef<HTMLDivElement>(null);
@@ -116,22 +121,34 @@ export function ChapterMapView({ map, onNodeClick }: ChapterMapViewProps) {
     
     if (node.status === NodeStatus.AVAILABLE || node.status === NodeStatus.CURRENT) {
       setSelectedNode(node);
+      
+      // Play click sound effect (placeholder)
+      console.log(`🎮 Node clicked: ${node.title} (${node.type})`);
+      
+      // Call the parent's onNodeClick with the node ID
       onNodeClick(node.id);
+    } else if (node.status === NodeStatus.LOCKED) {
+      // Give feedback for locked nodes
+      console.log('🔒 This node is locked!');
     }
   };
 
   // Draw connections between nodes
   const renderConnections = () => {
-    const connections: JSX.Element[] = [];
+    const connections: React.JSX.Element[] = [];
     const drawnConnections = new Set<string>();
 
-    map.nodes.forEach(node => {
+    // Safely iterate over nodes
+    const nodeValues = (map.nodes instanceof Map ? Array.from(map.nodes.values()) : Object.values(map.nodes)) as MapNode[];
+    
+    nodeValues.forEach((node) => {
       node.connections.forEach(targetId => {
         const connectionKey = [node.id, targetId].sort().join('-');
         if (drawnConnections.has(connectionKey)) return;
         drawnConnections.add(connectionKey);
 
-        const targetNode = map.nodes.get(targetId);
+        // Safe node lookup
+        const targetNode = map.nodes instanceof Map ? map.nodes.get(targetId) : map.nodes[targetId];
         if (!targetNode) return;
 
         const x1 = node.x * nodeSpacing + nodeSize / 2;
@@ -150,10 +167,14 @@ export function ChapterMapView({ map, onNodeClick }: ChapterMapViewProps) {
             y1={y1}
             x2={x2}
             y2={y2}
-            stroke={isActive ? '#60a5fa' : '#374151'}
-            strokeWidth={isActive ? 3 : 2}
-            strokeDasharray={isActive ? '0' : '5,5'}
-            opacity={isActive ? 1 : 0.5}
+            stroke={isActive ? '#10b981' : '#6b7280'}
+            strokeWidth={isActive ? 4 : 3}
+            strokeDasharray={isActive ? '0' : '8,4'}
+            opacity={isActive ? 1 : 0.6}
+            style={{ 
+              filter: isActive ? 'drop-shadow(0px 0px 4px #10b981)' : 'none',
+              strokeLinecap: 'round'
+            }}
           />
         );
       });
@@ -207,16 +228,25 @@ export function ChapterMapView({ map, onNodeClick }: ChapterMapViewProps) {
       >
         <motion.button
           className={cn(
-            'relative w-[60px] h-[60px] rounded-full flex items-center justify-center',
-            'border-2 transition-all duration-200',
+            'relative w-[60px] h-[60px] flex items-center justify-center',
+            'border-4 transition-all duration-150',
+            'pixel-corners', // Custom CSS class for pixel corners
             NODE_COLORS[node.type],
-            isClickable && 'cursor-pointer shadow-lg hover:shadow-xl',
-            !isClickable && node.type !== NodeType.BLOCKED && 'opacity-50 cursor-not-allowed',
-            isCompleted && 'ring-2 ring-green-400',
-            isCurrent && 'ring-4 ring-yellow-400 animate-pulse'
+            isClickable && 'cursor-pointer hover:scale-105 active:scale-95',
+            !isClickable && node.type !== NodeType.BLOCKED && 'opacity-50 cursor-not-allowed grayscale',
+            isCompleted && 'ring-4 ring-green-400 ring-offset-2 ring-offset-gray-900',
+            isCurrent && 'ring-4 ring-yellow-400 ring-offset-2 ring-offset-gray-900',
+            'image-rendering-pixelated' // Pixelated rendering
           )}
-          whileHover={isClickable ? { scale: 1.1 } : {}}
-          whileTap={isClickable ? { scale: 0.95 } : {}}
+          style={{
+            clipPath: 'polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px))',
+            imageRendering: 'pixelated'
+          }}
+          whileHover={isClickable ? { 
+            scale: 1.1,
+            boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)'
+          } : {}}
+          whileTap={isClickable ? { scale: 0.9 } : {}}
           onClick={() => handleNodeClick(node)}
           disabled={!isClickable}
         >
@@ -238,7 +268,7 @@ export function ChapterMapView({ map, onNodeClick }: ChapterMapViewProps) {
         </motion.button>
         
         {/* Node label */}
-        {node.type !== NodeType.EMPTY && node.type !== NodeType.BLOCKED && (
+        {node.type !== NodeType.BLOCKED && (
           <div className="text-center mt-1">
             <p className="text-xs text-gray-300 max-w-[80px] truncate">
               {node.title}
@@ -253,17 +283,25 @@ export function ChapterMapView({ map, onNodeClick }: ChapterMapViewProps) {
   const WeatherIcon = WEATHER_ICONS[map.weatherEffect || 'clear'];
 
   return (
-    <div className="relative w-full h-full bg-gray-900 overflow-hidden">
-      {/* Background with theme */}
+    <div className="relative w-full h-full bg-gray-900 overflow-hidden" style={{ imageRendering: 'pixelated' }}>
+      {/* Pixel-art themed background */}
       <div 
         className={cn(
           'absolute inset-0',
-          map.theme === 'industrial' && 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900',
-          map.theme === 'residential' && 'bg-gradient-to-br from-blue-900 via-gray-800 to-blue-900',
-          map.theme === 'corporate' && 'bg-gradient-to-br from-purple-900 via-gray-800 to-purple-900',
-          map.theme === 'underground' && 'bg-gradient-to-br from-green-900 via-gray-800 to-green-900',
-          map.theme === 'wasteland' && 'bg-gradient-to-br from-red-900 via-gray-800 to-red-900'
+          map.theme === 'industrial' && 'bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900',
+          map.theme === 'residential' && 'bg-gradient-to-br from-blue-900 via-slate-800 to-blue-900',
+          map.theme === 'corporate' && 'bg-gradient-to-br from-purple-900 via-slate-800 to-purple-900',
+          map.theme === 'underground' && 'bg-gradient-to-br from-green-900 via-slate-800 to-green-900',
+          map.theme === 'wasteland' && 'bg-gradient-to-br from-red-900 via-slate-800 to-red-900'
         )}
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 25% 25%, rgba(255,255,255,0.05) 2px, transparent 2px),
+            radial-gradient(circle at 75% 75%, rgba(255,255,255,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px, 20px 20px',
+          imageRendering: 'pixelated'
+        }}
       />
       
       {/* Map container */}
@@ -284,12 +322,17 @@ export function ChapterMapView({ map, onNodeClick }: ChapterMapViewProps) {
             height: mapHeight
           }}
         >
-          {/* Grid background */}
+          {/* Pixel grid background */}
           <div 
-            className="absolute inset-0 opacity-10"
+            className="absolute inset-0 opacity-20"
             style={{
-              backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
-              backgroundSize: `${nodeSpacing}px ${nodeSpacing}px`
+              backgroundImage: `
+                linear-gradient(rgba(34, 197, 94, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 197, 94, 0.3) 1px, transparent 1px),
+                radial-gradient(circle at center, rgba(59, 130, 246, 0.2) 2px, transparent 2px)
+              `,
+              backgroundSize: `${nodeSpacing}px ${nodeSpacing}px, ${nodeSpacing}px ${nodeSpacing}px, ${nodeSpacing * 2}px ${nodeSpacing * 2}px`,
+              imageRendering: 'pixelated'
             }}
           />
           
@@ -297,7 +340,11 @@ export function ChapterMapView({ map, onNodeClick }: ChapterMapViewProps) {
           {renderConnections()}
           
           {/* Nodes */}
-          {Array.from(map.nodes.values()).map(renderNode)}
+          {(() => {
+            const nodeValues = (map.nodes instanceof Map ? Array.from(map.nodes.values()) : Object.values(map.nodes)) as MapNode[];
+            console.log('🎮 Rendering nodes:', nodeValues.length, nodeValues);
+            return nodeValues.map((node) => renderNode(node));
+          })()}
         </div>
       </div>
       

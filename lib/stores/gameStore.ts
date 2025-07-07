@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { devtools, persist } from 'zustand/middleware';
+import { DailyContract } from '@/lib/systems/daily-contracts-system';
 
 interface GameState {
   // Currency and Progression
@@ -21,6 +22,15 @@ interface GameState {
   missionsAbandoned: number;
   perfectMissions: number;
   
+  // Daily Contracts
+  dailyContracts: DailyContract[];
+  activeContract: DailyContract | null;
+  contractsCompletedToday: number;
+  lastContractReset: string;
+  
+  // Campaigns
+  completedCampaigns: string[];
+  
   // Temporary Boosts
   activeBoosts: {
     id: string;
@@ -32,7 +42,7 @@ interface GameState {
   // Story Progress
   currentChapter: number;
   unlockedChapters: number[];
-  storyChoices: Record<string, any>;
+  storyChoices: Record<string, string>;
   
   // Notifications
   notifications: {
@@ -56,7 +66,7 @@ interface GameState {
   
   // Story Actions
   unlockChapter: (chapter: number) => void;
-  saveStoryChoice: (choiceId: string, choice: any) => void;
+  saveStoryChoice: (choiceId: string, choice: string) => void;
   
   // Stats Actions
   completeMission: (perfect: boolean) => void;
@@ -68,6 +78,14 @@ interface GameState {
   addNotification: (notification: Omit<GameState['notifications'][0], 'id' | 'timestamp'>) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
+  
+  // Daily Contract Actions
+  setDailyContracts: (contracts: DailyContract[]) => void;
+  acceptContract: (contract: DailyContract) => void;
+  updateContractProgress: (contractId: string, objectiveId: string, progress: number) => void;
+  completeContract: (contractId: string) => void;
+  claimContractRewards: (contractId: string) => void;
+  resetDailyContracts: () => void;
 }
 
 export const useGameStore = create<GameState>()(
@@ -87,6 +105,11 @@ export const useGameStore = create<GameState>()(
         missionsCompleted: 0,
         missionsAbandoned: 0,
         perfectMissions: 0,
+        dailyContracts: [],
+        activeContract: null,
+        contractsCompletedToday: 0,
+        lastContractReset: new Date().toISOString().split('T')[0],
+        completedCampaigns: [],
         activeBoosts: [],
         currentChapter: 1,
         unlockedChapters: [1],
@@ -220,6 +243,65 @@ export const useGameStore = create<GameState>()(
         clearNotifications: () => set((state) => {
           state.notifications = [];
         }),
+        
+        // Daily Contract Actions
+        setDailyContracts: (contracts) => set((state) => {
+          state.dailyContracts = contracts;
+        }),
+        
+        acceptContract: (contract) => set((state) => {
+          state.activeContract = contract;
+        }),
+        
+        updateContractProgress: (contractId, objectiveId, progress) => set((state) => {
+          const contract = state.dailyContracts.find(c => c.id === contractId);
+          if (contract) {
+            const objective = contract.objectives.find(o => o.id === objectiveId);
+            if (objective) {
+              objective.progress = progress;
+              if (objective.target && progress >= objective.target) {
+                objective.completed = true;
+              }
+            }
+          }
+        }),
+        
+        completeContract: (contractId) => set((state) => {
+          const contract = state.dailyContracts.find(c => c.id === contractId);
+          if (contract) {
+            contract.completed = true;
+            state.contractsCompletedToday += 1;
+            if (state.activeContract?.id === contractId) {
+              state.activeContract = null;
+            }
+          }
+        }),
+        
+        claimContractRewards: (contractId) => set((state) => {
+          const contract = state.dailyContracts.find(c => c.id === contractId);
+          if (contract && contract.completed && !contract.claimed) {
+            contract.claimed = true;
+            // Apply rewards
+            get().earnTips(contract.rewards.tips);
+            get().gainExperience(contract.rewards.experience);
+            
+            // Add notification
+            get().addNotification({
+              type: 'success',
+              message: `Contract completed! Earned ${contract.rewards.tips} tips and ${contract.rewards.experience} XP`,
+            });
+          }
+        }),
+        
+        resetDailyContracts: () => set((state) => {
+          const today = new Date().toISOString().split('T')[0];
+          if (state.lastContractReset !== today) {
+            state.lastContractReset = today;
+            state.contractsCompletedToday = 0;
+            state.dailyContracts = [];
+            state.activeContract = null;
+          }
+        }),
       })),
       {
         name: 'whix-game-state',
@@ -238,6 +320,9 @@ export const useGameStore = create<GameState>()(
           currentChapter: state.currentChapter,
           unlockedChapters: state.unlockedChapters,
           storyChoices: state.storyChoices,
+          dailyContracts: state.dailyContracts,
+          contractsCompletedToday: state.contractsCompletedToday,
+          lastContractReset: state.lastContractReset,
         }),
       }
     )
