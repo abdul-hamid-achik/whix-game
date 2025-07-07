@@ -16,6 +16,7 @@ import { CombatHUD } from '../hud/CombatHUD';
 import { SettingsOverlay } from '../overlays/SettingsOverlay';
 import { DailyContracts } from '../panels/DailyContracts';
 import { CampaignSelection } from '../panels/CampaignSelection';
+import { PartnerManagement } from '../panels/PartnerManagement';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings } from 'lucide-react';
 import { NeuraButton } from '@/components/neura';
@@ -102,6 +103,7 @@ export function GameLayout({ children }: GameLayoutProps) {
               title={
                 panelId === 'dailyContracts' ? 'Daily Contracts' :
                 panelId === 'campaignSelection' ? 'Select Campaign' :
+                panelId === 'partnerManagement' ? 'Partner Management' :
                 undefined
               }
             >
@@ -132,6 +134,11 @@ export function GameLayout({ children }: GameLayoutProps) {
                     });
                   }}
                   onClose={() => hidePanel('campaignSelection')}
+                />
+              )}
+              {panelId === 'partnerManagement' && (
+                <PartnerManagement
+                  onClose={() => hidePanel('partnerManagement')}
                 />
               )}
             </Panel>

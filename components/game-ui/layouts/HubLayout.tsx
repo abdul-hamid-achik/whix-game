@@ -8,6 +8,7 @@ import { useStoryStore } from '@/lib/stores/storyStore';
 import { useUIStore } from '@/lib/stores/uiStore';
 import { NeuraPanel, NeuraButton, NeuraProgressBar } from '@/components/neura';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { 
   Users, 
   Play, 
@@ -103,9 +104,20 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
                   ACTIVE ROSTER
                 </h3>
               </div>
-              <p className="text-gray-400 text-sm mb-6">
-                Your current team of delivery partners
-              </p>
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-gray-400 text-sm">
+                  Your current team of delivery partners
+                </p>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => showPanel('partnerManagement', { position: 'overlay', size: 'large' })}
+                  className="text-cyan-400 hover:text-cyan-300"
+                >
+                  Manage
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+              </div>
               <div className="grid grid-cols-3 gap-3">
                 {activePartners.slice(0, 3).map((partner, index) => (
                   <motion.div
@@ -114,7 +126,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
                     className="text-center p-3 bg-gray-800/50 rounded-lg border border-cyan-500/20 hover:border-cyan-500/50 transition-colors cursor-pointer"
-                    onClick={() => showPanel('partnerDetails', { position: 'overlay', size: 'large' })}
+                    onClick={() => showPanel('partnerManagement', { position: 'overlay', size: 'large' })}
                   >
                     <div className="w-16 h-16 mx-auto mb-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
                       {partner.name.charAt(0)}
