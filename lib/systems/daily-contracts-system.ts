@@ -315,7 +315,9 @@ export class DailyContractsSystem {
     }));
     
     // Time limits based on contract type and difficulty
-    const timeLimits = {
+    const timeLimits: Record<string, Record<ContractDifficulty, number>> & {
+      default: Record<ContractDifficulty, number>
+    } = {
       express_delivery: { easy: 30, normal: 20, hard: 15, extreme: 10 },
       timed_rush: { easy: 20, normal: 15, hard: 10, extreme: 5 },
       default: { easy: 60, normal: 45, hard: 30, extreme: 20 }

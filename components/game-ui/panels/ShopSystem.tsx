@@ -3,16 +3,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  ShoppingBag, Package, Zap, Shield, Heart, 
-  Brain, Clock, Coins, Gem, ChevronRight,
-  Star, AlertCircle, Check, Lock, Sparkles,
+  ShoppingBag, Package, Zap, Heart, 
+  Brain, Coins, Gem, ChevronRight,
+  Star, Lock, Sparkles,
   Gift, TrendingUp, Users
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
@@ -173,13 +172,6 @@ const SHOP_ITEMS: ShopItem[] = [
   }
 ];
 
-const CATEGORY_ICONS = {
-  consumables: <Package className="w-5 h-5" />,
-  equipment: <Shield className="w-5 h-5" />,
-  upgrades: <Zap className="w-5 h-5" />,
-  special: <Sparkles className="w-5 h-5" />,
-  currency: <Coins className="w-5 h-5" />
-};
 
 const RARITY_COLORS = {
   common: 'border-gray-400 text-gray-400',
@@ -189,14 +181,13 @@ const RARITY_COLORS = {
 };
 
 export function ShopSystem({ }: ShopSystemProps) {
-  const { currentTips, starFragments, level, spendTips, earnStarFragment } = useGameStore();
+  const { currentTips, starFragments, level, spendTips } = useGameStore();
   const { partners } = usePartnerStore();
   const { showPanel } = useUIStore();
   
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null);
   const [purchasedItems, setPurchasedItems] = useState<Set<string>>(new Set());
-  const [showPurchaseConfirm, setShowPurchaseConfirm] = useState(false);
   
   const filteredItems = SHOP_ITEMS.filter(item => 
     selectedCategory === 'all' || item.category === selectedCategory
@@ -264,13 +255,11 @@ export function ShopSystem({ }: ShopSystemProps) {
     
     // Track purchase
     setPurchasedItems(new Set([...purchasedItems, item.id]));
-    setShowPurchaseConfirm(false);
     setSelectedItem(null);
   };
   
   const renderItemCard = (item: ShopItem) => {
     const available = isAvailable(item);
-    const purchased = item.stock !== undefined && purchasedItems.has(item.id);
     const soldOut = item.stock !== undefined && 
       Array.from(purchasedItems).filter(id => id === item.id).length >= item.stock;
     

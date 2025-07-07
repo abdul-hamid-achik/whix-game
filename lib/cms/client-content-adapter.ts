@@ -298,6 +298,7 @@ export class ClientContentAdapter {
       experience: 0,
       bondLevel: 0,
       isInjured: false,
+      missions: 0,
       traitMastery: {},
       equipment: {},
       contentId: contentPartner.contentId,

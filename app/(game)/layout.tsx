@@ -1,4 +1,5 @@
 import { GameLayout } from '@/components/game-ui/layouts/GameLayout';
+import { KeyboardNavigationProvider } from '@/components/providers/KeyboardNavigationProvider';
 
 export default function Layout({
   children,
@@ -6,8 +7,10 @@ export default function Layout({
   children: React.ReactNode;
 }) {
   return (
-    <GameLayout>
-      {children}
-    </GameLayout>
+    <KeyboardNavigationProvider>
+      <GameLayout>
+        {children}
+      </GameLayout>
+    </KeyboardNavigationProvider>
   );
 }

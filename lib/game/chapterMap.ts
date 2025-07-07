@@ -67,7 +67,8 @@ export interface ChapterMap {
 }
 
 // Node rewards based on type and difficulty
-const BASE_REWARDS = {
+const BASE_REWARDS: Record<NodeType, { tips: number; experience: number }> = {
+  [NodeType.START]: { tips: 0, experience: 0 },
   [NodeType.DELIVERY]: { tips: 100, experience: 20 },
   [NodeType.COMBAT]: { tips: 150, experience: 40 },
   [NodeType.PUZZLE]: { tips: 120, experience: 30 },
@@ -75,13 +76,16 @@ const BASE_REWARDS = {
   [NodeType.REST]: { tips: 0, experience: 10 },
   [NodeType.SHOP]: { tips: 0, experience: 0 },
   [NodeType.STORY]: { tips: 50, experience: 50 },
-  [NodeType.BOSS]: { tips: 500, experience: 100 }
+  [NodeType.BOSS]: { tips: 500, experience: 100 },
+  [NodeType.END]: { tips: 0, experience: 0 },
+  [NodeType.BLOCKED]: { tips: 0, experience: 0 },
+  [NodeType.EMPTY]: { tips: 0, experience: 0 }
 };
 
 // Generate a random node based on position
 function generateNode(x: number, y: number, type: NodeType, difficulty: number = 1): MapNode {
   const id = `node_${x}_${y}`;
-  const baseReward = (BASE_REWARDS as any)[type] || { tips: 0, experience: 0 };
+  const baseReward = BASE_REWARDS[type];
   
   return {
     id,
@@ -102,7 +106,7 @@ function generateNode(x: number, y: number, type: NodeType, difficulty: number =
 
 // Generate node titles based on type
 function generateNodeTitle(type: NodeType): string {
-  const titles = {
+  const titles: Partial<Record<NodeType, string[]>> = {
     [NodeType.DELIVERY]: [
       'Express Delivery',
       'Priority Package',
@@ -161,13 +165,13 @@ function generateNodeTitle(type: NodeType): string {
     ]
   };
   
-  const typeTitles = (titles as any)[type] || ['Unknown Encounter'];
+  const typeTitles = titles[type] || ['Unknown Encounter'];
   return typeTitles[Math.floor(Math.random() * typeTitles.length)];
 }
 
 // Generate node descriptions
 function generateNodeDescription(type: NodeType): string {
-  const descriptions = {
+  const descriptions: Partial<Record<NodeType, string>> = {
     [NodeType.DELIVERY]: 'Complete a delivery mission in this area',
     [NodeType.COMBAT]: 'Fight your way through hostile forces',
     [NodeType.PUZZLE]: 'Solve a challenging logistics puzzle',
@@ -178,7 +182,7 @@ function generateNodeDescription(type: NodeType): string {
     [NodeType.BOSS]: 'Face a powerful enemy in this climactic battle'
   };
   
-  return (descriptions as any)[type] || 'Explore this location';
+  return descriptions[type] || 'Explore this location';
 }
 
 // Generate a chapter map

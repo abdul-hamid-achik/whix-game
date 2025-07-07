@@ -23,21 +23,23 @@ interface PartnerManagementProps {
 }
 
 const RARITY_COLORS = {
-  common: 'text-gray-400 border-gray-400',
-  rare: 'text-blue-400 border-blue-400',
-  epic: 'text-purple-400 border-purple-400',
-  legendary: 'text-orange-400 border-orange-400'
+  common: 'text-rarity-common border-rarity-common',
+  uncommon: 'text-rarity-uncommon border-rarity-uncommon',
+  rare: 'text-rarity-rare border-rarity-rare',
+  epic: 'text-rarity-epic border-rarity-epic',
+  legendary: 'text-rarity-legendary border-rarity-legendary animate-legendary-glow'
 };
 
 const RARITY_BACKGROUNDS = {
   common: 'from-gray-700 to-gray-800',
+  uncommon: 'from-green-700 to-green-800',
   rare: 'from-blue-700 to-blue-800',
   epic: 'from-purple-700 to-purple-800',
   legendary: 'from-orange-700 to-orange-800'
 };
 
 export function PartnerManagement({ }: PartnerManagementProps) {
-  const { partners, activeTeam, addToActiveTeam, removeFromActiveTeam } = usePartnerStore();
+  const { partners, activeTeam, addToActiveTeam, removeFromActiveTeam, getPartnerById } = usePartnerStore();
   
   const [selectedPartner, setSelectedPartner] = useState<StoredPartner | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -239,13 +241,13 @@ export function PartnerManagement({ }: PartnerManagementProps) {
           
           <CardContent className="space-y-4">
             {/* Biography */}
-            {selectedPartner.biography && (
+            {selectedPartner.personality.backstory && (
               <div>
                 <h4 className="font-semibold mb-2 flex items-center gap-2">
                   <Info className="w-4 h-4" />
                   Biography
                 </h4>
-                <p className="text-sm text-gray-400">{selectedPartner.biography}</p>
+                <p className="text-sm text-gray-400">{selectedPartner.personality.backstory}</p>
               </div>
             )}
             
@@ -264,23 +266,6 @@ export function PartnerManagement({ }: PartnerManagementProps) {
                 ))}
               </div>
             </div>
-            
-            {/* Abilities */}
-            {selectedPartner.abilities && selectedPartner.abilities.length > 0 && (
-              <div>
-                <h4 className="font-semibold mb-2 flex items-center gap-2">
-                  <Zap className="w-4 h-4" />
-                  Abilities
-                </h4>
-                <div className="space-y-2">
-                  {selectedPartner.abilities.map((ability, index) => (
-                    <div key={index} className="bg-gray-700/50 rounded p-2 text-sm">
-                      <p className="font-medium text-cyan-400">{ability}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
             
             {/* Traits with mastery */}
             <div>
@@ -382,7 +367,7 @@ export function PartnerManagement({ }: PartnerManagementProps) {
           <div className="grid grid-cols-3 gap-4">
             {[0, 1, 2].map((slot) => {
               const partnerId = activeTeam[slot];
-              const partner = partnerId ? partners[partnerId] : null;
+              const partner = partnerId ? getPartnerById(partnerId) : null;
               
               return (
                 <div

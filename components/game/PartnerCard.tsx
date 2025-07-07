@@ -43,12 +43,13 @@ export function PartnerCard({ partner, onClick, selected, showDetails = false }:
   const classInfo = PARTNER_CLASSES[partner.class as keyof typeof PARTNER_CLASSES];
   const Icon = classIcons[partner.class as keyof typeof classIcons] || Package;
   
-  const getRarityGradient = (rarity: string) => {
+  const getRarityClass = (rarity: string) => {
     switch (rarity) {
-      case 'legendary': return 'from-yellow-400 to-orange-500';
-      case 'epic': return 'from-purple-400 to-pink-500';
-      case 'rare': return 'from-blue-400 to-cyan-500';
-      default: return 'from-gray-400 to-gray-500';
+      case 'legendary': return 'text-rarity-legendary shadow-legendary-glow animate-legendary-glow';
+      case 'epic': return 'text-rarity-epic';
+      case 'rare': return 'text-rarity-rare';
+      case 'uncommon': return 'text-rarity-uncommon';
+      default: return 'text-rarity-common';
     }
   };
   
@@ -75,10 +76,10 @@ export function PartnerCard({ partner, onClick, selected, showDetails = false }:
               </CardDescription>
             </div>
             <div className={cn(
-              "px-2 py-1 rounded text-xs font-bold text-white bg-gradient-to-r",
-              getRarityGradient(partner.rarity)
+              "px-2 py-1 rounded text-xs font-bold uppercase bg-gray-900 border-2",
+              getRarityClass(partner.rarity)
             )}>
-              {partner.rarity.toUpperCase()}
+              {partner.rarity}
             </div>
           </div>
         </CardHeader>

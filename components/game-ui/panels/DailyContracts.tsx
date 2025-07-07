@@ -43,8 +43,8 @@ const DIFFICULTY_COLORS = {
 };
 
 export function DailyContracts({ onSelectContract }: DailyContractsProps) {
-  const { level, completedMissions } = useGameStore();
-  const { activeTeam } = usePartnerStore();
+  const { level, missionsCompleted } = useGameStore();
+  const { getActivePartners } = usePartnerStore();
   const [contracts, setContracts] = useState<DailyContract[]>([]);
   const [selectedContract, setSelectedContract] = useState<DailyContract | null>(null);
   const [timeUntilReset, setTimeUntilReset] = useState<string>('');
@@ -89,12 +89,13 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
   };
 
   // Get active partner traits and class
-  const activePartner = activeTeam.length > 0 ? activeTeam[0] : null;
-  const playerTraits = activePartner ? [
+  const activePartners = getActivePartners();
+  const activePartner = activePartners.length > 0 ? activePartners[0] : null;
+  const playerTraits: string[] = activePartner ? [
     activePartner.primaryTrait,
     activePartner.secondaryTrait,
     activePartner.tertiaryTrait
-  ].filter(Boolean) : [];
+  ].filter((trait) => trait !== undefined) : [];
   const playerClass = activePartner?.class || '';
 
   return (
@@ -182,7 +183,7 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
                   level,
                   playerTraits,
                   playerClass,
-                  completedMissions
+                  missionsCompleted
                 );
                 
                 return (
@@ -366,7 +367,7 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
                         level,
                         playerTraits,
                         playerClass,
-                        completedMissions
+                        missionsCompleted
                       ).canAccept}
                     >
                       Accept Contract

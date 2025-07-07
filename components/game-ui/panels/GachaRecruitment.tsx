@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, Star, Package, Gift, ChevronRight,
   Info, TrendingUp,
-  Coins, Gem, Clock, Zap
+  Coins, Gem, Clock
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,9 @@ import { useGameStore } from '@/lib/stores/gameStore';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useUIStore } from '@/lib/stores/uiStore';
 import { ClientGachaSystem } from '@/lib/cms/client-gacha-system';
-import { Partner, Rarity } from '@/lib/game/classes';
+import { ClientContentAdapter } from '@/lib/cms/client-content-adapter';
+import { Rarity } from '@/lib/game/classes';
+import { StoredPartner } from '@/lib/schemas/game-schemas';
 
 interface GachaRecruitmentProps {
   onClose?: () => void;
@@ -97,9 +99,9 @@ export function GachaRecruitment({ }: GachaRecruitmentProps) {
   
   const [selectedBanner, setSelectedBanner] = useState<Banner>(MOCK_BANNERS[0]);
   const [isPulling, setIsPulling] = useState(false);
-  const [pullResults, setPullResults] = useState<Partner[]>([]);
+  const [pullResults, setPullResults] = useState<StoredPartner[]>([]);
   const [showResults, setShowResults] = useState(false);
-  const [pullHistory, setPullHistory] = useState<Partner[]>([]);
+  const [pullHistory, setPullHistory] = useState<StoredPartner[]>([]);
   
   // Calculate pity progress
   const pityProgress = gachaPulls % selectedBanner.pityThreshold;
@@ -115,13 +117,27 @@ export function GachaRecruitment({ }: GachaRecruitmentProps) {
     // Simulate pull animation delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    const result = await ClientGachaSystem.performPull();
-    setPullResults([result.partner]);
-    setPullHistory([result.partner, ...pullHistory.slice(0, 49)]); // Keep last 50
-    
-    // Add to partner store
-    addPartner(result.partner);
-    updateGachaPulls(gachaPulls + 1);
+    try {
+      const gachaPull = await ClientGachaSystem.pullGacha(
+        'single',
+        0, // pullsSinceEpic - not tracking in this component
+        0, // pullsSinceLegendary - not tracking in this component
+        [], // ownedCharacterIds
+        [], // storyFlags
+        1   // level
+      );
+      
+      const contentPartner = gachaPull.results[0].partner;
+      const storedPartner = ClientContentAdapter.convertToStoredPartner(contentPartner);
+      setPullResults([storedPartner]);
+      setPullHistory([storedPartner, ...pullHistory.slice(0, 49)]); // Keep last 50
+      
+      // Add to partner store
+      addPartner(storedPartner);
+      updateGachaPulls(gachaPulls + 1);
+    } catch (error) {
+      console.error('Pull failed:', error);
+    }
     
     setIsPulling(false);
     setShowResults(true);
@@ -137,14 +153,28 @@ export function GachaRecruitment({ }: GachaRecruitmentProps) {
     // Simulate pull animation delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const results = await ClientGachaSystem.performMultiPull();
-    const partners = results.map(r => r.partner);
-    setPullResults(partners);
-    setPullHistory([...partners, ...pullHistory.slice(0, 40)]); // Keep last 50
-    
-    // Add all to partner store
-    partners.forEach(partner => addPartner(partner));
-    updateGachaPulls(gachaPulls + 10);
+    try {
+      const gachaPull = await ClientGachaSystem.pullGacha(
+        'multi',
+        0, // pullsSinceEpic - not tracking in this component
+        0, // pullsSinceLegendary - not tracking in this component
+        [], // ownedCharacterIds
+        [], // storyFlags
+        1   // level
+      );
+      
+      const storedPartners = gachaPull.results.map(r => 
+        ClientContentAdapter.convertToStoredPartner(r.partner)
+      );
+      setPullResults(storedPartners);
+      setPullHistory([...storedPartners, ...pullHistory.slice(0, 40)]); // Keep last 50
+      
+      // Add all to partner store
+      storedPartners.forEach(partner => addPartner(partner));
+      updateGachaPulls(gachaPulls + 10);
+    } catch (error) {
+      console.error('Multi pull failed:', error);
+    }
     
     setIsPulling(false);
     setShowResults(true);
@@ -315,7 +345,7 @@ export function GachaRecruitment({ }: GachaRecruitmentProps) {
                     
                     <CardContent className="relative">
                       <p className="text-sm text-gray-300 mb-3">
-                        {partner.biography?.slice(0, 100)}...
+                        {partner.personality.backstory?.slice(0, 100)}...
                       </p>
                       <div className="flex items-center gap-2 text-sm">
                         <Badge variant="secondary">

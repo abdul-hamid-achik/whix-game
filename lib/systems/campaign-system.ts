@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Partner } from '@/lib/game/classes';
+import { StoredPartner } from '@/lib/schemas/game-schemas';
 
 // Campaign types available in the game
 export const CampaignType = z.enum([
@@ -205,12 +205,19 @@ export const CAMPAIGN_TEMPLATES: Record<string, Partial<Campaign>> = {
         effects: {
           enemyHealthMultiplier: 1.05,
           enemyDamageMultiplier: 1.02,
+          playerHealthMultiplier: 1,
+          playerDamageMultiplier: 1,
           tipMultiplier: 1.1,
+          experienceMultiplier: 1,
+          energyCostMultiplier: 1,
+          injuryChanceMultiplier: 1,
         },
       },
     ],
     features: {
       permadeath: true,
+      ironman: true,
+      timedMissions: false,
       limitedResources: true,
       randomizedEvents: true,
     },
@@ -245,6 +252,9 @@ export const CAMPAIGN_TEMPLATES: Record<string, Partial<Campaign>> = {
     features: {
       permadeath: false,
       ironman: false,
+      timedMissions: false,
+      limitedResources: false,
+      randomizedEvents: false,
     },
     modifiers: [
       {
@@ -254,7 +264,11 @@ export const CAMPAIGN_TEMPLATES: Record<string, Partial<Campaign>> = {
         effects: {
           enemyHealthMultiplier: 0.7,
           enemyDamageMultiplier: 0.5,
+          playerHealthMultiplier: 1,
+          playerDamageMultiplier: 1,
           tipMultiplier: 2,
+          experienceMultiplier: 1.5,
+          energyCostMultiplier: 0.8,
           injuryChanceMultiplier: 0.1,
         },
       },
@@ -327,7 +341,7 @@ export class CampaignManager {
   }
   
   // Start a campaign
-  startCampaign(campaignId: string, selectedPartners: Partner[]): CampaignProgress | null {
+  startCampaign(campaignId: string, selectedPartners: StoredPartner[]): CampaignProgress | null {
     const campaign = this.campaigns.get(campaignId);
     if (!campaign || campaign.state === 'locked') return null;
     

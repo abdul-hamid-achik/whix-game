@@ -11,7 +11,7 @@ import { PartnerCard } from '@/components/game/PartnerCard';
 import { TraitIcon } from '@/components/game/TraitIcon';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { PARTNER_CLASSES } from '@/lib/game/classes';
-import { NEURODIVERGENT_TRAITS } from '@/lib/game/traits';
+import { NEURODIVERGENT_TRAITS, NeurodivergentTrait } from '@/lib/game/traits';
 
 export default function PartnersPage() {
   const { 
@@ -153,7 +153,7 @@ export default function PartnersPage() {
                       <h4 className="font-medium mb-2">Neurodivergent Traits</h4>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <TraitIcon trait={selectedPartner.primaryTrait as any} size="sm" />
+                          <TraitIcon trait={selectedPartner.primaryTrait as NeurodivergentTrait} size="sm" />
                           <div className="flex-1">
                             <div className="font-medium text-sm">
                               {NEURODIVERGENT_TRAITS[selectedPartner.primaryTrait as keyof typeof NEURODIVERGENT_TRAITS]?.name}
@@ -169,7 +169,7 @@ export default function PartnersPage() {
                         
                         {selectedPartner.secondaryTrait && (
                           <div className="flex items-center gap-2">
-                            <TraitIcon trait={selectedPartner.secondaryTrait as any} size="sm" />
+                            <TraitIcon trait={selectedPartner.secondaryTrait as NeurodivergentTrait} size="sm" />
                             <div className="flex-1">
                               <div className="font-medium text-sm">
                                 {NEURODIVERGENT_TRAITS[selectedPartner.secondaryTrait as keyof typeof NEURODIVERGENT_TRAITS]?.name}

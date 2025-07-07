@@ -182,11 +182,11 @@ export class SkinGachaSystem {
     }
   }
 
-  private async selectRandomSkin(rarity: string) {
+  private async selectRandomSkin(rarity: 'common' | 'rare' | 'epic' | 'legendary') {
     const availableSkins = await db.select()
       .from(skins)
       .where(and(
-        eq(skins.rarity, rarity as any),
+        eq(skins.rarity, rarity),
         eq(skins.isActive, true)
       ));
 

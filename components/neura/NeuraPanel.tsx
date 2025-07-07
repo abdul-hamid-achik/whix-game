@@ -22,10 +22,17 @@ export function NeuraPanel({
   title 
 }: NeuraPanelProps) {
   const variantStyles = {
-    primary: 'border-cyan-500/50 bg-gray-900/80',
-    secondary: 'border-purple-500/50 bg-gray-900/80',
-    danger: 'border-red-500/50 bg-gray-900/80',
-    success: 'border-green-500/50 bg-gray-900/80',
+    primary: 'border-cyan-500/50 bg-gray-900/80 text-cyan-400',
+    secondary: 'border-purple-500/50 bg-gray-900/80 text-purple-400',
+    danger: 'border-red-500/50 bg-gray-900/80 text-red-400',
+    success: 'border-green-500/50 bg-gray-900/80 text-green-400',
+  };
+
+  const accentColors = {
+    primary: 'bg-cyan-500',
+    secondary: 'bg-purple-500',
+    danger: 'bg-red-500',
+    success: 'bg-green-500',
   };
 
   return (
@@ -34,46 +41,31 @@ export function NeuraPanel({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       className={cn(
-        'relative border-2 backdrop-blur-sm',
-        'before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/5 before:to-transparent before:pointer-events-none',
-        'after:absolute after:inset-0 after:border after:border-white/10 after:pointer-events-none',
+        'panel-aztec relative overflow-hidden',
         variantStyles[variant],
         glitch && 'animate-pulse',
         className
       )}
-      style={{
-        clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
-      }}
     >
-      {/* Scanlines effect */}
+      {/* Stone texture effect */}
       {scanlines && (
-        <div className="absolute inset-0 pointer-events-none opacity-20">
-          <div 
-            className="h-full w-full"
-            style={{
-              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 255, 0.1) 2px, rgba(0, 255, 255, 0.1) 4px)',
-            }}
-          />
-        </div>
+        <div className="absolute inset-0 pointer-events-none opacity-20 bg-stone-texture" />
       )}
       
       {/* Corner accents */}
       <div className="absolute top-0 left-0 w-4 h-4">
-        <div className={cn('w-full h-0.5', `bg-${variant === 'primary' ? 'cyan' : variant === 'secondary' ? 'purple' : variant === 'danger' ? 'red' : 'green'}-500`)} />
-        <div className={cn('w-0.5 h-full', `bg-${variant === 'primary' ? 'cyan' : variant === 'secondary' ? 'purple' : variant === 'danger' ? 'red' : 'green'}-500`)} />
+        <div className={cn('w-full h-0.5', accentColors[variant])} />
+        <div className={cn('w-0.5 h-full', accentColors[variant])} />
       </div>
       <div className="absolute top-0 right-0 w-4 h-4">
-        <div className={cn('w-full h-0.5', `bg-${variant === 'primary' ? 'cyan' : variant === 'secondary' ? 'purple' : variant === 'danger' ? 'red' : 'green'}-500`)} />
-        <div className={cn('w-0.5 h-full ml-auto', `bg-${variant === 'primary' ? 'cyan' : variant === 'secondary' ? 'purple' : variant === 'danger' ? 'red' : 'green'}-500`)} />
+        <div className={cn('w-full h-0.5', accentColors[variant])} />
+        <div className={cn('w-0.5 h-full ml-auto', accentColors[variant])} />
       </div>
       
       {/* Title bar */}
       {title && (
-        <div className={cn(
-          'px-4 py-2 border-b border-current/30 bg-black/40',
-          `text-${variant === 'primary' ? 'cyan' : variant === 'secondary' ? 'purple' : variant === 'danger' ? 'red' : 'green'}-400`
-        )}>
-          <div className="font-mono text-sm font-semibold uppercase tracking-wider">
+        <div className="px-4 py-2 border-b border-current/30 bg-black/40">
+          <div className="font-soviet text-sm font-semibold uppercase tracking-wider">
             {title}
           </div>
         </div>

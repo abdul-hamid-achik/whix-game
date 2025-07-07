@@ -10,6 +10,13 @@
 
 import { Assets, Sprite, Texture, Rectangle } from 'pixi.js';
 
+// Extended sprite type that includes animation properties
+export interface AnimatedSprite extends Sprite {
+  animationFrames: Texture[];
+  currentFrame: number;
+  animationSpeed: number;
+}
+
 export interface SpriteSheet {
   name: string;
   path: string;
@@ -219,13 +226,13 @@ export class PixelArtManager {
     
     if (frames.length === 0) return null;
     
-    const sprite = new Sprite(frames[0]);
+    const sprite = new Sprite(frames[0]) as AnimatedSprite;
     sprite.scale.set(character.scale);
     
     // Store animation data on sprite for animation system
-    (sprite as any).animationFrames = frames;
-    (sprite as any).currentFrame = 0;
-    (sprite as any).animationSpeed = SPRITE_SHEETS[character.spriteSheet].animations[animation].frameRate;
+    sprite.animationFrames = frames;
+    sprite.currentFrame = 0;
+    sprite.animationSpeed = SPRITE_SHEETS[character.spriteSheet].animations[animation].frameRate;
     
     return sprite;
   }

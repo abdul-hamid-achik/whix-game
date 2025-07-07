@@ -19,9 +19,13 @@ import { CampaignSelection } from '../panels/CampaignSelection';
 import { PartnerManagement } from '../panels/PartnerManagement';
 import { GachaRecruitment } from '../panels/GachaRecruitment';
 import { ShopSystem } from '../panels/ShopSystem';
+import { KeyboardShortcuts } from '../panels/KeyboardShortcuts';
+import { ArenaMode } from '../arena/ArenaMode';
+import { LeaderboardView } from '../leaderboard/LeaderboardView';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings } from 'lucide-react';
 import { NeuraButton } from '@/components/neura';
+import { TransitionWrapper } from '../TransitionWrapper';
 
 interface GameLayoutProps {
   children: React.ReactNode;
@@ -67,32 +71,20 @@ export function GameLayout({ children }: GameLayoutProps) {
         }}
       />
       
-      {/* Scanlines effect for cyberpunk theme */}
+      {/* Stone texture effect for Soviet-Aztec theme */}
       {settings.theme === 'neura' && (
         <div 
           className="absolute inset-0 pointer-events-none opacity-10"
           style={{
-            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 255, 0.3) 2px, rgba(0, 255, 255, 0.3) 4px)',
+            backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(120, 113, 108, 0.2) 10px, rgba(120, 113, 108, 0.2) 20px)',
           }}
         />
       )}
 
       {/* Main Layout Content */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentState}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ 
-            duration: settings.animations ? 0.3 : 0,
-            ease: "easeInOut" 
-          }}
-          className="relative h-full w-full"
-        >
-          {renderStateLayout()}
-        </motion.div>
-      </AnimatePresence>
+      <TransitionWrapper gameState={currentState} className="relative h-full w-full">
+        {renderStateLayout()}
+      </TransitionWrapper>
 
       {/* Overlay Panels */}
       <AnimatePresence>
@@ -108,6 +100,9 @@ export function GameLayout({ children }: GameLayoutProps) {
                 panelId === 'partnerManagement' ? 'Partner Management' :
                 panelId === 'gachaRecruitment' ? 'Partner Recruitment' :
                 panelId === 'shopSystem' ? 'WHIX Company Store' :
+                panelId === 'keyboardShortcuts' ? 'Keyboard Shortcuts' :
+                panelId === 'arenaMode' ? 'Arena' :
+                panelId === 'leaderboard' ? 'Performance & Rankings' :
                 undefined
               }
             >
@@ -132,9 +127,9 @@ export function GameLayout({ children }: GameLayoutProps) {
                     hidePanel('campaignSelection');
                     setState(GameState.PARTNER_SELECTION, {
                       missionType: 'campaign',
-                      campaignId: campaign.id,
-                      campaignType: campaign.type,
                       difficulty: campaign.difficulty,
+                      missionId: campaign.id,
+                      missionName: campaign.name,
                     });
                   }}
                   onClose={() => hidePanel('campaignSelection')}
@@ -153,6 +148,21 @@ export function GameLayout({ children }: GameLayoutProps) {
               {panelId === 'shopSystem' && (
                 <ShopSystem
                   onClose={() => hidePanel('shopSystem')}
+                />
+              )}
+              {panelId === 'keyboardShortcuts' && (
+                <KeyboardShortcuts
+                  onClose={() => hidePanel('keyboardShortcuts')}
+                />
+              )}
+              {panelId === 'arenaMode' && (
+                <ArenaMode
+                  onClose={() => hidePanel('arenaMode')}
+                />
+              )}
+              {panelId === 'leaderboard' && (
+                <LeaderboardView
+                  onClose={() => hidePanel('leaderboard')}
                 />
               )}
             </Panel>

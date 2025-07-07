@@ -83,6 +83,7 @@ export const usePartnerStore = create<PartnerState>()(
             maxEnergy: 100,
             bondLevel: 0,
             isInjured: false,
+            missions: 0,
             traitMastery: {
               [partner.primaryTrait]: { level: 1, experience: 0, unlocked: true },
               ...(partner.secondaryTrait && { [partner.secondaryTrait]: { level: 1, experience: 0, unlocked: true } }),
@@ -111,6 +112,7 @@ export const usePartnerStore = create<PartnerState>()(
             maxEnergy: 100,
             bondLevel: 0,
             isInjured: false,
+            missions: 0,
             traitMastery: {
               [partner.primaryTrait]: { level: 1, experience: 0, unlocked: true },
               ...(partner.secondaryTrait && { [partner.secondaryTrait]: { level: 1, experience: 0, unlocked: true } }),

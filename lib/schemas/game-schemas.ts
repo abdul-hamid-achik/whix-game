@@ -49,6 +49,8 @@ export const StoredPartnerSchema = GeneratedPartnerSchema.extend({
   voiceStyle: z.string().optional(),
   relationships: z.record(z.string(), z.number()).optional(),
   backstory: z.string().optional(),
+  // Mission statistics
+  missions: z.number().default(0),
 });
 
 // UI Context Schemas
@@ -76,19 +78,60 @@ export enum GameState {
 export const PanelPositionSchema = z.enum(['left', 'right', 'center', 'overlay']);
 export const PanelSizeSchema = z.enum(['small', 'medium', 'large', 'fullscreen']);
 
+// Node data for adventure map
+export const NodeDataSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  difficulty: z.number().optional(),
+  requirements: z.any().optional(),
+  rewards: z.any().optional(),
+}).optional();
+
+// Rewards data schema
+export const RewardsDataSchema = z.object({
+  tips: z.number().optional(),
+  bonusTips: z.number().optional(),
+  experience: z.number().optional(),
+  starFragments: z.number().optional(),
+  items: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    rarity: z.enum(['common', 'rare', 'epic', 'legendary']),
+    quantity: z.number(),
+  })).optional(),
+  partnerExperience: z.record(z.string(), z.number()).optional(),
+  bondIncrease: z.record(z.string(), z.number()).optional(),
+}).optional();
+
+// Mission objective schema
+export const MissionObjectiveSchema = z.object({
+  description: z.string(),
+  completed: z.boolean(),
+});
+
 export const UIContextDataSchema = z.object({
   missionType: z.string().optional(),
   difficulty: z.string().optional(),
   chapterTitle: z.string().optional(),
   selectedPartners: z.array(z.string()).optional(),
   missionId: z.string().optional(),
+  missionName: z.string().optional(),
   returnState: GameStateSchema.optional(),
   encounterType: z.string().optional(),
-  nodeData: z.any().optional(),
+  nodeData: NodeDataSchema,
   mapData: z.any().optional(),
   combatResult: z.string().optional(),
   eventResult: z.string().optional(),
-  rewards: z.any().optional(),
+  rewards: RewardsDataSchema,
+  // Mission performance data
+  objectives: z.array(MissionObjectiveSchema).optional(),
+  timeSpent: z.number().optional(),
+  damageDealt: z.number().optional(),
+  damageTaken: z.number().optional(),
+  itemsUsed: z.number().optional(),
+  perfectClear: z.boolean().optional(),
 }).optional();
 
 export const PanelConfigSchema = z.object({
@@ -143,6 +186,9 @@ export type GeneratedPartner = z.infer<typeof GeneratedPartnerSchema>;
 export type StoredPartner = z.infer<typeof StoredPartnerSchema>;
 // GameState is exported as enum above
 export type UIContextData = z.infer<typeof UIContextDataSchema>;
+export type NodeData = z.infer<typeof NodeDataSchema>;
+export type RewardsData = z.infer<typeof RewardsDataSchema>;
+export type MissionObjective = z.infer<typeof MissionObjectiveSchema>;
 export type PanelConfig = z.infer<typeof PanelConfigSchema>;
 export type StoryRequirement = z.infer<typeof StoryRequirementSchema>;
 export type Mission = z.infer<typeof MissionSchema>;

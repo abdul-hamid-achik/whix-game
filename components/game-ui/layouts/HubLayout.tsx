@@ -19,7 +19,8 @@ import {
   ChevronRight,
   Lock,
   Sword,
-  ShoppingBag
+  ShoppingBag,
+  BarChart3
 } from 'lucide-react';
 
 interface HubLayoutProps {
@@ -80,6 +81,14 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
                 Level {level} | {experience} XP
               </p>
             </div>
+            
+            <NeuraButton
+              variant="ghost"
+              size="sm"
+              onClick={() => showPanel('leaderboard', { position: 'overlay', size: 'large' })}
+            >
+              <BarChart3 className="w-4 h-4" />
+            </NeuraButton>
             
             <NeuraButton
               variant="ghost"
@@ -214,11 +223,14 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
                 <NeuraButton 
                   className="w-full justify-start"
                   variant="danger"
-                  disabled
+                  onClick={() => showPanel('arenaMode', { 
+                    position: 'overlay', 
+                    size: 'fullscreen' 
+                  })}
                 >
                   <Trophy className="w-4 h-4 mr-2" />
                   Arena Mode
-                  <Lock className="w-4 h-4 ml-auto" />
+                  <ChevronRight className="w-4 h-4 ml-auto" />
                 </NeuraButton>
               </div>
             </div>

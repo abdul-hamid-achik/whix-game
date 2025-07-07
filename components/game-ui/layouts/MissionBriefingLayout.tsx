@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import { z } from 'zod';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { useUIStore, GameState } from '@/lib/stores/uiStore';
@@ -12,13 +13,19 @@ interface MissionBriefingLayoutProps {
   children: ReactNode;
 }
 
+const MissionBriefingDataSchema = z.object({
+  chapterTitle: z.string().optional(),
+  missionType: z.string().optional(),
+  difficulty: z.string().optional(),
+});
+
 export function MissionBriefingLayout({ children: _children }: MissionBriefingLayoutProps) {
   const { partners } = usePartnerStore();
   const { currentTips, level } = useGameStore();
   const { setState, contextData } = useUIStore();
 
   const activePartners = Object.values(partners).slice(0, 3);
-  const missionData = contextData as any;
+  const missionData = MissionBriefingDataSchema.parse(contextData || {});
 
   return (
     <div className="h-full flex flex-col">
