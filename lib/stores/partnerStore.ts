@@ -20,12 +20,15 @@ interface PartnerState {
   pullsSinceEpic: number;
   pullsSinceLegendary: number;
   totalPulls: number;
+  gachaPulls: number;
   
   // Actions
   addPartner: (partner: GeneratedPartner | ContentPartner) => StoredPartner;
   addContentPartner: (partner: ContentPartner) => StoredPartner;
   removePartner: (partnerId: string) => void;
   setActiveTeam: (partnerIds: string[]) => void;
+  addToActiveTeam: (partnerId: string) => void;
+  removeFromActiveTeam: (partnerId: string) => void;
   selectPartner: (partnerId: string | null) => void;
   
   // Partner Management
@@ -43,6 +46,7 @@ interface PartnerState {
   recordPull: (rarities: string[]) => void;
   resetPity: (type: 'epic' | 'legendary') => void;
   getPityRate: () => { epic: number; legendary: number };
+  updateGachaPulls: (pulls: number) => void;
   
   // Character Unlocking
   checkForUnlocks: (gameState: { level: number; completedChapters: string[]; totalTipsEarned: number; missionsCompleted: number; storyFlags: string[] }) => void;
@@ -68,6 +72,7 @@ export const usePartnerStore = create<PartnerState>()(
         pullsSinceEpic: 0,
         pullsSinceLegendary: 0,
         totalPulls: 0,
+        gachaPulls: 0,
         
         // Partner Actions
         addPartner: (partner) => {
@@ -136,6 +141,16 @@ export const usePartnerStore = create<PartnerState>()(
         
         setActiveTeam: (partnerIds) => set((state) => {
           state.activeTeam = partnerIds.slice(0, 3);
+        }),
+        
+        addToActiveTeam: (partnerId) => set((state) => {
+          if (!state.activeTeam.includes(partnerId) && state.activeTeam.length < 3) {
+            state.activeTeam.push(partnerId);
+          }
+        }),
+        
+        removeFromActiveTeam: (partnerId) => set((state) => {
+          state.activeTeam = state.activeTeam.filter(id => id !== partnerId);
         }),
         
         selectPartner: (partnerId) => set((state) => {
@@ -255,6 +270,10 @@ export const usePartnerStore = create<PartnerState>()(
             legendary: Math.min(pullsSinceLegendary / 90, 1),
           };
         },
+        
+        updateGachaPulls: (pulls) => set((state) => {
+          state.gachaPulls = pulls;
+        }),
         
         // Character Unlocking
         checkForUnlocks: (gameState) => set((state) => {

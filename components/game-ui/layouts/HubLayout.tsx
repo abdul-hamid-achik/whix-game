@@ -325,6 +325,16 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
             
             <NeuraButton 
               size="lg"
+              variant="success"
+              className="px-8"
+              onClick={() => showPanel('gachaRecruitment', { position: 'overlay', size: 'large' })}
+            >
+              <Zap className="w-5 h-5 mr-2" />
+              RECRUITMENT
+            </NeuraButton>
+            
+            <NeuraButton 
+              size="lg"
               variant="ghost"
               className="px-8"
               onClick={() => showPanel('neuralSettings', { position: 'overlay', size: 'large' })}
