@@ -164,21 +164,32 @@ const generateBackstory = (
 ): string => {
   const firstName = name.split(' ')[0];
   const classInfo = PARTNER_CLASSES[partnerClass];
+  
+  if (!traits[0]) {
+    return `${firstName} is a dedicated ${classInfo.name} working to make ends meet in the gig economy.`;
+  }
+  
   const primaryTraitInfo = NEURODIVERGENT_TRAITS[traits[0]];
   
+  if (!primaryTraitInfo) {
+    return `${firstName} is a dedicated ${classInfo.name} with unique abilities that help them excel in their work.`;
+  }
+  
   const templates = [
-    `${firstName} discovered their ${primaryTraitInfo.name.toLowerCase()} as a child, initially seeing it as a challenge. But in Neo Prosperity's gig economy, what others called "${traits[0]}" became their greatest strength. As a ${classInfo.name}, they've learned to leverage their unique perspective to excel at their work, even while fighting against Whix's exploitative system.`,
+    `${firstName} discovered their ${primaryTraitInfo.name?.toLowerCase() || 'unique abilities'} as a child, initially seeing it as a challenge. But in Neo Prosperity's gig economy, what others called "${traits[0]}" became their greatest strength. As a ${classInfo.name}, they've learned to leverage their unique perspective to excel at their work, even while fighting against Whix's exploitative system.`,
     
-    `Growing up, ${firstName}'s ${primaryTraitInfo.name.toLowerCase()} made them feel different from their peers. But when they joined Whix as a ${classInfo.name}, they found that their ability to ${primaryTraitInfo.positiveFraming.toLowerCase()} gave them an edge. Now they use their talents not just to survive, but to help other partners resist the company's unfair practices.`,
+    `Growing up, ${firstName}'s ${primaryTraitInfo.name?.toLowerCase() || 'unique abilities'} made them feel different from their peers. But when they joined Whix as a ${classInfo.name}, they found that their ability to ${primaryTraitInfo.positiveFraming?.toLowerCase() || 'think differently'} gave them an edge. Now they use their talents not just to survive, but to help other partners resist the company's unfair practices.`,
     
-    `${firstName} never fit the neurotypical mold, and they're proud of it. Their ${primaryTraitInfo.name.toLowerCase()} allows them to ${primaryTraitInfo.missionBenefit.toLowerCase()}, making them an exceptional ${classInfo.name}. While Whix tries to exploit their abilities, ${firstName} dreams of a world where neurodivergent people are valued, not used.`,
+    `${firstName} never fit the neurotypical mold, and they're proud of it. Their ${primaryTraitInfo.name?.toLowerCase() || 'unique abilities'} allows them to ${primaryTraitInfo.missionBenefit?.toLowerCase() || 'excel in unexpected ways'}, making them an exceptional ${classInfo.name}. While Whix tries to exploit their abilities, ${firstName} dreams of a world where neurodivergent people are valued, not used.`,
   ];
   
   let backstory = templates[Math.floor(Math.random() * templates.length)];
   
-  if (traits.length > 1) {
+  if (traits.length > 1 && traits[1]) {
     const secondaryTraitInfo = NEURODIVERGENT_TRAITS[traits[1]];
-    backstory += ` Their ${secondaryTraitInfo.name.toLowerCase()} complements this perfectly, creating a unique combination that makes them invaluable to their fellow partners.`;
+    if (secondaryTraitInfo && secondaryTraitInfo.name) {
+      backstory += ` Their ${secondaryTraitInfo.name.toLowerCase()} complements this perfectly, creating a unique combination that makes them invaluable to their fellow partners.`;
+    }
   }
   
   if (rarity === 'legendary') {

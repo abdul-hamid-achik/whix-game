@@ -33,6 +33,14 @@ interface GameState {
   unlockedChapters: number[];
   storyChoices: Record<string, any>;
   
+  // Notifications
+  notifications: {
+    id: string;
+    type: 'success' | 'error' | 'warning' | 'info';
+    message: string;
+    timestamp: number;
+  }[];
+  
   // Actions
   earnTips: (amount: number) => void;
   spendTips: (amount: number) => boolean;
@@ -53,6 +61,11 @@ interface GameState {
   completeMission: (perfect: boolean) => void;
   abandonMission: () => void;
   gainExperience: (amount: number) => void;
+  
+  // Notification Actions
+  addNotification: (notification: Omit<GameState['notifications'][0], 'id' | 'timestamp'>) => void;
+  removeNotification: (id: string) => void;
+  clearNotifications: () => void;
 }
 
 export const useGameStore = create<GameState>()(
@@ -75,6 +88,7 @@ export const useGameStore = create<GameState>()(
         currentChapter: 1,
         unlockedChapters: [1],
         storyChoices: {},
+        notifications: [],
         
         // Currency Actions
         earnTips: (amount) => set((state) => {
@@ -181,6 +195,23 @@ export const useGameStore = create<GameState>()(
             state.experience -= expForNextLevel;
             state.level += 1;
           }
+        }),
+        
+        // Notification Actions
+        addNotification: (notification) => set((state) => {
+          state.notifications.push({
+            ...notification,
+            id: Math.random().toString(36).substr(2, 9),
+            timestamp: Date.now(),
+          });
+        }),
+        
+        removeNotification: (id) => set((state) => {
+          state.notifications = state.notifications.filter(n => n.id !== id);
+        }),
+        
+        clearNotifications: () => set((state) => {
+          state.notifications = [];
         }),
       })),
       {
