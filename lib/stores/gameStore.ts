@@ -14,6 +14,7 @@ interface GameState {
   level: number;
   experience: number;
   playerName: string;
+  humanity: number;
   
   // Mission Statistics
   missionsCompleted: number;
@@ -61,6 +62,7 @@ interface GameState {
   completeMission: (perfect: boolean) => void;
   abandonMission: () => void;
   gainExperience: (amount: number) => void;
+  adjustHumanity: (amount: number) => void;
   
   // Notification Actions
   addNotification: (notification: Omit<GameState['notifications'][0], 'id' | 'timestamp'>) => void;
@@ -81,6 +83,7 @@ export const useGameStore = create<GameState>()(
         level: 1,
         experience: 0,
         playerName: 'Partner',
+        humanity: 50,
         missionsCompleted: 0,
         missionsAbandoned: 0,
         perfectMissions: 0,
@@ -195,6 +198,10 @@ export const useGameStore = create<GameState>()(
             state.experience -= expForNextLevel;
             state.level += 1;
           }
+        }),
+        
+        adjustHumanity: (amount) => set((state) => {
+          state.humanity = Math.max(0, Math.min(100, state.humanity + amount));
         }),
         
         // Notification Actions

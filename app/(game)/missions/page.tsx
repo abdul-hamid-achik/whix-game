@@ -283,11 +283,7 @@ export default function MissionsPage() {
       
       {/* Warning if no active partners */}
       {activePartners.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mt-6 p-4 bg-yellow-900/20 border border-yellow-900/50 rounded-lg"
-        >
+        <div className="mt-6 p-4 bg-yellow-900/20 border border-yellow-900/50 rounded-lg">
           <div className="flex items-center gap-3">
             <AlertCircle className="w-5 h-5 text-yellow-500" />
             <div>
@@ -299,7 +295,7 @@ export default function MissionsPage() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
     </div>
   );

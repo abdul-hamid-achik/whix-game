@@ -56,7 +56,7 @@ export class SkinGachaSystem {
     
     // Check if player has enough tips
     const player = await db.select().from(players).where(eq(players.id, playerId)).limit(1);
-    if (!player[0] || player[0].tips < tipCost) {
+    if (!player[0] || player[0].currentTips < tipCost) {
       throw new Error('Insufficient tips for skin gacha');
     }
 
@@ -98,9 +98,9 @@ export class SkinGachaSystem {
               skinType: skin.skinType,
               category: skin.category,
               basePrompt: skin.imagePrompt,
-              styleModifiers: skin.styleModifiers || {},
-              partnerClassCompatible: skin.partnerClassCompatible || [],
-              traitSynergies: skin.traitSynergies || [],
+              styleModifiers: (skin.styleModifiers || {}) as Record<string, string>,
+              partnerClassCompatible: (skin.partnerClassCompatible || []) as string[],
+              traitSynergies: (skin.traitSynergies || []) as string[],
               tipCost: skin.tipCost
             },
             partnerData.class,
@@ -160,7 +160,7 @@ export class SkinGachaSystem {
     // Deduct tips from player
     await db.update(players)
       .set({ 
-        tips: player[0].tips - tipCost,
+        currentTips: player[0].currentTips - tipCost,
         updatedAt: new Date()
       })
       .where(eq(players.id, playerId));
@@ -186,7 +186,7 @@ export class SkinGachaSystem {
     const availableSkins = await db.select()
       .from(skins)
       .where(and(
-        eq(skins.rarity, rarity),
+        eq(skins.rarity, rarity as any),
         eq(skins.isActive, true)
       ));
 
@@ -207,19 +207,19 @@ export class SkinGachaSystem {
   }
 
   async getPlayerSkins(playerId: string, _partnerId?: string) {
-    let query = db.select({
+    const whereConditions = [eq(playerSkins.playerId, playerId)];
+    
+    if (_partnerId) {
+      whereConditions.push(eq(playerSkins.partnerId, _partnerId));
+    }
+
+    return await db.select({
       playerSkin: playerSkins,
       skin: skins
     })
     .from(playerSkins)
     .leftJoin(skins, eq(playerSkins.skinId, skins.id))
-    .where(eq(playerSkins.playerId, playerId));
-
-    if (_partnerId) {
-      query = query.where(eq(playerSkins.partnerId, _partnerId));
-    }
-
-    return await query;
+    .where(and(...whereConditions));
   }
 
   async equipSkin(playerId: string, playerSkinId: string) {

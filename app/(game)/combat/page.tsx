@@ -1,21 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Swords, Heart, Shield, Zap, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CombatGrid } from '@/components/game/CombatGrid';
+import { EnhancedCombatView } from '@/components/game/EnhancedCombatView';
 import { TraitIcon } from '@/components/game/TraitIcon';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useGameStore } from '@/lib/stores/gameStore';
+import { useChapterMapStore } from '@/lib/stores/chapterMapStore';
 import { 
   CombatUnit, 
   CombatPosition, 
   generateEnemyTeam,
   getValidMoves,
   getTargetsInRange,
-  calculateDamage
+  calculateDamage,
+  EnemyType,
+  ENEMY_TEMPLATES
 } from '@/lib/game/combat';
 import { NEURODIVERGENT_TRAITS } from '@/lib/game/traits';
 import { cn } from '@/lib/utils';
@@ -23,8 +28,16 @@ import { cn } from '@/lib/utils';
 type CombatPhase = 'placement' | 'battle' | 'victory' | 'defeat';
 
 export default function CombatPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const { getActivePartners } = usePartnerStore();
-  const { earnTips, earnStarFragment } = useGameStore();
+  const { earnTips, earnStarFragment, gainExperience } = useGameStore();
+  const { completeNode, currentChapter } = useChapterMapStore();
+  
+  // Check if this is a story combat (accessed from map)
+  const isStoryCombat = searchParams.get('story') === 'true';
+  const nodeId = searchParams.get('nodeId');
+  const isBossBattle = searchParams.get('boss') === 'true';
   
   const [phase, setPhase] = useState<CombatPhase>('placement');
   const [playerUnits, setPlayerUnits] = useState<CombatUnit[]>([]);
@@ -39,6 +52,100 @@ export default function CombatPage() {
     initializeCombat();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
+  // If this is a story combat, use the enhanced view
+  if (isStoryCombat) {
+    const handleCombatEnd = (victory: boolean, rewards?: any) => {
+      if (victory) {
+        if (rewards) {
+          earnTips(rewards.tips || 0);
+          gainExperience(rewards.experience || 0);
+        }
+        
+        // Complete the node in the chapter map
+        if (nodeId) {
+          completeNode(nodeId);
+        }
+        
+        // Navigate back to story map
+        setTimeout(() => {
+          router.push('/story/map');
+        }, 2000);
+      } else {
+        // On defeat, let player retry
+        setTimeout(() => {
+          router.push('/story/map');
+        }, 2000);
+      }
+    };
+    
+    // Generate contextual enemies based on location
+    const generateContextualEnemies = (): CombatUnit[] => {
+      const enemyTypes: EnemyType[] = isBossBattle 
+        ? ['corporate_manager', 'security_guard'] 
+        : ['angry_customer', 'karen_customer', 'bourgeois_resident'];
+      
+      const numEnemies = isBossBattle ? 1 : 2 + Math.floor(currentChapter / 2);
+      const enemies: CombatUnit[] = [];
+      
+      for (let i = 0; i < numEnemies; i++) {
+        const enemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+        const template = ENEMY_TEMPLATES[enemyType];
+        const position: CombatPosition = {
+          x: 4 + Math.floor(i / 2),
+          y: 2 + (i % 3)
+        };
+        
+        enemies.push({
+          ...template,
+          id: `enemy_${i}`,
+          position,
+          stats: {
+            ...template.stats,
+            // Scale with chapter
+            maxHealth: Math.floor(template.stats.maxHealth * (1 + currentChapter * 0.2)),
+            currentHealth: Math.floor(template.stats.maxHealth * (1 + currentChapter * 0.2)),
+            attack: Math.floor(template.stats.attack * (1 + currentChapter * 0.1))
+          }
+        });
+      }
+      
+      return enemies;
+    };
+    
+    const partners = getActivePartners();
+    const combatPartners: CombatUnit[] = partners.map((partner, index) => ({
+      id: partner.id,
+      name: partner.name,
+      type: 'partner' as const,
+      position: { x: 1 + Math.floor(index / 2), y: 2 + (index % 3) },
+      stats: {
+        currentHealth: 100,
+        maxHealth: 100,
+        attack: Math.floor((partner.stats.focus + partner.stats.logic) / 4),
+        defense: Math.floor((partner.stats.stamina + partner.stats.perception) / 4),
+        speed: partner.stats.focus,
+      },
+      traits: [partner.primaryTrait, partner.secondaryTrait].filter(Boolean) as string[],
+      abilities: partner.primaryTrait ? [{
+        id: partner.primaryTrait,
+        name: NEURODIVERGENT_TRAITS[partner.primaryTrait as keyof typeof NEURODIVERGENT_TRAITS]?.combatAbility?.name || '',
+        cooldown: NEURODIVERGENT_TRAITS[partner.primaryTrait as keyof typeof NEURODIVERGENT_TRAITS]?.combatAbility?.cooldown || 3,
+        currentCooldown: 0,
+      }] : [],
+      isActive: true,
+      hasActed: false,
+    }));
+    
+    return (
+      <EnhancedCombatView
+        playerUnits={combatPartners}
+        enemyUnits={generateContextualEnemies()}
+        background={isBossBattle ? 'office' : 'street'}
+        onCombatEnd={handleCombatEnd}
+      />
+    );
+  }
   
   const initializeCombat = () => {
     const partners = getActivePartners();

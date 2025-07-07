@@ -2,6 +2,12 @@ import { pgTable, text, integer, timestamp, boolean, json, uuid, pgEnum } from '
 import { relations } from 'drizzle-orm';
 
 // Enums
+export const userRoleEnum = pgEnum('user_role', [
+  'admin',
+  'free',
+  'paid'
+]);
+
 export const partnerClassEnum = pgEnum('partner_class', [
   'courier',
   'analyst',
@@ -55,17 +61,20 @@ export const skinCategoryEnum = pgEnum('skin_category', [
 
 // Tables
 export const users = pgTable('users', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  email: text('email').unique().notNull(),
-  username: text('username').unique().notNull(),
-  passwordHash: text('password_hash').notNull(),
+  id: text('id').primaryKey(), // Using nanoid instead of uuid
+  email: text('email').unique(),
+  name: text('name'),
+  password: text('password'),
+  role: userRoleEnum('role').default('free').notNull(),
+  guestId: text('guest_id'),
+  emailVerified: timestamp('email_verified'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const players = pgTable('players', {
   id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => users.id).notNull(),
+  userId: text('user_id').references(() => users.id).notNull(),
   level: integer('level').default(1).notNull(),
   experience: integer('experience').default(0).notNull(),
   credits: integer('credits').default(1000).notNull(),

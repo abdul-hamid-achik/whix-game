@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -428,9 +429,11 @@ export function ImageGenerator({ onImageGenerated }: ImageGeneratorProps) {
           <CardContent>
             <div className="space-y-4">
               <div className="relative">
-                <img 
+                <Image 
                   src={generatedImage.url} 
                   alt="Generated image"
+                  width={400}
+                  height={400}
                   className="w-full rounded-lg border"
                 />
                 <Button

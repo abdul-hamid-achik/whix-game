@@ -448,7 +448,7 @@ async function seedGameData() {
                     ]
                   }),
                   title: f.jobTitle(),
-                  description: f.loremIpsum({ sentenceCount: 1 }),
+                  description: f.loremIpsum({ sentencesCount: 1 }),
                   isUnlocked: f.weightedRandom([
                     { weight: 0.6, value: f.default({ defaultValue: false }) },
                     { weight: 0.4, value: f.default({ defaultValue: true }) }
@@ -481,7 +481,7 @@ async function seedGameData() {
         count: 50,
         columns: {
           title: f.companyName(),
-          description: f.loremIpsum({ sentenceCount: 3 }),
+          description: f.loremIpsum({ sentencesCount: 3 }),
           type: f.valuesFromArray({ 
             values: ['story', 'side', 'daily', 'special']
           }),
@@ -506,7 +506,7 @@ async function seedGameData() {
         count: 30,
         columns: {
           name: f.companyName(),
-          description: f.loremIpsum({ sentenceCount: 2 }),
+          description: f.loremIpsum({ sentencesCount: 2 }),
           type: f.valuesFromArray({ 
             values: ['weapon', 'armor', 'accessory', 'consumable', 'material']
           }),
@@ -540,12 +540,12 @@ async function seedGameData() {
     
     console.log('\n🎯 Sample Partners:');
     partners.forEach(partner => {
-      console.log(`- ${partner.name} (${partner.partnerClass}, Level ${partner.level})`);
+      console.log(`- ${partner.name} (${partner.class}, Level ${partner.level})`);
     });
     
     console.log('\n🎯 Sample Missions:');
     missions.forEach(mission => {
-      console.log(`- ${mission.title} (${mission.type}, ${mission.difficulty})`);
+      console.log(`- ${mission.title} (${mission.type}, ${mission.status})`);
     });
     
     console.log('\n🎮 Additional game metadata has been prepared for:');

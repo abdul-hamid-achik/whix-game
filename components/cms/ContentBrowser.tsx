@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, FileText, Users, Map, Package, MessageSquare, Book } from 'lucide-react';
+import { Search, FileText, Users, Map, Package, MessageSquare, Book, Sparkles } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +18,7 @@ const contentTypeConfig = {
   chapter: { icon: Book, color: 'text-blue-500' },
   map: { icon: Map, color: 'text-orange-500' },
   item: { icon: FileText, color: 'text-yellow-500' },
+  trait: { icon: Sparkles, color: 'text-indigo-500' },
   dialogue: { icon: MessageSquare, color: 'text-pink-500' },
 };
 
@@ -48,7 +49,7 @@ export function ContentBrowser() {
 
       {/* Content Type Tabs */}
       <Tabs value={activeType} onValueChange={(v) => setActiveType(v as ContentMetadata['type'])}>
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           {Object.entries(contentTypeConfig).map(([type, config]) => (
             <TabsTrigger key={type} value={type} className="flex items-center gap-2">
               <config.icon className={cn("h-4 w-4", config.color)} />
@@ -186,6 +187,16 @@ function renderContentSpecificInfo(metadata: ContentMetadata) {
           <p>Category: <span className="font-medium">{metadata.category}</span></p>
           <p>Rarity: <span className="font-medium">{metadata.rarity}</span></p>
           <p>Value: {metadata.value} tips</p>
+        </div>
+      );
+    case 'trait':
+      return (
+        <div className="mt-4 space-y-1 text-sm">
+          <p>Category: <span className="font-medium">{metadata.category}</span></p>
+          <p>Rarity: <span className="font-medium">{metadata.rarity}</span></p>
+          {metadata.compatibleClasses && (
+            <p>Classes: {metadata.compatibleClasses.join(', ')}</p>
+          )}
         </div>
       );
     case 'dialogue':

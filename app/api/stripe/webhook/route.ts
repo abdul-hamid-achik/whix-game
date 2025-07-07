@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { headers } from 'next/headers';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-06-30.basil',
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -11,7 +11,8 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text();
-    const signature = headers().get('stripe-signature')!;
+    const headersList = await headers();
+    const signature = headersList.get('stripe-signature')!;
 
     let event: Stripe.Event;
 

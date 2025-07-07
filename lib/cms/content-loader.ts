@@ -11,6 +11,7 @@ import {
   ChapterMetadata,
   MapMetadata,
   ItemMetadata,
+  TraitMetadata,
   DialogueMetadata
 } from './content-types';
 
@@ -24,6 +25,7 @@ const CONTENT_DIRECTORIES = {
   chapter: 'chapters',
   map: 'maps',
   item: 'items',
+  trait: 'traits',
   dialogue: 'dialogues',
 } as const;
 
@@ -161,6 +163,12 @@ export const loadItem = (slug: string) =>
 export const loadAllItems = () => 
   loadContentByType<ItemMetadata>('item');
 
+export const loadTrait = (slug: string) => 
+  loadContentBySlug<TraitMetadata>('trait', slug);
+
+export const loadAllTraits = () => 
+  loadContentByType<TraitMetadata>('trait');
+
 export const loadDialogue = (slug: string) => 
   loadContentBySlug<DialogueMetadata>('dialogue', slug);
 
@@ -237,5 +245,9 @@ export function initializeContentDirectories(): void {
 export function watchContent(
   callback: (event: string, filename: string) => void
 ): fs.FSWatcher {
-  return fs.watch(CONTENT_DIR, { recursive: true }, callback);
+  return fs.watch(CONTENT_DIR, { recursive: true }, (event, filename) => {
+    if (filename) {
+      callback(event, filename);
+    }
+  });
 }

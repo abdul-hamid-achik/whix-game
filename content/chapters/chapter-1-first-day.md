@@ -2,7 +2,7 @@
 id: "chapter-1-first-day"
 type: "chapter"
 title: "Chapter 1: First Day on the Job"
-description: "Your introduction to the gig economy dystopia of Neo Prosperity"
+description: "Your introduction to the gig economy dystopia of Polanco"
 chapterNumber: 1
 act: 1
 setting: "WHIX Distribution Center - Onboarding Facility"
@@ -43,7 +43,7 @@ published: true
 
 ## Opening Scene
 
-Rain hammers against the glass walls of the WHIX Distribution Center, each drop a pixel in the endless gray bitmap of Neo Prosperity's sky. You stand in line with dozens of other hopefuls, each clutching their acceptance notification like a lottery ticket.
+Rain hammers against the glass walls of the WHIX Distribution Center, each drop a pixel in the endless gray bitmap of Polanco's sky. You stand in line with dozens of other hopefuls, each clutching their acceptance notification like a lottery ticket.
 
 The irony isn't lost on you. In a city where 67% of jobs have been algorithmatized away, being selected as a WHIX partner is considered lucky.
 
@@ -101,7 +101,7 @@ The assignment system pairs you with [Name varies based on player choices], whos
 
 ## The Tutorial Mission
 
-Your first delivery seems simple: transport a package from Point A to Point B. But this is Neo Prosperity, where simple doesn't exist.
+Your first delivery seems simple: transport a package from Point A to Point B. But this is Polanco, where simple doesn't exist.
 
 The rain has turned the streets into rivers of neon reflections. Your partner's enhanced senses pick up things you miss—a surveillance drone's hum, the pattern of police patrols, the safest route through the chaos.
 
@@ -140,7 +140,7 @@ Back at your pod that night, the day's events replay in your mind. The city's ne
 
 Your partner's words echo: "We're glitches in their matrix."
 
-Maybe that's exactly what Neo Prosperity needs.
+Maybe that's exactly what Polanco needs.
 
 Your WHIX device pings with tomorrow's assignments. The tip count is pathetic after the company's cut, but something else has value now—knowledge that the system isn't as absolute as it seems.
 
@@ -173,4 +173,4 @@ It's a revolution waiting to happen.
 - The medical supply subplot
 - Kai's mysterious background
 - The "glitches" in WHIX's system
-- Pre-WHIX Neo Prosperity history
+- Pre-WHIX Polanco history

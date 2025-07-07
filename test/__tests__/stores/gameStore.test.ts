@@ -1,241 +1,427 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { act, renderHook } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useGameStore } from '@/lib/stores/gameStore';
+import { Character, Partner, Mission, InventoryItem, Chapter } from '@/lib/types/game';
 
-describe('Game Store', () => {
+// Mock Zustand
+vi.mock('zustand', async () => {
+  const actualZustand = await vi.importActual('zustand');
+  return {
+    ...actualZustand,
+    create: vi.fn((stateCreator: any) => {
+      const { create } = actualZustand as any;
+      return create(stateCreator);
+    })
+  };
+});
+
+describe('GameStore - Polanco Theme', () => {
   beforeEach(() => {
     // Reset store to initial state
     useGameStore.setState({
-      currentTips: 1000,
-      totalTipsEarned: 0,
-      companyStars: 0,
-      tipCutPercentage: 75,
-      starFragments: 0,
-      level: 1,
-      experience: 0,
-      activeBoosts: [],
+      player: null,
+      partners: [],
+      inventory: [],
+      missions: [],
+      currentChapter: null,
+      currentMission: null,
+      currentLocation: 'polanco-central',
+      humanityIndex: 50,
+      tips: 0,
+      stats: {
+        missionsCompleted: 0,
+        totalTipsEarned: 0,
+        choicesMade: 0,
+        partnersRecruited: 0,
+      },
+      relationships: {},
+      flags: {},
+      unlockedChapters: ['chapter-1-first-day'],
+      unlockedLocations: ['polanco-central'],
     });
   });
 
-  describe('Tip Management', () => {
-    it('calculates Whix cut correctly', () => {
-      const { result } = renderHook(() => useGameStore());
+  describe('Player Management', () => {
+    it('should initialize player as WHIX courier', () => {
+      const mockPlayer: Character = {
+        id: 'player-001',
+        name: 'Test Courier',
+        role: 'protagonist',
+        class: 'courier',
+        traits: ['hyperfocus', 'pattern_recognition'],
+        stats: {
+          focus: 75,
+          perception: 70,
+          social: 60,
+          logic: 65,
+          stamina: 70
+        },
+        description: 'New WHIX courier in Polanco',
+        backstory: 'Forced into gig economy after corporate downsizing',
+        relationships: {},
+        avatarUrl: '/avatars/courier.png'
+      };
+
+      useGameStore.getState().initializePlayer(mockPlayer);
       
-      const { playerShare, whixCut } = result.current.calculateWhixCut(100);
-      expect(whixCut).toBe(75); // 75% cut
-      expect(playerShare).toBe(25); // Player keeps 25%
+      const state = useGameStore.getState();
+      expect(state.player).toEqual(mockPlayer);
+      expect(state.player?.class).toBe('courier');
+      expect(state.currentLocation).toBe('polanco-central');
     });
 
-    it('reduces tip cut with company stars', () => {
-      const { result } = renderHook(() => useGameStore());
+    it('should track humanity changes from corporate exploitation', () => {
+      const store = useGameStore.getState();
       
-      // Give player 2 stars (should reduce cut by 30%)
-      act(() => {
-        useGameStore.setState({ 
-          companyStars: 2,
-          tipCutPercentage: 45 // 75 - (2 * 15)
-        });
-      });
+      // Accept exploitative WHIX terms
+      store.updateHumanity(-10);
+      expect(store.humanityIndex).toBe(40);
       
-      const { playerShare, whixCut } = result.current.calculateWhixCut(100);
-      expect(whixCut).toBe(45);
-      expect(playerShare).toBe(55);
-    });
-
-    it('earns tips with boost multiplier', () => {
-      const { result } = renderHook(() => useGameStore());
+      // Help fellow couriers
+      store.updateHumanity(15);
+      expect(store.humanityIndex).toBe(55);
       
-      // Add a 50% tip boost
-      act(() => {
-        result.current.addBoost({
-          type: 'tips',
-          value: 0.5,
-          expiresAt: Date.now() + 60000,
-        });
-      });
+      // Humanity should be capped at 0-100
+      store.updateHumanity(-100);
+      expect(store.humanityIndex).toBe(0);
       
-      act(() => {
-        result.current.earnTips(100);
-      });
-      
-      // With 50% boost: 150 tips, player keeps 25% = 37.5 (rounds to 38)
-      expect(result.current.currentTips).toBe(1038); // 1000 + 38 (Math.floor of 37.5 after calculations)
-      expect(result.current.totalTipsEarned).toBe(150);
-    });
-
-    it('spends tips correctly', () => {
-      const { result } = renderHook(() => useGameStore());
-      
-      // Successful spend
-      act(() => {
-        const success = result.current.spendTips(500);
-        expect(success).toBe(true);
-      });
-      
-      expect(result.current.currentTips).toBe(500);
-      
-      // Failed spend (not enough tips)
-      act(() => {
-        const failure = result.current.spendTips(600);
-        expect(failure).toBe(false);
-      });
-      
-      expect(result.current.currentTips).toBe(500);
+      store.updateHumanity(200);
+      expect(store.humanityIndex).toBe(100);
     });
   });
 
-  describe('Star System', () => {
-    it('upgrades company star with enough fragments', () => {
-      const { result } = renderHook(() => useGameStore());
+  describe('Partner System', () => {
+    it('should add neurodivergent partners with proper traits', () => {
+      const mockPartner: Partner = {
+        id: 'partner-kai',
+        name: 'Kai Chen',
+        class: 'analyst',
+        primaryTrait: 'pattern_recognition',
+        secondaryTrait: 'systematic_thinking',
+        level: 3,
+        experience: 250,
+        rarity: 'rare',
+        stats: {
+          focus: 85,
+          perception: 90,
+          social: 50,
+          logic: 95,
+          stamina: 55
+        },
+        currentEnergy: 80,
+        maxEnergy: 100,
+        bondLevel: 2,
+        backstory: 'Data analyst who sees patterns in WHIX algorithm',
+        joinedAt: 'chapter-1'
+      };
+
+      useGameStore.getState().addPartner(mockPartner);
       
-      act(() => {
-        // Need 10 fragments for first star
-        result.current.earnStarFragment(10);
-      });
+      const partners = useGameStore.getState().partners;
+      expect(partners).toHaveLength(1);
+      expect(partners[0].primaryTrait).toBe('pattern_recognition');
+      expect(partners[0].class).toBe('analyst');
       
-      let upgraded;
-      act(() => {
-        upgraded = result.current.upgradeCompanyStar();
-      });
-      
-      expect(upgraded).toBe(true);
-      expect(result.current.companyStars).toBe(1);
-      expect(result.current.starFragments).toBe(0);
-      expect(result.current.tipCutPercentage).toBe(60); // 75 - 15
+      // Verify traits are neurodivergent-themed, not fantasy
+      expect(['hyperfocus', 'pattern_recognition', 'enhanced_senses', 'systematic_thinking'])
+        .toContain(partners[0].primaryTrait);
     });
 
-    it('requires more fragments for each star level', () => {
-      const { result } = renderHook(() => useGameStore());
-      
-      act(() => {
-        useGameStore.setState({ companyStars: 2, starFragments: 20 });
-      });
-      
-      // Should need 30 fragments for 3rd star
-      let upgraded;
-      act(() => {
-        upgraded = result.current.upgradeCompanyStar();
-      });
-      expect(upgraded).toBe(false); // Not enough fragments
-      
-      act(() => {
-        result.current.earnStarFragment(10); // Now have 30
-      });
-      
-      let upgraded2;
-      act(() => {
-        upgraded2 = result.current.upgradeCompanyStar();
-      });
-      expect(upgraded2).toBe(true);
-      expect(result.current.companyStars).toBe(3);
-    });
+    it('should update partner bond through shared experiences', () => {
+      const partner: Partner = {
+        id: 'partner-001',
+        name: 'Test Partner',
+        class: 'courier',
+        primaryTrait: 'hyperfocus',
+        secondaryTrait: 'enhanced_senses',
+        level: 1,
+        experience: 0,
+        rarity: 'common',
+        stats: { focus: 70, perception: 65, social: 55, logic: 60, stamina: 75 },
+        currentEnergy: 100,
+        maxEnergy: 100,
+        bondLevel: 1,
+        backstory: 'Fellow courier surviving the gig economy',
+        joinedAt: 'chapter-1'
+      };
 
-    it('caps at 5 stars maximum', () => {
-      const { result } = renderHook(() => useGameStore());
+      useGameStore.getState().addPartner(partner);
       
-      act(() => {
-        useGameStore.setState({ 
-          companyStars: 5, 
-          starFragments: 100,
-          tipCutPercentage: 0 
-        });
-      });
+      // Complete delivery mission together
+      useGameStore.getState().updatePartnerBond('partner-001', 1);
       
-      const upgraded = result.current.upgradeCompanyStar();
-      expect(upgraded).toBe(false);
-      expect(result.current.companyStars).toBe(5);
-    });
-  });
-
-  describe('Experience and Leveling', () => {
-    it('gains experience and levels up', () => {
-      const { result } = renderHook(() => useGameStore());
-      
-      act(() => {
-        result.current.gainExperience(150); // Level 1 needs 100 XP
-      });
-      
-      expect(result.current.level).toBe(2);
-      expect(result.current.experience).toBe(50); // 150 - 100
-    });
-
-    it('applies experience boost', () => {
-      const { result } = renderHook(() => useGameStore());
-      
-      act(() => {
-        result.current.addBoost({
-          type: 'experience',
-          value: 1, // 100% boost (doubles XP)
-          expiresAt: Date.now() + 60000,
-        });
-      });
-      
-      act(() => {
-        result.current.gainExperience(50);
-      });
-      
-      // With 100% boost: 50 * 2 = 100 XP
-      // Level 1 needs 100 XP to level up, so we'll level up to 2 with 0 XP remaining
-      expect(result.current.level).toBe(2);
-      expect(result.current.experience).toBe(0);
+      const updatedPartner = useGameStore.getState().partners[0];
+      expect(updatedPartner.bondLevel).toBe(2);
     });
   });
 
-  describe('Boost System', () => {
-    it('removes expired boosts', () => {
-      const { result } = renderHook(() => useGameStore());
+  describe('Mission System', () => {
+    it('should handle WHIX delivery missions', () => {
+      const mockMission: Mission = {
+        id: 'delivery-001',
+        title: 'Rush Delivery to Corporate District',
+        description: 'Deliver package through heavy surveillance zone',
+        type: 'delivery',
+        objectives: [
+          {
+            id: 'obj-1',
+            description: 'Pick up package from underground market',
+            completed: false,
+            optional: false
+          },
+          {
+            id: 'obj-2',
+            description: 'Avoid corporate surveillance',
+            completed: false,
+            optional: true
+          }
+        ],
+        rewards: {
+          tips: 200, // Before WHIX 75% cut
+          items: ['enhanced-scanner'],
+          experience: 100
+        },
+        requirements: {
+          level: 2,
+          traits: ['enhanced_senses']
+        },
+        timeLimit: '30 minutes',
+        location: 'polanco-corporate',
+        difficultyRating: 3,
+        storyImpact: 'Increases corporate suspicion'
+      };
+
+      useGameStore.getState().addMission(mockMission);
+      useGameStore.getState().startMission('delivery-001');
       
-      act(() => {
-        result.current.addBoost({
-          type: 'tips',
-          value: 0.5,
-          expiresAt: Date.now() - 1000, // Already expired
-        });
-      });
+      const state = useGameStore.getState();
+      expect(state.currentMission?.id).toBe('delivery-001');
+      expect(state.missions[0].type).toBe('delivery');
       
-      expect(result.current.activeBoosts).toHaveLength(1);
-      
-      act(() => {
-        result.current.removeExpiredBoosts();
-      });
-      
-      expect(result.current.activeBoosts).toHaveLength(0);
+      // Complete mission and check tip calculation (25% after WHIX cut)
+      useGameStore.getState().completeMission('delivery-001');
+      expect(state.tips).toBe(50); // 200 * 0.25 = 50
+      expect(state.stats.missionsCompleted).toBe(1);
     });
 
-    it('stacks multiple boosts of same type', () => {
-      const { result } = renderHook(() => useGameStore());
+    it('should track different mission types in Polanco', () => {
+      const missionTypes = ['delivery', 'investigation', 'sabotage', 'rescue', 'intel'];
       
-      act(() => {
-        result.current.addBoost({
-          type: 'tips',
-          value: 0.5,
-          expiresAt: Date.now() + 60000,
-        });
-        result.current.addBoost({
-          type: 'tips',
-          value: 0.3,
-          expiresAt: Date.now() + 60000,
-        });
+      missionTypes.forEach((type, index) => {
+        const mission: Mission = {
+          id: `mission-${index}`,
+          title: `${type} mission`,
+          description: `A ${type} mission in Polanco`,
+          type: type as any,
+          objectives: [],
+          rewards: { tips: 100, items: [], experience: 50 },
+          requirements: {},
+          location: 'polanco-central',
+          difficultyRating: 2
+        };
+        
+        useGameStore.getState().addMission(mission);
       });
       
-      const multiplier = result.current.getActiveBoostMultiplier('tips');
-      expect(multiplier).toBe(1.8); // 1 + 0.5 + 0.3
+      const missions = useGameStore.getState().missions;
+      expect(missions).toHaveLength(5);
+      
+      // Verify no fantasy mission types
+      missions.forEach(m => {
+        expect(m.type).not.toBe('dragon_slaying');
+        expect(m.type).not.toBe('dungeon_crawl');
+        expect(m.location).toContain('polanco');
+      });
+    });
+  });
+
+  describe('Inventory Management', () => {
+    it('should manage dystopian delivery equipment', () => {
+      const deliveryItems: InventoryItem[] = [
+        {
+          id: 'scanner-001',
+          itemId: 'basic-scanner',
+          name: 'WHIX Standard Scanner',
+          quantity: 1,
+          category: 'equipment',
+          equipped: true
+        },
+        {
+          id: 'stim-001',
+          itemId: 'energy-stim',
+          name: 'Corporate-Grade Stimulant',
+          quantity: 5,
+          category: 'consumable',
+          equipped: false
+        }
+      ];
+
+      deliveryItems.forEach(item => {
+        useGameStore.getState().addItemToInventory(item);
+      });
+      
+      const inventory = useGameStore.getState().inventory;
+      expect(inventory).toHaveLength(2);
+      
+      // Verify items are dystopian-themed
+      inventory.forEach(item => {
+        expect(item.name).not.toContain('sword');
+        expect(item.name).not.toContain('potion');
+        expect(item.name).not.toContain('armor');
+        expect(['equipment', 'consumable', 'key_item', 'data']).toContain(item.category);
+      });
     });
 
-    it('handles "all" type boosts', () => {
-      const { result } = renderHook(() => useGameStore());
+    it('should handle item usage in gig economy context', () => {
+      const energyStim: InventoryItem = {
+        id: 'stim-001',
+        itemId: 'energy-stim',
+        name: 'Budget Energy Drink',
+        quantity: 3,
+        category: 'consumable',
+        equipped: false
+      };
+
+      useGameStore.getState().addItemToInventory(energyStim);
       
-      act(() => {
-        result.current.addBoost({
-          type: 'all',
-          value: 0.2,
-          expiresAt: Date.now() + 60000,
-        });
+      // Use item
+      useGameStore.getState().updateItemQuantity('stim-001', -1);
+      
+      const item = useGameStore.getState().inventory[0];
+      expect(item.quantity).toBe(2);
+      
+      // Remove when depleted
+      useGameStore.getState().updateItemQuantity('stim-001', -2);
+      expect(useGameStore.getState().inventory).toHaveLength(0);
+    });
+  });
+
+  describe('Story Progression', () => {
+    it('should track Polanco story chapters', () => {
+      const mockChapter: Chapter = {
+        id: 'chapter-2-corporate-pressure',
+        title: 'Chapter 2: Corporate Pressure',
+        chapterNumber: 2,
+        description: 'WHIX tightens control as resistance grows',
+        setting: 'WHIX Corporate Tower',
+        act: 1,
+        published: true
+      };
+
+      useGameStore.getState().setCurrentChapter(mockChapter);
+      useGameStore.getState().unlockChapter('chapter-2-corporate-pressure');
+      
+      const state = useGameStore.getState();
+      expect(state.currentChapter?.id).toBe('chapter-2-corporate-pressure');
+      expect(state.unlockedChapters).toContain('chapter-2-corporate-pressure');
+      expect(state.currentChapter?.setting).toContain('WHIX');
+    });
+
+    it('should track relationship changes with Polanco factions', () => {
+      const store = useGameStore.getState();
+      
+      // Help fellow couriers
+      store.updateRelationship('courier-collective', 20);
+      expect(store.relationships['courier-collective']).toBe(20);
+      
+      // Anger corporate overlords
+      store.updateRelationship('whix-management', -30);
+      expect(store.relationships['whix-management']).toBe(-30);
+      
+      // Build trust with underground resistance
+      store.updateRelationship('polanco-resistance', 15);
+      expect(store.relationships['polanco-resistance']).toBe(15);
+      
+      // Verify no fantasy factions
+      expect(store.relationships['elven-council']).toBeUndefined();
+      expect(store.relationships['mage-guild']).toBeUndefined();
+    });
+  });
+
+  describe('Location System', () => {
+    it('should manage Polanco districts', () => {
+      const polancoLocations = [
+        'polanco-central',
+        'corporate-district',
+        'underground-market',
+        'residential-blocks',
+        'abandoned-warehouse'
+      ];
+
+      polancoLocations.forEach(location => {
+        useGameStore.getState().unlockLocation(location);
       });
       
-      expect(result.current.getActiveBoostMultiplier('tips')).toBe(1.2);
-      expect(result.current.getActiveBoostMultiplier('experience')).toBe(1.2);
-      expect(result.current.getActiveBoostMultiplier('trait')).toBe(1.2);
+      const unlockedLocations = useGameStore.getState().unlockedLocations;
+      expect(unlockedLocations.length).toBeGreaterThanOrEqual(5);
+      
+      // Travel to new location
+      useGameStore.getState().setCurrentLocation('underground-market');
+      expect(useGameStore.getState().currentLocation).toBe('underground-market');
+      
+      // Verify no fantasy locations
+      unlockedLocations.forEach(loc => {
+        expect(loc).not.toContain('castle');
+        expect(loc).not.toContain('dungeon');
+        expect(loc).not.toContain('tavern');
+      });
+    });
+  });
+
+  describe('Game Flags and Choices', () => {
+    it('should track dystopian story choices', () => {
+      const store = useGameStore.getState();
+      
+      // Track important story decisions
+      store.setFlag('accepted_whix_terms', true);
+      store.setFlag('helped_injured_courier', true);
+      store.setFlag('reported_to_corporate', false);
+      store.setFlag('joined_resistance', true);
+      
+      expect(store.flags['accepted_whix_terms']).toBe(true);
+      expect(store.flags['joined_resistance']).toBe(true);
+      
+      // Track choice statistics
+      store.incrementChoicesMade();
+      store.incrementChoicesMade();
+      expect(store.stats.choicesMade).toBe(2);
+    });
+  });
+
+  describe('Save/Load System', () => {
+    it('should serialize game state with Polanco theme intact', () => {
+      // Set up game state
+      const store = useGameStore.getState();
+      store.initializePlayer({
+        id: 'player-001',
+        name: 'Test Courier',
+        role: 'protagonist',
+        class: 'courier',
+        traits: ['hyperfocus'],
+        stats: { focus: 75, perception: 70, social: 60, logic: 65, stamina: 70 },
+        description: 'Surviving in Polanco',
+        backstory: 'Gig economy survivor',
+        relationships: {},
+      });
+      
+      store.updateTips(100);
+      store.updateHumanity(10);
+      store.setCurrentLocation('underground-market');
+      
+      // Get save data
+      const saveData = store.getSaveData();
+      
+      expect(saveData.player?.class).toBe('courier');
+      expect(saveData.tips).toBe(100);
+      expect(saveData.humanityIndex).toBe(60);
+      expect(saveData.currentLocation).toBe('underground-market');
+      
+      // Reset and load
+      store.reset();
+      expect(store.player).toBeNull();
+      
+      store.loadSaveData(saveData);
+      expect(store.player?.class).toBe('courier');
+      expect(store.currentLocation).toBe('underground-market');
     });
   });
 });

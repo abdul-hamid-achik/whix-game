@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { STRIPE_PRODUCTS } from '@/lib/stripe/config';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-06-30.basil',
 });
 
 export async function POST(req: NextRequest) {

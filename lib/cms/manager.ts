@@ -12,6 +12,17 @@ import {
   MapMetadata,
   ChapterMetadata
 } from './content-types';
+import {
+  gameDataSchema,
+  characterMetadataSchema,
+  levelMetadataSchema,
+  itemMetadataSchema,
+  mapMetadataSchema,
+  chapterMetadataSchema,
+  traitMetadataSchema,
+  dialogMetadataSchema
+} from './content-schemas';
+import { z } from 'zod';
 
 export class ContentManager {
   private contentDir: string;
@@ -47,12 +58,14 @@ export class ContentManager {
             .use(html)
             .process(markdownContent);
           
-          return {
+          // Parse based on content type
+          const parsed = this.parseContentByType(type, {
             ...data,
             content: processedContent.toString(),
             slug: file.replace('.md', ''),
             filePath: filePath
-          } as T;
+          });
+          return parsed as T;
         })
       );
 
@@ -83,12 +96,13 @@ export class ContentManager {
         .use(html)
         .process(markdownContent);
       
-      const content = {
+      const parsed = this.parseContentByType(type, {
         ...data,
         content: processedContent.toString(),
         slug: id,
         filePath: filePath
-      } as T;
+      });
+      const content = parsed as T;
 
       this.cache.set(cacheKey, content);
       return content;
@@ -184,7 +198,7 @@ export class ContentManager {
       const matches = content.filter(item =>
         item.title?.toLowerCase().includes(query.toLowerCase()) ||
         item.description?.toLowerCase().includes(query.toLowerCase()) ||
-        item.name?.toLowerCase().includes(query.toLowerCase())
+        ('name' in item && item.name?.toLowerCase().includes(query.toLowerCase()))
       );
       results.push(...matches);
     }
@@ -205,63 +219,77 @@ export class ContentManager {
       this.getAllChapters()
     ]);
 
-    return {
+    const gameData = {
       characters: characters.map(char => ({
         id: char.id,
         name: char.name,
         class: char.class,
-        rarity: char.rarity,
-        traits: char.traits,
-        level: char.level,
-        stats: char.stats,
-        abilities: char.abilities
+        rarity: char.stats?.level ? this.getLevelBasedRarity(char.stats.level) : 'common',
+        traits: char.traits || [],
+        level: char.stats?.level || 1,
+        stats: char.stats || {},
+        abilities: char.abilities || []
       })),
       traits: traits.map(trait => ({
         id: trait.id,
         name: trait.name,
         category: trait.category,
         rarity: trait.rarity,
-        statBonus: trait.statBonus,
-        compatibleClasses: trait.compatibleClasses,
-        abilityUnlocks: trait.abilityUnlocks
+        statBonus: trait.statBonus || {},
+        abilityUnlocks: trait.abilityUnlocks || []
       })),
       levels: levels.map(level => ({
         id: level.id,
-        name: level.name,
+        name: level.title,
         difficulty: level.difficulty,
-        unlockLevel: level.unlockLevel,
-        rewards: level.rewards,
-        hazards: level.hazards,
-        opportunities: level.opportunities,
-        roguelikeElements: level.roguelikeElements
+        unlockLevel: level.requirements?.level || 1,
+        rewards: level.rewards || { tips: 0, experience: 0 },
+        hazards: level.hazards || [],
+        opportunities: [],
+        roguelikeElements: level.roguelikeElements || {}
       })),
       items: items.map(item => ({
         id: item.id,
-        name: item.name,
+        name: item.title,
         category: item.category,
         rarity: item.rarity,
         value: item.value,
-        stats: item.stats,
-        effects: item.effects,
-        traitSynergies: item.traitSynergies
+        stats: {},
+        effects: item.effects || [],
+        traitSynergies: []
       })),
       maps: maps.map(map => ({
         id: map.id,
-        name: map.name,
-        regions: map.regions,
-        scale: map.scale,
-        landmarks: map.landmarks,
-        hiddenLocations: map.hiddenLocations
+        name: map.title,
+        regions: [],
+        scale: 1,
+        landmarks: [],
+        hiddenLocations: []
       })),
       chapters: chapters.map(chapter => ({
         id: chapter.id,
-        name: chapter.name,
-        unlockLevel: chapter.unlockLevel,
-        difficulty: chapter.difficulty,
-        rewards: chapter.rewards,
-        roguelikeElements: chapter.roguelikeElements
+        name: chapter.title,
+        unlockLevel: 1,
+        difficulty: 'normal',
+        rewards: [],
+        roguelikeElements: []
       }))
     };
+
+    // Validate the game data structure with Zod
+    try {
+      return gameDataSchema.parse(gameData);
+    } catch (error) {
+      console.error('Game data validation error:', error);
+      return gameData;
+    }
+  }
+
+  private getLevelBasedRarity(level: number): string {
+    if (level >= 20) return 'legendary';
+    if (level >= 15) return 'epic';
+    if (level >= 10) return 'rare';
+    return 'common';
   }
 
   /**
@@ -352,8 +380,47 @@ export class ContentManager {
     } catch (error) {
       return {
         valid: false,
-        errors: [`Validation failed: ${error.message}`]
+        errors: [`Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`]
       };
+    }
+  }
+
+  /**
+   * Parse content based on type using Zod schemas
+   */
+  private parseContentByType(type: string, data: any) {
+    const schemaMap: Record<string, z.ZodSchema> = {
+      'characters': characterMetadataSchema,
+      'levels': levelMetadataSchema,
+      'items': itemMetadataSchema,
+      'maps': mapMetadataSchema,
+      'chapters': chapterMetadataSchema,
+      'traits': traitMetadataSchema,
+      'dialogues': dialogMetadataSchema,
+      'dialogue': dialogMetadataSchema,
+    };
+
+    const schema = schemaMap[type];
+    if (!schema) {
+      console.warn(`No schema found for content type: ${type}`);
+      return data;
+    }
+
+    try {
+      // Parse only the metadata part, keep content/slug/filePath as is
+      const { content, slug, filePath, ...metadata } = data;
+      const parsedMetadata = schema.parse({ ...metadata, type: type.replace(/s$/, '') });
+      
+      return {
+        ...parsedMetadata,
+        content,
+        slug,
+        filePath
+      };
+    } catch (error) {
+      console.error(`Error parsing ${type} content:`, error);
+      // Return original data if parsing fails
+      return data;
     }
   }
 

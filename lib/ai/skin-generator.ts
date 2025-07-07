@@ -46,7 +46,7 @@ const WHIX_SKIN_PROMPTS = {
     legendary: "Legendary hacker device, reality manipulation capabilities, system-breaking technology"
   },
   
-  // Vehicles - What you use to navigate Neo Prosperity's chaos
+  // Vehicles - What you use to navigate Polanco's chaos
   courier_bike: {
     common: "Beat-up delivery bike, rust spots, multiple repairs, economic desperation on wheels",
     rare: "Modified street bike, performance upgrades, courier optimization, urban navigation specialist",
@@ -69,7 +69,7 @@ const WHIX_SKIN_PROMPTS = {
     legendary: "Legendary consciousness merger, human-AI hybrid, transcendent technology"
   },
   
-  // Backgrounds - The environments of Neo Prosperity's dystopia
+  // Backgrounds - The environments of Polanco's dystopia
   city_backdrop: {
     common: "Rain-soaked Polanco streets, neon signs, economic decay, cyberpunk urban decay",
     rare: "Corporate district skyline, glass towers, algorithmic city, dystopian prosperity",

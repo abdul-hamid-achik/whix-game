@@ -4,7 +4,8 @@ import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Package, Users, Swords, Book, 
-  DollarSign, Star, Zap, Target 
+  DollarSign, Star, Zap, Target,
+  Settings, Sparkles, Map
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -230,6 +231,41 @@ export default function DashboardPage() {
           </div>
         </div>
       </motion.div>
+      
+      {/* Admin Tools - Only show in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="mt-8"
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5" />
+                Admin Tools
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <Link href="/admin/image-generator">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Character Image Generator
+                  </Button>
+                </Link>
+                <Link href="/admin/map-generator">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Map className="w-4 h-4 mr-2" />
+                    Map & Background Generator
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
     </div>
   );
 }

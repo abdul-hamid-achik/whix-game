@@ -213,44 +213,44 @@ export default function ShopPage() {
                             <span>{'starFragments' in product.contents ? product.contents.starFragments : 0} Star Fragments</span>
                           </div>
                         )}
-                        {product.contents.guaranteedRarePartner && (
+                        {'guaranteedRarePartner' in product.contents && product.contents.guaranteedRarePartner && (
                           <div className="flex items-center gap-2">
                             <Sparkles className="w-4 h-4 text-blue-500" />
                             <span>Guaranteed Rare Partner</span>
                           </div>
                         )}
-                        {product.contents.guaranteedEpicPartner && (
+                        {'guaranteedEpicPartner' in product.contents && product.contents.guaranteedEpicPartner && (
                           <div className="flex items-center gap-2">
                             <Crown className="w-4 h-4 text-purple-500" />
                             <span>Guaranteed Epic Partner</span>
                           </div>
                         )}
-                        {product.contents.dailyTips && (
+                        {'dailyTips' in product.contents && product.contents.dailyTips && (
                           <div className="flex items-center gap-2">
                             <Coins className="w-4 h-4 text-yellow-500" />
-                            <span>{product.contents.dailyTips} Tips Daily</span>
+                            <span>{'dailyTips' in product.contents ? product.contents.dailyTips : 0} Tips Daily</span>
                           </div>
                         )}
-                        {product.contents.reducedWhixCut && (
+                        {'reducedWhixCut' in product.contents && product.contents.reducedWhixCut && (
                           <div className="flex items-center gap-2">
                             <Zap className="w-4 h-4 text-orange-500" />
-                            <span>{product.contents.reducedWhixCut}% Less WHIX Cut</span>
+                            <span>{'reducedWhixCut' in product.contents ? product.contents.reducedWhixCut : 0}% Less WHIX Cut</span>
                           </div>
                         )}
                       </div>
-                      {product.oneTimePurchase && (
+                      {'oneTimePurchase' in product && product.oneTimePurchase && (
                         <Badge variant="outline" className="w-full justify-center">
                           One-time purchase
                         </Badge>
                       )}
-                      {product.subscription && (
+                      {'subscription' in product && product.subscription && (
                         <Badge variant="outline" className="w-full justify-center">
                           Monthly subscription
                         </Badge>
                       )}
                       <Button
                         className="w-full"
-                        variant={product.subscription ? 'default' : 'secondary'}
+                        variant={'subscription' in product && product.subscription ? 'default' : 'secondary'}
                         onClick={() => handlePurchase(product.id, 'bundles')}
                         disabled={isLoading === product.id}
                       >
@@ -259,7 +259,7 @@ export default function ShopPage() {
                         ) : (
                           <>
                             {formatPrice(product.price)}
-                            {product.subscription && '/month'}
+                            {'subscription' in product && product.subscription && '/month'}
                           </>
                         )}
                       </Button>

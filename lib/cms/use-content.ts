@@ -111,6 +111,14 @@ export function useItems(query?: string, limit?: number) {
   return useContent({ type: 'item', query, limit });
 }
 
+export function useTrait(slug: string) {
+  return useContent({ type: 'trait', slug });
+}
+
+export function useTraits(query?: string, limit?: number) {
+  return useContent({ type: 'trait', query, limit });
+}
+
 export function useDialogue(slug: string) {
   return useContent({ type: 'dialogue', slug });
 }

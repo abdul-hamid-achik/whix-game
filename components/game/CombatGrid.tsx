@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { CombatUnit, CombatPosition } from '@/lib/game/combat';
+import { CombatUnit, CombatPosition, COMBAT_GRID_SIZE } from '@/lib/game/combat';
 
 interface CombatGridProps {
   units: CombatUnit[];
@@ -20,11 +20,11 @@ export function CombatGrid({
   onCellClick,
   onUnitClick,
 }: CombatGridProps) {
-  const grid = Array(5).fill(null).map(() => Array(5).fill(null));
+  const grid = Array(COMBAT_GRID_SIZE).fill(null).map(() => Array(COMBAT_GRID_SIZE).fill(null));
   
   // Place units on grid
   units.forEach(unit => {
-    if (unit.position.x >= 0 && unit.position.x < 5 && unit.position.y >= 0 && unit.position.y < 5) {
+    if (unit.position.x >= 0 && unit.position.x < COMBAT_GRID_SIZE && unit.position.y >= 0 && unit.position.y < COMBAT_GRID_SIZE) {
       grid[unit.position.y][unit.position.x] = unit;
     }
   });

@@ -1,6 +1,6 @@
 # WHIX: Gig Economy Dystopia
 
-A cyberpunk-themed game where neurodivergent traits are superpowers in a dystopian gig economy. Fight against corporate exploitation while managing a team of unique partners in Neo Prosperity.
+A cyberpunk-themed game where neurodivergent traits are superpowers in a dystopian gig economy. Fight against corporate exploitation while managing a team of unique partners in Polanco.
 
 🎮 **Play Now:** [whix-game.vercel.app](https://whix-game.vercel.app)
 
@@ -16,7 +16,7 @@ A cyberpunk-themed game where neurodivergent traits are superpowers in a dystopi
 
 ## 🎯 Game Concept
 
-In the year 2045, the gig economy has consumed everything. WHIX, the monopolistic delivery app, controls Neo Prosperity with an iron algorithm. But in this dystopia, those society calls "different" have found their edge. Their neurodivergent traits aren't disabilities—they're the keys to breaking the system.
+In the year 2045, the gig economy has consumed everything. WHIX, the monopolistic delivery app, controls Polanco with an iron algorithm. But in this dystopia, those society calls "different" have found their edge. Their neurodivergent traits aren't disabilities—they're the keys to breaking the system.
 
 Play as a rebel coordinator, recruiting partners and managing deliveries while secretly building a resistance. Every choice matters, every partner is unique, and the algorithm is always watching.
 
@@ -134,4 +134,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Remember**: In Neo Prosperity, being different isn't a bug—it's a feature. 🌆✊
+**Remember**: In Polanco, being different isn't a bug—it's a feature. 🌆✊

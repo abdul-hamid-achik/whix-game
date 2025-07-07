@@ -1,25 +1,27 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { 
   Home, 
   Package, 
   Users, 
-  Swords, 
   BookOpen, 
   ShoppingBag,
   Sparkles,
   Settings,
-  LogOut
+  LogOut,
+  Map,
+  Shield
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { PixelArtIcon } from '@/components/pixel-art/PixelArtIcon';
 
-const navItems = [
+const regularNavItems = [
   {
     href: '/dashboard',
     label: 'Dashboard',
@@ -50,18 +52,19 @@ const navItems = [
     pulse: true,
   },
   {
-    href: '/combat',
-    label: 'Combat',
-    icon: Swords,
-    pixelIcon: 'sword',
-    color: 'from-red-400 to-rose-500',
-  },
-  {
     href: '/story',
     label: 'Story',
     icon: BookOpen,
     pixelIcon: 'book',
     color: 'from-indigo-400 to-purple-500',
+  },
+  {
+    href: '/story/map',
+    label: 'Map',
+    icon: Map,
+    pixelIcon: 'map',
+    color: 'from-emerald-400 to-teal-500',
+    badge: 'NEW',
   },
   {
     href: '/shop',
@@ -71,6 +74,9 @@ const navItems = [
     color: 'from-yellow-400 to-amber-500',
     badge: 'NEW',
   },
+];
+
+const adminNavItems = [
   {
     href: '/admin/content',
     label: 'Content',
@@ -78,11 +84,40 @@ const navItems = [
     pixelIcon: 'book',
     color: 'from-gray-400 to-gray-600',
   },
+  {
+    href: '/admin/character-generator',
+    label: 'Characters',
+    icon: Users,
+    pixelIcon: 'users',
+    color: 'from-purple-400 to-pink-500',
+  },
+  {
+    href: '/admin/map-generator',
+    label: 'Maps',
+    icon: Map,
+    pixelIcon: 'map',
+    color: 'from-emerald-400 to-teal-500',
+  },
+  {
+    href: '/admin/users',
+    label: 'Users',
+    icon: Shield,
+    pixelIcon: 'shield',
+    color: 'from-red-400 to-rose-500',
+  },
 ];
 
 export function GameNavigation() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const { currentTips, level, playerName } = useGameStore();
+  
+  // Check if user is admin or guest
+  const isAdmin = session?.user?.role === 'admin';
+  const _isGuest = !!session?.user?.guestId;
+  
+  // Combine nav items based on role
+  const navItems = [...regularNavItems, ...(isAdmin ? adminNavItems : [])];
 
   return (
     <nav className="fixed left-0 top-0 h-full w-64 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-r z-50">
@@ -196,6 +231,14 @@ export function GameNavigation() {
 // Mobile Navigation
 export function MobileGameNavigation() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  
+  // Check if user is admin or guest
+  const isAdmin = session?.user?.role === 'admin';
+  const _isGuest = !!session?.user?.guestId;
+  
+  // Combine nav items based on role
+  const navItems = [...regularNavItems, ...(isAdmin ? adminNavItems : [])];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t z-50 md:hidden">
