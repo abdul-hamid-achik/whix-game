@@ -34,6 +34,25 @@ export const rarityEnum = pgEnum('rarity', [
   'legendary'
 ]);
 
+export const skinTypeEnum = pgEnum('skin_type', [
+  'outfit',
+  'accessory',
+  'vehicle',
+  'device',
+  'background'
+]);
+
+export const skinCategoryEnum = pgEnum('skin_category', [
+  'delivery_uniform',
+  'street_wear',
+  'corporate',
+  'tech_gear',
+  'courier_bike',
+  'data_pad',
+  'neural_interface',
+  'city_backdrop'
+]);
+
 // Tables
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -329,6 +348,46 @@ export const achievements = pgTable('achievements', {
   rewards: json('rewards').default({}).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Skin System Tables
+export const skins = pgTable('skins', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  rarity: rarityEnum('rarity').notNull(),
+  skinType: skinTypeEnum('skin_type').notNull(),
+  category: skinCategoryEnum('skin_category').notNull(),
+  imagePrompt: text('image_prompt').notNull(),
+  styleModifiers: json('style_modifiers').default({}).notNull(), // Additional prompt modifications based on rarity
+  partnerClassCompatible: json('partner_class_compatible').default(['courier', 'analyst', 'negotiator', 'specialist', 'investigator']).notNull(),
+  traitSynergies: json('trait_synergies').default([]).notNull(), // Traits that enhance this skin's visual
+  tipCost: integer('tip_cost').notNull(), // Cost to pull this skin
+  isActive: boolean('is_active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const playerSkins = pgTable('player_skins', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  playerId: uuid('player_id').references(() => players.id).notNull(),
+  skinId: uuid('skin_id').references(() => skins.id).notNull(),
+  partnerId: uuid('partner_id').references(() => partners.id), // If skin is applied to specific partner
+  generatedImageUrl: text('generated_image_url'), // AI-generated image URL
+  generatedAt: timestamp('generated_at'),
+  isEquipped: boolean('is_equipped').default(false).notNull(),
+  acquisitionMethod: text('acquisition_method').default('gacha').notNull(), // gacha, purchase, reward, etc.
+  obtainedAt: timestamp('obtained_at').defaultNow().notNull(),
+});
+
+export const skinGachaPulls = pgTable('skin_gacha_pulls', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  playerId: uuid('player_id').references(() => players.id).notNull(),
+  skinId: uuid('skin_id').references(() => skins.id).notNull(),
+  tipCost: integer('tip_cost').notNull(),
+  rarity: rarityEnum('rarity').notNull(),
+  wasGenerated: boolean('was_generated').default(false).notNull(), // Did we generate a new image
+  pulledAt: timestamp('pulled_at').defaultNow().notNull(),
 });
 
 // Gacha Relations

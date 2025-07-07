@@ -1,68 +1,68 @@
-// Fantasy RPG-themed color palettes and design tokens inspired by Kingdom Rush
+// Aztec-Soviet delivery-themed color palettes and design tokens for WHIX
 export const themes = {
-  // Fantasy Kingdom theme inspired by Kingdom Rush
-  fantasyKingdom: {
-    name: 'Fantasy Kingdom',
+  // Polanco Collective theme - Aztec patterns meet Soviet industrial design
+  polancoCollective: {
+    name: 'Polanco Collective',
     colors: {
       primary: {
-        50: '#fef7ed',
-        100: '#fdedd3',
-        200: '#fbd7a5',
-        300: '#f8b86d',
-        400: '#f59332',
-        500: '#f2750a', // Warm orange
-        600: '#e35d06',
-        700: '#bc4509',
-        800: '#95380f',
-        900: '#782f10',
+        50: '#fef3c7', // Pale gold
+        100: '#fde68a', // Light gold
+        200: '#fcd34d', // Gold
+        300: '#f59e0b', // Aztec gold
+        400: '#d97706', // Deep gold
+        500: '#b45309', // Rich gold
+        600: '#92400e', // Bronze
+        700: '#78350f', // Dark bronze
+        800: '#451a03', // Deep bronze
+        900: '#1c0701', // Almost black bronze
       },
       secondary: {
-        50: '#f0f9ff',
-        100: '#e0f2fe',
-        200: '#bae6fd',
-        300: '#7dd3fc',
-        400: '#38bdf8',
-        500: '#0ea5e9', // Sky blue
-        600: '#0284c7',
-        700: '#0369a1',
-        800: '#075985',
-        900: '#0c4a6e',
+        50: '#fee2e2', // Light red
+        100: '#fecaca', // Soft red
+        200: '#fca5a5', // Red
+        300: '#f87171', // Bright red
+        400: '#ef4444', // Soviet red
+        500: '#dc2626', // Deep red
+        600: '#b91c1c', // Dark red
+        700: '#991b1b', // Very dark red
+        800: '#7f1d1d', // Maroon
+        900: '#450a0a', // Dark maroon
       },
       accent: {
-        neon: '#10b981', // Emerald green
-        cyber: '#8b5cf6', // Purple
-        electric: '#f59e0b', // Amber
-        warning: '#f97316', // Orange
-        danger: '#ef4444', // Red
+        neon: '#10b981', // Jade green (Aztec)
+        cyber: '#8b5cf6', // Violet (Soviet tech)
+        electric: '#06b6d4', // Turquoise (Aztec water)
+        warning: '#f59e0b', // Gold (warning)
+        danger: '#dc2626', // Deep red (danger)
       },
       background: {
-        primary: '#0f172a', // Dark slate
-        secondary: '#1e293b', // Slate 800
-        tertiary: '#334155', // Slate 700
-        overlay: 'rgba(15, 23, 42, 0.9)',
+        primary: '#1c1917', // Stone 900 (dark earth)
+        secondary: '#292524', // Stone 800 (earth)
+        tertiary: '#44403c', // Stone 700 (light earth)
+        overlay: 'rgba(28, 25, 23, 0.9)',
       },
       text: {
-        primary: '#f1f5f9', // Slate 100
-        secondary: '#cbd5e1', // Slate 300
-        muted: '#94a3b8', // Slate 400
-        inverse: '#0f172a',
+        primary: '#fef3c7', // Pale gold
+        secondary: '#d6d3d1', // Stone 300
+        muted: '#a8a29e', // Stone 400
+        inverse: '#1c1917',
       },
     },
     effects: {
       glow: {
-        small: '0 0 8px rgba(242, 117, 10, 0.3)',
-        medium: '0 0 16px rgba(242, 117, 10, 0.4)',
-        large: '0 0 24px rgba(242, 117, 10, 0.5)',
+        small: '0 0 8px rgba(180, 83, 9, 0.4)', // Gold glow
+        medium: '0 0 16px rgba(180, 83, 9, 0.6)', // Stronger gold glow
+        large: '0 0 24px rgba(180, 83, 9, 0.8)', // Intense gold glow
       },
-      scanlines: 'none',
+      scanlines: 'repeating-linear-gradient(0deg, rgba(180, 83, 9, 0.1), rgba(180, 83, 9, 0.1) 1px, transparent 1px, transparent 3px)', // Aztec pattern overlay
       glitch: {
-        text: 'none',
-        box: 'kingdom-float 3s ease-in-out infinite',
+        text: 'aztec-shimmer 2s ease-in-out infinite',
+        box: 'soviet-machinery 4s linear infinite',
       },
     },
     fonts: {
-      display: "'Cinzel', serif",
-      body: "'Crimson Text', serif",
+      display: "'Playfair Display', serif", // More Soviet-style serif
+      body: "'IBM Plex Sans', sans-serif", // Soviet-inspired industrial sans
       pixel: "'Press Start 2P', cursive",
     },
   },
@@ -396,6 +396,41 @@ export const glitchAnimations = `
     }
     50% {
       text-shadow: 0 0 20px rgba(242, 117, 10, 0.8);
+    }
+  }
+
+  @keyframes aztec-shimmer {
+    0%, 100% {
+      text-shadow: 0 0 8px rgba(180, 83, 9, 0.6);
+    }
+    33% {
+      text-shadow: 0 0 12px rgba(16, 185, 129, 0.4), 0 0 8px rgba(180, 83, 9, 0.6);
+    }
+    66% {
+      text-shadow: 0 0 12px rgba(6, 182, 212, 0.4), 0 0 8px rgba(180, 83, 9, 0.6);
+    }
+  }
+
+  @keyframes soviet-machinery {
+    0% {
+      transform: translateX(0px);
+      box-shadow: 0 0 8px rgba(220, 38, 38, 0.3);
+    }
+    25% {
+      transform: translateX(1px);
+      box-shadow: 0 0 12px rgba(180, 83, 9, 0.4);
+    }
+    50% {
+      transform: translateX(0px);
+      box-shadow: 0 0 8px rgba(220, 38, 38, 0.3);
+    }
+    75% {
+      transform: translateX(-1px);
+      box-shadow: 0 0 12px rgba(180, 83, 9, 0.4);
+    }
+    100% {
+      transform: translateX(0px);
+      box-shadow: 0 0 8px rgba(220, 38, 38, 0.3);
     }
   }
 `;

@@ -164,6 +164,41 @@ export const ItemMetadataSchema = BaseMetadataSchema.extend({
   icon: z.string().optional(),
 });
 
+// Trait metadata schema
+export const TraitMetadataSchema = BaseMetadataSchema.extend({
+  type: z.literal('trait'),
+  name: z.string(),
+  category: z.enum(['neurodivergent', 'social', 'technical', 'physical']),
+  rarity: z.enum(['common', 'rare', 'epic', 'legendary']),
+  statBonus: z.record(z.string(), z.number()).optional(),
+  personalityTraits: z.array(z.string()).optional(),
+  strengths: z.array(z.string()).optional(),
+  challenges: z.array(z.string()).optional(),
+  abilityUnlocks: z.array(z.object({
+    level: z.number(),
+    ability: z.string(),
+    description: z.string(),
+  })).optional(),
+  compatibleClasses: z.array(z.string()).optional(),
+  positiveRepresentation: z.object({
+    description: z.string(),
+    examples: z.array(z.string()).optional(),
+  }).optional(),
+  realWorldConnection: z.object({
+    description: z.string(),
+    notableFigures: z.array(z.string()).optional(),
+  }).optional(),
+  gameplayMechanics: z.object({
+    passiveEffect: z.string().optional(),
+    activeAbility: z.string().optional(),
+    drawback: z.string().optional(),
+    synergies: z.array(z.object({
+      trait: z.string(),
+      effect: z.string(),
+    })).optional(),
+  }).optional(),
+});
+
 // Dialogue metadata schema
 export const DialogueMetadataSchema = BaseMetadataSchema.extend({
   type: z.literal('dialogue'),
@@ -193,6 +228,7 @@ export const ContentMetadataSchema = z.discriminatedUnion('type', [
   ChapterMetadataSchema,
   MapMetadataSchema,
   ItemMetadataSchema,
+  TraitMetadataSchema,
   DialogueMetadataSchema,
 ]);
 
@@ -202,5 +238,6 @@ export type LevelMetadata = z.infer<typeof LevelMetadataSchema>;
 export type ChapterMetadata = z.infer<typeof ChapterMetadataSchema>;
 export type MapMetadata = z.infer<typeof MapMetadataSchema>;
 export type ItemMetadata = z.infer<typeof ItemMetadataSchema>;
+export type TraitMetadata = z.infer<typeof TraitMetadataSchema>;
 export type DialogueMetadata = z.infer<typeof DialogueMetadataSchema>;
 export type ContentMetadata = z.infer<typeof ContentMetadataSchema>;
