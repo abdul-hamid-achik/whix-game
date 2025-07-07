@@ -14,8 +14,8 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [themeName, setThemeName] = useState<ThemeName>('neonRebel');
-  const [glitchEnabled, setGlitchEnabled] = useState(true);
+  const [themeName, setThemeName] = useState<ThemeName>('fantasyKingdom');
+  const [glitchEnabled, setGlitchEnabled] = useState(false);
   const theme = themes[themeName];
 
   useEffect(() => {

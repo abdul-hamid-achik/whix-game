@@ -1,6 +1,73 @@
-// Cyberpunk-themed color palettes and design tokens
+// Fantasy RPG-themed color palettes and design tokens inspired by Kingdom Rush
 export const themes = {
-  // Default cyberpunk theme
+  // Fantasy Kingdom theme inspired by Kingdom Rush
+  fantasyKingdom: {
+    name: 'Fantasy Kingdom',
+    colors: {
+      primary: {
+        50: '#fef7ed',
+        100: '#fdedd3',
+        200: '#fbd7a5',
+        300: '#f8b86d',
+        400: '#f59332',
+        500: '#f2750a', // Warm orange
+        600: '#e35d06',
+        700: '#bc4509',
+        800: '#95380f',
+        900: '#782f10',
+      },
+      secondary: {
+        50: '#f0f9ff',
+        100: '#e0f2fe',
+        200: '#bae6fd',
+        300: '#7dd3fc',
+        400: '#38bdf8',
+        500: '#0ea5e9', // Sky blue
+        600: '#0284c7',
+        700: '#0369a1',
+        800: '#075985',
+        900: '#0c4a6e',
+      },
+      accent: {
+        neon: '#10b981', // Emerald green
+        cyber: '#8b5cf6', // Purple
+        electric: '#f59e0b', // Amber
+        warning: '#f97316', // Orange
+        danger: '#ef4444', // Red
+      },
+      background: {
+        primary: '#0f172a', // Dark slate
+        secondary: '#1e293b', // Slate 800
+        tertiary: '#334155', // Slate 700
+        overlay: 'rgba(15, 23, 42, 0.9)',
+      },
+      text: {
+        primary: '#f1f5f9', // Slate 100
+        secondary: '#cbd5e1', // Slate 300
+        muted: '#94a3b8', // Slate 400
+        inverse: '#0f172a',
+      },
+    },
+    effects: {
+      glow: {
+        small: '0 0 8px rgba(242, 117, 10, 0.3)',
+        medium: '0 0 16px rgba(242, 117, 10, 0.4)',
+        large: '0 0 24px rgba(242, 117, 10, 0.5)',
+      },
+      scanlines: 'none',
+      glitch: {
+        text: 'none',
+        box: 'kingdom-float 3s ease-in-out infinite',
+      },
+    },
+    fonts: {
+      display: "'Cinzel', serif",
+      body: "'Crimson Text', serif",
+      pixel: "'Press Start 2P', cursive",
+    },
+  },
+
+  // Default cyberpunk theme (keeping as alternative)
   neonRebel: {
     name: 'Neon Rebel',
     colors: {
@@ -302,6 +369,33 @@ export const glitchAnimations = `
     }
     100% {
       transform: translateY(100vh);
+    }
+  }
+
+  @keyframes kingdom-float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  @keyframes magic-shimmer {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(16, 185, 129, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+    }
+  }
+
+  @keyframes fantasy-glow {
+    0%, 100% {
+      text-shadow: 0 0 10px rgba(242, 117, 10, 0.5);
+    }
+    50% {
+      text-shadow: 0 0 20px rgba(242, 117, 10, 0.8);
     }
   }
 `;
