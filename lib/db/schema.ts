@@ -249,3 +249,121 @@ export const playerCombatHistoryRelations = relations(playerCombatHistory, ({ on
     references: [combatEncounters.id],
   }),
 }));
+
+// Gacha System Tables
+export const pullTypeEnum = pgEnum('pull_type', ['single', 'multi']);
+
+export const gachaPulls = pgTable('gacha_pulls', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  playerId: uuid('player_id').references(() => players.id).notNull(),
+  pullType: pullTypeEnum('pull_type').notNull(),
+  pulledPartnerIds: json('pulled_partner_ids').default([]).notNull(),
+  rarities: json('rarities').default([]).notNull(),
+  tipCost: integer('tip_cost').notNull(),
+  pulledAt: timestamp('pulled_at').defaultNow().notNull(),
+});
+
+export const gachaPityCounters = pgTable('gacha_pity_counters', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  playerId: uuid('player_id').references(() => players.id).unique().notNull(),
+  pullsSinceEpic: integer('pulls_since_epic').default(0).notNull(),
+  pullsSinceLegendary: integer('pulls_since_legendary').default(0).notNull(),
+  totalPulls: integer('total_pulls').default(0).notNull(),
+  guaranteedRareCounter: integer('guaranteed_rare_counter').default(0).notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const weeklyBanners = pgTable('weekly_banners', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  startDate: timestamp('start_date').notNull(),
+  endDate: timestamp('end_date').notNull(),
+  featuredPartnerId: uuid('featured_partner_id'),
+  featuredClass: text('featured_class'),
+  featuredTrait: text('featured_trait'),
+  rateUpPercentage: integer('rate_up_percentage').default(50).notNull(),
+  active: boolean('active').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Additional tables for our comprehensive game system
+export const storyProgress = pgTable('story_progress', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  playerId: uuid('player_id').references(() => players.id).notNull(),
+  chapterId: text('chapter_id').notNull(),
+  isCompleted: boolean('is_completed').default(false).notNull(),
+  currentDialogueId: text('current_dialogue_id'),
+  choices: json('choices').default([]).notNull(),
+  completedAt: timestamp('completed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const gameSettings = pgTable('game_settings', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  playerId: uuid('player_id').references(() => players.id).unique().notNull(),
+  theme: text('theme').default('neonRebel').notNull(),
+  soundEnabled: boolean('sound_enabled').default(true).notNull(),
+  musicEnabled: boolean('music_enabled').default(true).notNull(),
+  notifications: json('notifications').default({
+    missions: true,
+    energy: true,
+    rewards: true
+  }).notNull(),
+  difficulty: text('difficulty').default('normal').notNull(),
+  autoSave: boolean('auto_save').default(true).notNull(),
+  language: text('language').default('en').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const achievements = pgTable('achievements', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  playerId: uuid('player_id').references(() => players.id).notNull(),
+  achievementId: text('achievement_id').notNull(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  isUnlocked: boolean('is_unlocked').default(false).notNull(),
+  unlockedAt: timestamp('unlocked_at'),
+  progress: integer('progress').default(0).notNull(),
+  maxProgress: integer('max_progress').default(100).notNull(),
+  rewards: json('rewards').default({}).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Gacha Relations
+export const gachaPullsRelations = relations(gachaPulls, ({ one }) => ({
+  player: one(players, {
+    fields: [gachaPulls.playerId],
+    references: [players.id],
+  }),
+}));
+
+export const gachaPityCountersRelations = relations(gachaPityCounters, ({ one }) => ({
+  player: one(players, {
+    fields: [gachaPityCounters.playerId],
+    references: [players.id],
+  }),
+}));
+
+// Story and Game Relations
+export const storyProgressRelations = relations(storyProgress, ({ one }) => ({
+  player: one(players, {
+    fields: [storyProgress.playerId],
+    references: [players.id],
+  }),
+}));
+
+export const gameSettingsRelations = relations(gameSettings, ({ one }) => ({
+  player: one(players, {
+    fields: [gameSettings.playerId],
+    references: [players.id],
+  }),
+}));
+
+export const achievementsRelations = relations(achievements, ({ one }) => ({
+  player: one(players, {
+    fields: [achievements.playerId],
+    references: [players.id],
+  }),
+}));

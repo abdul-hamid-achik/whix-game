@@ -14,7 +14,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx lib/db/seed-basic.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
@@ -45,6 +46,7 @@
     "remark-html": "^16.0.1",
     "stripe": "^18.3.0",
     "tailwind-merge": "^3.3.1",
+    "uuid": "^11.1.0",
     "zod": "^3.25.74",
     "zustand": "^5.0.6"
   },
@@ -58,13 +60,16 @@
     "@types/node": "^20.19.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.6.0",
     "@vitest/ui": "^3.2.4",
     "dotenv": "^17.0.1",
+    "drizzle-seed": "^0.3.1",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "jsdom": "^26.1.0",
     "tailwindcss": "^4",
+    "tsx": "^4.20.3",
     "typescript": "^5",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
