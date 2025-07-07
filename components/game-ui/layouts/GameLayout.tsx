@@ -18,6 +18,7 @@ import { DailyContracts } from '../panels/DailyContracts';
 import { CampaignSelection } from '../panels/CampaignSelection';
 import { PartnerManagement } from '../panels/PartnerManagement';
 import { GachaRecruitment } from '../panels/GachaRecruitment';
+import { ShopSystem } from '../panels/ShopSystem';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings } from 'lucide-react';
 import { NeuraButton } from '@/components/neura';
@@ -106,6 +107,7 @@ export function GameLayout({ children }: GameLayoutProps) {
                 panelId === 'campaignSelection' ? 'Select Campaign' :
                 panelId === 'partnerManagement' ? 'Partner Management' :
                 panelId === 'gachaRecruitment' ? 'Partner Recruitment' :
+                panelId === 'shopSystem' ? 'WHIX Company Store' :
                 undefined
               }
             >
@@ -146,6 +148,11 @@ export function GameLayout({ children }: GameLayoutProps) {
               {panelId === 'gachaRecruitment' && (
                 <GachaRecruitment
                   onClose={() => hidePanel('gachaRecruitment')}
+                />
+              )}
+              {panelId === 'shopSystem' && (
+                <ShopSystem
+                  onClose={() => hidePanel('shopSystem')}
                 />
               )}
             </Panel>

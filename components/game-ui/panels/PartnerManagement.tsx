@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Users, Search, Filter, 
+  Users, Search, 
   Heart, Zap, Shield, Brain, TrendingUp,
   X, Info
 } from 'lucide-react';

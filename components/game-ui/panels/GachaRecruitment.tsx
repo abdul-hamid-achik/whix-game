@@ -1,17 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, Star, Package, Gift, ChevronRight,
-  Zap, Info, AlertCircle, TrendingUp, Heart,
-  Coins, Gem, Clock, Users
+  Info, TrendingUp,
+  Coins, Gem, Clock, Zap
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { 
   Dialog,
   DialogContent,
@@ -22,7 +21,7 @@ import { cn } from '@/lib/utils';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useUIStore } from '@/lib/stores/uiStore';
-import { clientGachaSystem } from '@/lib/cms/client-gacha-system';
+import { ClientGachaSystem } from '@/lib/cms/client-gacha-system';
 import { Partner, Rarity } from '@/lib/game/classes';
 
 interface GachaRecruitmentProps {
@@ -91,7 +90,7 @@ const RARITY_PARTICLES = {
   legendary: 5
 };
 
-export function GachaRecruitment({ onClose }: GachaRecruitmentProps) {
+export function GachaRecruitment({ }: GachaRecruitmentProps) {
   const { currentTips, spendTips } = useGameStore();
   const { addPartner, gachaPulls = 0, updateGachaPulls } = usePartnerStore();
   const { showPanel } = useUIStore();
@@ -116,12 +115,12 @@ export function GachaRecruitment({ onClose }: GachaRecruitmentProps) {
     // Simulate pull animation delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    const result = clientGachaSystem.performPull();
-    setPullResults([result]);
-    setPullHistory([result, ...pullHistory.slice(0, 49)]); // Keep last 50
+    const result = await ClientGachaSystem.performPull();
+    setPullResults([result.partner]);
+    setPullHistory([result.partner, ...pullHistory.slice(0, 49)]); // Keep last 50
     
     // Add to partner store
-    addPartner(result);
+    addPartner(result.partner);
     updateGachaPulls(gachaPulls + 1);
     
     setIsPulling(false);
@@ -138,12 +137,13 @@ export function GachaRecruitment({ onClose }: GachaRecruitmentProps) {
     // Simulate pull animation delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const results = clientGachaSystem.performMultiPull();
-    setPullResults(results);
-    setPullHistory([...results, ...pullHistory.slice(0, 40)]); // Keep last 50
+    const results = await ClientGachaSystem.performMultiPull();
+    const partners = results.map(r => r.partner);
+    setPullResults(partners);
+    setPullHistory([...partners, ...pullHistory.slice(0, 40)]); // Keep last 50
     
     // Add all to partner store
-    results.forEach(partner => addPartner(partner));
+    partners.forEach(partner => addPartner(partner));
     updateGachaPulls(gachaPulls + 10);
     
     setIsPulling(false);

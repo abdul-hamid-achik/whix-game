@@ -18,7 +18,8 @@ import {
   Zap,
   ChevronRight,
   Lock,
-  Sword
+  Sword,
+  ShoppingBag
 } from 'lucide-react';
 
 interface HubLayoutProps {
@@ -79,6 +80,14 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
                 Level {level} | {experience} XP
               </p>
             </div>
+            
+            <NeuraButton
+              variant="ghost"
+              size="sm"
+              onClick={() => showPanel('shopSystem', { position: 'overlay', size: 'large' })}
+            >
+              <ShoppingBag className="w-4 h-4" />
+            </NeuraButton>
             
             <NeuraButton
               variant="ghost"
