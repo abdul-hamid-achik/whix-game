@@ -1,0 +1,105 @@
+# 2025 Unified Docker Compose for WHIX Game
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: whix-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-whixuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-whixpassword}
+      POSTGRES_DB: ${POSTGRES_DB:-whixgame}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-whixuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Next.js Application (dev by default, prod with --profile prod)
+  app:
+    build:
+      context: .
+      target: ${BUILD_TARGET:-dev}
+    container_name: whix-app
+    restart: unless-stopped
+    environment:
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-whixuser}:${POSTGRES_PASSWORD:-whixpassword}@postgres:5432/${POSTGRES_DB:-whixgame}?schema=public
+      
+      # Next.js
+      NODE_ENV: ${NODE_ENV:-development}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+      
+      # Auth
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-your-secret-key-here}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      
+      # Stripe
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      
+      # Game
+      GAME_VERSION: ${GAME_VERSION:-0.1.0}
+    volumes:
+      - .:/app:cached
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - dev
+
+  # Production app service
+  app-prod:
+    extends:
+      service: app
+    build:
+      target: prod
+    volumes: []
+    profiles:
+      - prod
+
+  # Adminer for database management
+  adminer:
+    image: adminer:latest
+    container_name: whix-adminer
+    restart: unless-stopped
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    depends_on:
+      - postgres
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: dracula
+    profiles:
+      - dev
+      - tools
+
+  # Redis for caching/sessions (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: whix-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    profiles:
+      - cache
+      - prod
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: whix_network

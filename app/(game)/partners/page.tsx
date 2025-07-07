@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Heart, Zap, Shield, Package } from 'lucide-react';
+import { Users, Heart, Shield } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,6 @@ import { TraitIcon } from '@/components/game/TraitIcon';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { PARTNER_CLASSES } from '@/lib/game/classes';
 import { NEURODIVERGENT_TRAITS } from '@/lib/game/traits';
-import { cn } from '@/lib/utils';
 
 export default function PartnersPage() {
   const { 

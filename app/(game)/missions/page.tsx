@@ -69,7 +69,7 @@ export default function MissionsPage() {
     startMission(mission.id, partnerIds);
     
     // Navigate to appropriate mission page based on type
-    if (mission.type === 'combat' || mission.type === 'special_event') {
+    if (mission.type === 'special_event') {
       window.location.href = '/combat';
     } else if (mission.type === 'customer_negotiation') {
       window.location.href = '/missions/social';

@@ -1,10 +1,7 @@
-import { z } from 'zod';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useStoryStore } from '@/lib/stores/storyStore';
 import { Encounter, EncounterState, HumanityIndex } from './encounters';
-import { Item } from './items';
-import { ExtendedDialogueNode } from './extendedDialogue';
 
 // Narrative Manager - Central system for story progression
 export class NarrativeManager {
@@ -226,7 +223,7 @@ export class NarrativeManager {
   }
   
   private getOldTimerEncounter(): Encounter {
-    const stage = (this.encounterState.encounterProgress['old_timer'] || 0) + 1;
+    const _stage = (this.encounterState.encounterProgress['old_timer'] || 0) + 1;
     // Return appropriate Old Timer encounter based on stage
     return {} as Encounter; // Placeholder
   }

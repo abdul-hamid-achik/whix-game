@@ -292,7 +292,7 @@ function generateMissionTitle(type: MissionType, difficulty: MissionDifficulty):
   return `${difficultyPrefix}${title}`;
 }
 
-function generateMissionDescription(type: MissionType, difficulty: MissionDifficulty): string {
+function generateMissionDescription(type: MissionType, _difficulty: MissionDifficulty): string {
   const descriptions: Record<MissionType, string[]> = {
     standard_delivery: [
       'Deliver packages within the time limit',

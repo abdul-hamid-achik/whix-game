@@ -58,7 +58,9 @@ export const SURVIVAL_ITEMS: Record<string, Item> = {
       { type: 'narrative', target: 'hidden_messages', value: 'previous_occupant' },
     ],
     stackable: false,
+    maxStack: 1,
     value: 0,
+    soulbound: false,
   },
   
   pigeons_friend: {
@@ -72,7 +74,10 @@ export const SURVIVAL_ITEMS: Record<string, Item> = {
       { type: 'passive', target: 'weather_prediction', value: 25 },
       { type: 'passive', target: 'tip_multiplier_rain', value: 2 },
     ],
+    stackable: true,
+    maxStack: 99,
     value: 5,
+    soulbound: false,
     specialInteractions: ['pigeon_network'],
   },
   
@@ -88,6 +93,8 @@ export const SURVIVAL_ITEMS: Record<string, Item> = {
       { type: 'passive', target: 'star_bearer_detection', value: true },
     ],
     stackable: false,
+    maxStack: 1,
+    value: 0,
     soulbound: true,
     specialInteractions: ['tania_dialogue', 'shatter_for_humanity'],
   },
@@ -111,6 +118,7 @@ export const MAP_TOOLS: Record<string, Item> = {
     stackable: true,
     maxStack: 3,
     value: 50,
+    soulbound: false,
   },
   
   tanias_last_note: {
@@ -127,6 +135,8 @@ export const MAP_TOOLS: Record<string, Item> = {
       { type: 'stat', target: 'humanity_index', value: -5 },
     ],
     stackable: false,
+    maxStack: 1,
+    value: 0,
     soulbound: true,
   },
 };
@@ -148,7 +158,9 @@ export const SPECIAL_ITEMS: Record<string, Item> = {
       { type: 'stat', target: 'humanity_index', value: -50 },
     ],
     stackable: false,
+    maxStack: 1,
     value: 0,
+    soulbound: true,
     specialInteractions: ['old_timer_reaction', 'tania_breakdown'],
   },
   
@@ -164,6 +176,8 @@ export const SPECIAL_ITEMS: Record<string, Item> = {
       { type: 'passive', target: 'child_sight', value: true },
     ],
     stackable: false,
+    maxStack: 1,
+    value: 0,
     soulbound: true,
     specialInteractions: ['invisible_passages', 'mateo_trust'],
   },
@@ -182,7 +196,7 @@ export const SPECIAL_ITEMS: Record<string, Item> = {
     stackable: true,
     maxStack: 5,
     value: 0,
-    condition: 'humanity_index_above_75',
+    soulbound: false,
     specialInteractions: ['strengthen_community_bonds'],
   },
 };

@@ -2,8 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CombatUnit, CombatPosition } from '@/lib/game/combat';
-import { TraitIcon } from './TraitIcon';
-import { Heart, Shield, Zap } from 'lucide-react';
 
 interface CombatGridProps {
   units: CombatUnit[];

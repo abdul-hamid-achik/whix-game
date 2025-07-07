@@ -1,7 +1,31 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { devtools, persist } from 'zustand/middleware';
-import type { Partner, Player, PlayerMission } from '../db/schema';
+// Type definitions for game state
+interface Player {
+  id: string;
+  level: number;
+  experience: number;
+  credits: number;
+  currentLocationId?: string | null;
+}
+
+interface Partner {
+  id: string;
+  name: string;
+  class: string;
+  level: number;
+  experience: number;
+  stats: any;
+}
+
+interface PlayerMission {
+  id: string;
+  playerId: string;
+  missionId: string;
+  status: string;
+  progress: any;
+}
 
 interface GameState {
   // Player State

@@ -1,7 +1,5 @@
 import { z } from 'zod';
-import { DialogueNode, DialogueChoice, Character } from './dialogueSystem';
-import { EncounterChoice } from './encounters';
-import { Item } from './items';
+import { DialogueChoiceSchema } from './dialogueSystem';
 
 // Extended dialogue system for complex encounters
 export const ExtendedDialogueNodeSchema = z.object({
@@ -9,7 +7,7 @@ export const ExtendedDialogueNodeSchema = z.object({
   speaker: z.string(),
   text: z.string(),
   emotion: z.enum(['neutral', 'happy', 'sad', 'angry', 'surprised', 'thinking', 'glitched', 'broken']).default('neutral'),
-  choices: z.array(DialogueChoice).optional(),
+  choices: z.array(DialogueChoiceSchema).optional(),
   requirements: z.object({
     humanityIndex: z.number().optional(),
     items: z.array(z.string()).optional(),
@@ -41,6 +39,7 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
       environmentChange: 'cathedral_dystopian',
     },
     nextId: 'tania_found',
+    isEnd: false,
   },
   {
     id: 'tania_found',
@@ -48,6 +47,7 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
     text: 'You find Tania at the quermes, surrounded by new partners. Their eyes are empty. Hers are worse—they\'re full of purpose.',
     emotion: 'neutral',
     nextId: 'miguel_approach',
+    isEnd: false,
   },
   {
     id: 'miguel_approach',
@@ -55,6 +55,7 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
     text: 'Tania! I\'ve been searching everywhere. My phone kept losing your signal—',
     emotion: 'surprised',
     nextId: 'tania_cold_response',
+    isEnd: false,
   },
   {
     id: 'tania_cold_response',
@@ -66,6 +67,7 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
       soundEffect: 'static_burst',
     },
     nextId: 'miguel_concern',
+    isEnd: false,
   },
   {
     id: 'miguel_concern',
@@ -73,12 +75,14 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
     text: 'What happened to you? This morning you were teaching me about optimal routes.',
     emotion: 'sad',
     nextId: 'tania_metrics',
+    isEnd: false,
   },
   {
     id: 'tania_metrics',
     speaker: 'tania',
     text: 'This morning I was 4.7 stars. Now I\'m 4.9. Do you understand the mathematics of that jump?',
     emotion: 'broken',
+    isEnd: false,
     choices: [
       {
         id: 'emotional_plea',
@@ -121,6 +125,7 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
       visualEffect: 'glitch',
     },
     nextId: 'platinum_whisper',
+    isEnd: false,
   },
   {
     id: 'tania_tos_response',
@@ -131,6 +136,7 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
       visualEffect: 'shake',
     },
     nextId: 'platinum_whisper',
+    isEnd: false,
   },
   {
     id: 'tania_platinum_reveal',
@@ -142,6 +148,7 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
       soundEffect: 'heartbeat_electronic',
     },
     nextId: 'miguel_cost_question',
+    isEnd: false,
   },
   {
     id: 'miguel_cost_question',
@@ -149,6 +156,7 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
     text: 'At what cost?',
     emotion: 'angry',
     nextId: 'tania_breakdown',
+    isEnd: false,
   },
   {
     id: 'tania_breakdown',
@@ -160,6 +168,7 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
       soundEffect: 'static_crescendo',
     },
     nextId: 'tania_moment_clarity',
+    isEnd: false,
   },
   {
     id: 'tania_moment_clarity',
@@ -170,6 +179,7 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
       visualEffect: 'fade',
     },
     nextId: 'partner_interrupt',
+    isEnd: false,
   },
   {
     id: 'partner_interrupt',
@@ -180,6 +190,7 @@ export const TANIA_ABANDONMENT_DIALOGUE: ExtendedDialogueNode[] = [
       soundEffect: 'modem_whisper',
     },
     nextId: 'tania_termination',
+    isEnd: false,
   },
   {
     id: 'tania_termination',
@@ -228,6 +239,7 @@ export const OLD_TIMER_TEMPORAL_DIALOGUE: Record<number, ExtendedDialogueNode[]>
       speaker: 'old_timer',
       text: 'Excuse me, young person. Do you have the time?',
       emotion: 'neutral',
+      isEnd: false,
       effects: {
         visualEffect: 'time_stutter',
       },
@@ -273,6 +285,7 @@ export const MATEO_BIRTHDAY_DIALOGUE: Record<string, ExtendedDialogueNode> = {
       environmentChange: 'cage_house_opens',
     },
     nextId: 'mateo_reaction',
+    isEnd: false,
   },
   
   mateo_reaction: {
@@ -280,6 +293,7 @@ export const MATEO_BIRTHDAY_DIALOGUE: Record<string, ExtendedDialogueNode> = {
     speaker: 'mateo',
     text: 'It\'s... it\'s exactly right. How did you know?',
     emotion: 'surprised',
+    isEnd: false,
     choices: [
       {
         id: 'listened',
@@ -289,7 +303,6 @@ export const MATEO_BIRTHDAY_DIALOGUE: Record<string, ExtendedDialogueNode> = {
           relationship: { mateo: 50 },
           rewards: {
             items: ['mateos_drawing'],
-            humanityIndex: 15,
           },
         },
       },
@@ -309,6 +322,7 @@ export const MATEO_BIRTHDAY_DIALOGUE: Record<string, ExtendedDialogueNode> = {
     speaker: 'mateo',
     text: 'Nobody listens. Are you broken like me?',
     emotion: 'sad',
+    isEnd: false,
     choices: [
       {
         id: 'different_not_broken',

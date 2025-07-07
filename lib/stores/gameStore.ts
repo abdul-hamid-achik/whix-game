@@ -94,7 +94,7 @@ export const useGameStore = create<GameState>()(
         earnTips: (amount) => set((state) => {
           const boostMultiplier = get().getActiveBoostMultiplier('tips');
           const boostedAmount = Math.floor(amount * boostMultiplier);
-          const { playerShare, whixCut } = get().calculateWhixCut(boostedAmount);
+          const { playerShare } = get().calculateWhixCut(boostedAmount);
           
           state.currentTips += playerShare;
           state.totalTipsEarned += boostedAmount;

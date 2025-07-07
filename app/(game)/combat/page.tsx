@@ -15,8 +15,7 @@ import {
   generateEnemyTeam,
   getValidMoves,
   getTargetsInRange,
-  calculateDamage,
-  calculateDistance
+  calculateDamage
 } from '@/lib/game/combat';
 import { NEURODIVERGENT_TRAITS } from '@/lib/game/traits';
 import { cn } from '@/lib/utils';
@@ -25,7 +24,7 @@ type CombatPhase = 'placement' | 'battle' | 'victory' | 'defeat';
 
 export default function CombatPage() {
   const { getActivePartners } = usePartnerStore();
-  const { earnTips, earnStarFragment, completeMission } = useGameStore();
+  const { earnTips, earnStarFragment } = useGameStore();
   
   const [phase, setPhase] = useState<CombatPhase>('placement');
   const [playerUnits, setPlayerUnits] = useState<CombatUnit[]>([]);
@@ -38,6 +37,7 @@ export default function CombatPage() {
   
   useEffect(() => {
     initializeCombat();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   const initializeCombat = () => {
@@ -249,7 +249,7 @@ export default function CombatPage() {
                   variant="game"
                   disabled={ability.currentCooldown > 0}
                 >
-                  <TraitIcon trait={ability.id as any} size="sm" className="mr-2" />
+                  <TraitIcon trait={ability.id as keyof typeof NEURODIVERGENT_TRAITS} size="sm" className="mr-2" />
                   {ability.name}
                   {ability.currentCooldown > 0 && ` (${ability.currentCooldown})`}
                 </Button>

@@ -3,10 +3,10 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Package, Users, Swords, Book, TrendingUp, 
+  Package, Users, Swords, Book, 
   DollarSign, Star, Zap, Target 
 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useGameStore } from '@/lib/stores/gameStore';
@@ -35,6 +35,7 @@ export default function DashboardPage() {
     removeExpiredBoosts();
     checkInjuryRecovery();
     generateDailyMissions(level);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   const activePartners = getActivePartners();

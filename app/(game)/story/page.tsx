@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { Book, Lock, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +18,7 @@ import {
 import { cn } from '@/lib/utils';
 
 export default function StoryPage() {
-  const { currentChapter, unlockedChapters, saveStoryChoice } = useGameStore();
+  const { unlockedChapters, saveStoryChoice } = useGameStore();
   const { getActivePartners } = usePartnerStore();
   
   const [selectedChapter, setSelectedChapter] = useState<StoryChapter | null>(null);
@@ -40,24 +40,24 @@ export default function StoryPage() {
     const partners = getActivePartners();
     
     // Check trait requirement
-    if (choice.requirement.trait) {
+    if (choice.requirement?.trait) {
       const hasTrait = partners.some(p => 
-        p.primaryTrait === choice.requirement.trait ||
-        p.secondaryTrait === choice.requirement.trait
+        p.primaryTrait === choice.requirement?.trait ||
+        p.secondaryTrait === choice.requirement?.trait
       );
       if (!hasTrait) return false;
     }
     
     // Check stat requirement
-    if (choice.requirement.stat && choice.requirement.minValue) {
+    if (choice.requirement?.stat && choice.requirement?.minValue) {
       const hasStatValue = partners.some(p => 
-        p.stats[choice.requirement.stat as keyof typeof p.stats] >= choice.requirement.minValue!
+        p.stats[choice.requirement!.stat as keyof typeof p.stats] >= choice.requirement!.minValue!
       );
       if (!hasStatValue) return false;
     }
     
     // Check previous choice requirement
-    if (choice.requirement.previousChoice) {
+    if (choice.requirement?.previousChoice) {
       // This would check against saved story choices
       return false; // Simplified for now
     }

@@ -113,7 +113,6 @@ export const CHAPTER_1: StoryChapter = {
       speaker: 'kai',
       text: "Hey! You must be the new partner. I'm Kai. Don't look so nervous - we all started somewhere.",
       emotion: 'happy',
-      isEnd: false,
       choices: [
         {
           id: 'choice_1a',
@@ -150,7 +149,6 @@ export const CHAPTER_1: StoryChapter = {
       text: "Processing, huh? I get that. This place can be overwhelming. But hey, at least we partners look out for each other.",
       emotion: 'thinking',
       nextId: 'manager_entrance',
-      isEnd: false,
     },
     {
       id: 'kai_response_1b',
@@ -158,7 +156,6 @@ export const CHAPTER_1: StoryChapter = {
       text: "*whispers* Shh! Not so loud... You're right, but the walls have ears here. Come find me later - there's someone you should meet.",
       emotion: 'surprised',
       nextId: 'manager_entrance',
-      isEnd: false,
     },
     {
       id: 'kai_response_1c',
@@ -166,14 +163,12 @@ export const CHAPTER_1: StoryChapter = {
       text: "Sure! First tip: don't question the system out loud. Second: find partners who share your... perspective. You'll understand soon.",
       emotion: 'neutral',
       nextId: 'manager_entrance',
-      isEnd: false,
     },
     {
       id: 'manager_entrance',
       speaker: 'whix_manager',
       text: "Ah, our newest partner! Welcome to the Whix family. I'm District Manager Klein. I trust you're ready to deliver excellence?",
       emotion: 'happy',
-      isEnd: false,
       choices: [
         {
           id: 'choice_2a',
@@ -202,7 +197,6 @@ export const CHAPTER_1: StoryChapter = {
       text: "Excellent attitude! Remember, Whix takes 75% to ensure you get the best support and infrastructure. It's really quite generous of us.",
       emotion: 'neutral',
       nextId: 'tania_introduction',
-      isEnd: false,
     },
     {
       id: 'manager_response_2b',
@@ -210,14 +204,12 @@ export const CHAPTER_1: StoryChapter = {
       text: "*smile falters* I see we have a... perceptive one. Just remember, perception without productivity is worthless here.",
       emotion: 'angry',
       nextId: 'tania_introduction',
-      isEnd: false,
     },
     {
       id: 'tania_introduction',
       speaker: 'tania',
       text: "*A woman with intense focus in her eyes approaches after Klein leaves* That manager's spiel never gets less nauseating. I'm Tania.",
       emotion: 'neutral',
-      isEnd: false,
       choices: [
         {
           id: 'choice_3a',
@@ -246,7 +238,6 @@ export const CHAPTER_1: StoryChapter = {
       text: "Like it? I excel despite it. There's a difference. This system tries to exploit what makes us unique, but we can turn that around.",
       emotion: 'thinking',
       nextId: 'chapter_end',
-      isEnd: false,
     },
     {
       id: 'tania_response_3b',
@@ -254,7 +245,6 @@ export const CHAPTER_1: StoryChapter = {
       text: "*eyes light up* You get it. Yes, my hyperfocus is why I'm legendary tier. But it's also why I see through their manipulation. Want to learn how to use your traits against them?",
       emotion: 'happy',
       nextId: 'chapter_end',
-      isEnd: false,
     },
     {
       id: 'chapter_end',

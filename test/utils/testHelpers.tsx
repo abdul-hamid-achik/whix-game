@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, RenderOptions } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, beforeEach, afterEach } from 'vitest';
 
 // Custom render function that includes providers
 export function renderWithProviders(

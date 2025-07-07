@@ -1,7 +1,6 @@
 import { pgTable, uuid, integer, timestamp, json, pgEnum, text, boolean } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { players } from '../schema';
-import { rarityEnum } from '../schema';
 
 export const pullTypeEnum = pgEnum('pull_type', ['single', 'multi']);
 

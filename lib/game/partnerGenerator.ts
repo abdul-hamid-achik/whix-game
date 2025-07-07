@@ -1,5 +1,4 @@
 import { nanoid } from 'nanoid';
-import { z } from 'zod';
 import { 
   PartnerClass, 
   PARTNER_CLASSES, 
@@ -178,9 +177,9 @@ const generateBackstory = (
   const templates = [
     `${firstName} discovered their ${primaryTraitInfo.name?.toLowerCase() || 'unique abilities'} as a child, initially seeing it as a challenge. But in Neo Prosperity's gig economy, what others called "${traits[0]}" became their greatest strength. As a ${classInfo.name}, they've learned to leverage their unique perspective to excel at their work, even while fighting against Whix's exploitative system.`,
     
-    `Growing up, ${firstName}'s ${primaryTraitInfo.name?.toLowerCase() || 'unique abilities'} made them feel different from their peers. But when they joined Whix as a ${classInfo.name}, they found that their ability to ${primaryTraitInfo.positiveFraming?.toLowerCase() || 'think differently'} gave them an edge. Now they use their talents not just to survive, but to help other partners resist the company's unfair practices.`,
+    `Growing up, ${firstName}'s ${primaryTraitInfo.name?.toLowerCase() || 'unique abilities'} made them feel different from their peers. But when they joined Whix as a ${classInfo.name}, they found that their ability to think differently gave them an edge. Now they use their talents not just to survive, but to help other partners resist the company's unfair practices.`,
     
-    `${firstName} never fit the neurotypical mold, and they're proud of it. Their ${primaryTraitInfo.name?.toLowerCase() || 'unique abilities'} allows them to ${primaryTraitInfo.missionBenefit?.toLowerCase() || 'excel in unexpected ways'}, making them an exceptional ${classInfo.name}. While Whix tries to exploit their abilities, ${firstName} dreams of a world where neurodivergent people are valued, not used.`,
+    `${firstName} never fit the neurotypical mold, and they're proud of it. Their ${primaryTraitInfo.name?.toLowerCase() || 'unique abilities'} allows them to excel in unexpected ways, making them an exceptional ${classInfo.name}. While Whix tries to exploit their abilities, ${firstName} dreams of a world where neurodivergent people are valued, not used.`,
   ];
   
   let backstory = templates[Math.floor(Math.random() * templates.length)];

@@ -235,7 +235,7 @@ export const useMissionStore = create<MissionState>()(
           ...state.dailyMissions,
           state.weeklyMission,
           state.specialEvent,
-        ].find(m => m?.id === missionId);
+        ].filter(m => m !== null).find(m => m?.id === missionId);
       },
       
       getActiveMissionProgress: (missionId) => {

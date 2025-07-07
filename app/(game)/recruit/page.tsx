@@ -183,7 +183,7 @@ export default function RecruitPage() {
                   <CardContent className="relative">
                     <div className="text-sm space-y-1">
                       <div className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
-                        {partner.primaryTrait.replace(/_/g, ' ').split(' ').map(word => 
+                        {partner.primaryTrait.replace(/_/g, ' ').split(' ').map((word: string) => 
                           word.charAt(0).toUpperCase() + word.slice(1)
                         ).join(' ')}
                       </div>
