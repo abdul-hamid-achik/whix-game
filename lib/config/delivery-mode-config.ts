@@ -45,6 +45,15 @@ export const TERMINOLOGY_MAP: Record<string, TerminologyMapping> = {
   WEATHER_VEST: { game: 'Weatherproof Delivery Vest', delivery: 'Professional Vest' },
   ENCRYPTED_PHONE: { game: 'Encrypted Delivery Phone', delivery: 'Secure Device' },
   
+  // Food Items (Mexican/CDMX specialties)
+  TACOS_AL_PASTOR: { game: 'Tacos al Pastor', delivery: 'Tacos al Pastor Order' },
+  BLUE_CORN_QUESADILLA: { game: 'Blue Corn Quesadilla', delivery: 'Quesadilla Order' },
+  TAMALES_OAXAQUENOS: { game: 'Tamales Oaxaqueños', delivery: 'Tamale Order' },
+  TORTA_CHILAQUILES: { game: 'Torta de Chilaquiles', delivery: 'Torta Order' },
+  TLACOYOS: { game: 'Tlacoyos con Nopales', delivery: 'Tlacoyo Order' },
+  FOOD_PICKUP: { game: 'Food Acquisition', delivery: 'Restaurant Pickup' },
+  FOOD_DELIVERY: { game: 'Food Distribution', delivery: 'Customer Delivery' },
+  
   // Districts/Areas
   NEON_HEIGHTS: { game: 'Neon Heights Corporate', delivery: 'Business District' },
   CENTRAL_SQUARE: { game: 'Central Square Chaos', delivery: 'Downtown Area' },
