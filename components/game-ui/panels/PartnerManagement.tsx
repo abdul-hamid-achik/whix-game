@@ -257,11 +257,11 @@ export function PartnerManagement({ }: PartnerManagementProps) {
                 <Shield className="w-4 h-4" />
                 Combat Stats
               </h4>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3">
                 {Object.entries(selectedPartner.stats).map(([stat, value]) => (
                   <div key={stat} className="bg-gray-700/50 rounded p-2">
                     <p className="text-xs text-gray-400 capitalize">{stat}</p>
-                    <p className="text-lg font-bold">{value}</p>
+                    <p className="text-base sm:text-lg font-bold">{value}</p>
                   </div>
                 ))}
               </div>
@@ -349,22 +349,22 @@ export function PartnerManagement({ }: PartnerManagementProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold mb-2">Partner Management</h2>
-        <p className="text-gray-400">
+      <div className="mb-4 sm:mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-2">Partner Management</h2>
+        <p className="text-gray-400 text-sm sm:text-base">
           Manage your team of {partnersList.length} neurodivergent delivery partners
         </p>
       </div>
 
       {/* Active Team Display */}
-      <Card className="mb-6 bg-cyan-900/20 border-cyan-500/30">
+      <Card className="mb-4 sm:mb-6 bg-cyan-900/20 border-cyan-500/30">
         <CardHeader>
-          <CardTitle className="text-cyan-400">Active Team ({activeTeam.length}/3)</CardTitle>
+          <CardTitle className="text-cyan-400 text-lg sm:text-xl">Active Team ({activeTeam.length}/3)</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             {[0, 1, 2].map((slot) => {
               const partnerId = activeTeam[slot];
               const partner = partnerId ? getPartnerById(partnerId) : null;
@@ -398,8 +398,8 @@ export function PartnerManagement({ }: PartnerManagementProps) {
       </Card>
 
       {/* Filters and Search */}
-      <div className="mb-6 space-y-4">
-        <div className="flex gap-4">
+      <div className="mb-4 sm:mb-6 space-y-3 sm:space-y-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
@@ -410,42 +410,44 @@ export function PartnerManagement({ }: PartnerManagementProps) {
             />
           </div>
           
-          <select
-            value={filterClass}
-            onChange={(e) => setFilterClass(e.target.value)}
-            className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-md"
-          >
-            <option value="all">All Classes</option>
-            {Object.entries(PARTNER_CLASSES).map(([key, data]) => (
-              <option key={key} value={key}>{data.name}</option>
-            ))}
-          </select>
-          
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as 'level' | 'rarity' | 'bond')}
-            className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-md"
-          >
-            <option value="level">Sort by Level</option>
-            <option value="rarity">Sort by Rarity</option>
-            <option value="bond">Sort by Bond</option>
-          </select>
+          <div className="flex gap-2 sm:gap-3">
+            <select
+              value={filterClass}
+              onChange={(e) => setFilterClass(e.target.value)}
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm"
+            >
+              <option value="all">All Classes</option>
+              {Object.entries(PARTNER_CLASSES).map(([key, data]) => (
+                <option key={key} value={key}>{data.name}</option>
+              ))}
+            </select>
+            
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'level' | 'rarity' | 'bond')}
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm"
+            >
+              <option value="level">Sort by Level</option>
+              <option value="rarity">Sort by Rarity</option>
+              <option value="bond">Sort by Bond</option>
+            </select>
+          </div>
         </div>
       </div>
 
       {/* Partners Grid and Details */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <ScrollArea className="h-[600px] pr-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
+        <div className="xl:col-span-2">
+          <ScrollArea className="h-[400px] sm:h-[500px] lg:h-[600px] pr-2 sm:pr-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-3 sm:gap-4">
               <AnimatePresence mode="popLayout">
                 {filteredPartners.map(partner => renderPartnerCard(partner))}
               </AnimatePresence>
               
               {filteredPartners.length === 0 && (
-                <div className="col-span-2 text-center py-12">
-                  <Users className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400">No partners found</p>
+                <div className="col-span-full text-center py-8 sm:py-12">
+                  <Users className="w-8 h-8 sm:w-12 sm:h-12 text-gray-600 mx-auto mb-4" />
+                  <p className="text-gray-400 text-sm sm:text-base">No partners found</p>
                 </div>
               )}
             </div>

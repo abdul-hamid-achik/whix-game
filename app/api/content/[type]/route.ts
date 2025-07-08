@@ -19,7 +19,7 @@ export async function GET(
     const contentType = resolvedParams.type as ContentMetadata['type'];
 
     // Validate content type
-    const validTypes = ['character', 'level', 'chapter', 'map', 'item', 'trait', 'dialogue'];
+    const validTypes = ['character', 'level', 'chapter', 'map', 'item', 'trait', 'dialogue', 'ui-content'];
     if (!validTypes.includes(contentType)) {
       return NextResponse.json(
         { error: 'Invalid content type' },

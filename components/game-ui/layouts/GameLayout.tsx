@@ -206,16 +206,20 @@ export function GameLayout({ children }: GameLayoutProps) {
       )}
 
       {/* Settings Button */}
-      <motion.button
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="fixed bottom-4 right-4 z-50"
-        onClick={() => setShowSettings(true)}
       >
-        <NeuraButton variant="ghost" size="sm" className="rounded-full p-2">
+        <NeuraButton 
+          variant="ghost" 
+          size="sm" 
+          className="rounded-full p-2"
+          onClick={() => setShowSettings(true)}
+        >
           <Settings className="w-5 h-5" />
         </NeuraButton>
-      </motion.button>
+      </motion.div>
 
       {/* Settings Overlay */}
       <SettingsOverlay 

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { loadContentBySlug } from '@/lib/cms/content-loader';
 import { UIContentMetadata } from '@/lib/cms/content-schemas';
 
 interface UIContentData {
@@ -25,11 +24,18 @@ export function useUIContent(): UIContentData {
       try {
         setContent(prev => ({ ...prev, isLoading: true, error: null }));
 
-        // Load loading screens content
-        const loadingContent = await loadContentBySlug('ui', 'loading-screens');
-        
-        // Load login screens content
-        const loginContent = await loadContentBySlug('ui', 'login-screens');
+        // Load UI content via API routes
+        const [loadingResponse, loginResponse] = await Promise.all([
+          fetch('/api/content/ui-content?slug=loading-screens'),
+          fetch('/api/content/ui-content?slug=login-screens')
+        ]);
+
+        if (!loadingResponse.ok || !loginResponse.ok) {
+          throw new Error('Failed to fetch UI content');
+        }
+
+        const loadingContent = await loadingResponse.json();
+        const loginContent = await loginResponse.json();
 
         setContent({
           loading: loadingContent.metadata as UIContentMetadata,

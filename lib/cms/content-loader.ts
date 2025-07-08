@@ -27,6 +27,7 @@ const CONTENT_DIRECTORIES = {
   item: 'items',
   trait: 'traits',
   dialogue: 'dialogues',
+  'ui-content': 'ui',
 } as const;
 
 export interface ContentFile<T extends ContentMetadata = ContentMetadata> {

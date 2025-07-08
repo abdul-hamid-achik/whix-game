@@ -12,6 +12,7 @@ import { TraitIcon } from '@/components/game/TraitIcon';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { useChapterMapStore } from '@/lib/stores/chapterMapStore';
+import { useUIStore, GameState } from '@/lib/stores/uiStore';
 import { 
   CombatUnit, 
   CombatPosition, 
@@ -33,6 +34,7 @@ export default function CombatPage() {
   const { getActivePartners } = usePartnerStore();
   const { earnTips, earnStarFragment, gainExperience } = useGameStore();
   const { completeNode, currentChapter } = useChapterMapStore();
+  const { setState } = useUIStore();
   
   // Check if this is a story combat (accessed from map)
   const isStoryCombat = searchParams.get('story') === 'true';
@@ -49,9 +51,11 @@ export default function CombatPage() {
   const [validTargets, setValidTargets] = useState<CombatUnit[]>([]);
   
   useEffect(() => {
+    // Set UI state to combat mode
+    setState(GameState.TACTICAL_COMBAT);
     initializeCombat();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setState]);
   
   // If this is a story combat, use the enhanced view
   if (isStoryCombat) {
@@ -148,7 +152,62 @@ export default function CombatPage() {
   }
   
   const initializeCombat = () => {
-    const partners = getActivePartners();
+    let partners = getActivePartners();
+    
+    // Debug logging
+    console.log('🎯 Combat Initialization:');
+    console.log('  - Active partners:', partners);
+    console.log('  - Partner count:', partners.length);
+    console.log('  - Is story combat:', isStoryCombat);
+    console.log('  - Node ID:', nodeId);
+    
+    // If no active partners, check if any partners exist at all
+    const { partners: allPartners, addPartner, setActiveTeam } = usePartnerStore.getState();
+    
+    if (partners.length === 0) {
+      console.warn('⚠️ No active partners available for combat!');
+      
+      // If no partners exist at all, create emergency demo partners
+      if (allPartners.length === 0) {
+        console.log('🚨 No partners exist! Creating emergency demo partners...');
+        
+        // Create a simple demo partner for combat
+        const demoPartner = {
+          id: 'demo-partner-1',
+          name: 'Demo Courier',
+          class: 'courier' as const,
+          primaryTrait: 'hyperactive' as const,
+          level: 1,
+          rarity: 'common' as const,
+          stats: {
+            focus: 15,
+            perception: 12,
+            social: 10,
+            logic: 8,
+            stamina: 14,
+          },
+          personality: {
+            traits: ['Energetic', 'Quick-thinking'],
+            likes: ['Fast delivery', 'City exploration'],
+            dislikes: ['Waiting', 'Bureaucracy'],
+            backstory: 'A hyperactive courier ready for action.'
+          }
+        };
+        
+        const newPartner = addPartner(demoPartner);
+        setActiveTeam([newPartner.id]);
+        partners = [newPartner];
+        
+        addToLog("🆘 Demo partner created for combat!");
+      } else {
+        // If partners exist but none are active, auto-select the first one
+        console.log('🔧 Auto-selecting first available partner...');
+        setActiveTeam([allPartners[0].id]);
+        partners = [allPartners[0]];
+        addToLog("📝 Auto-selected available partner for combat.");
+      }
+    }
+    
     const playerStartPositions: CombatPosition[] = [
       { x: 1, y: 2 },
       { x: 0, y: 1 },

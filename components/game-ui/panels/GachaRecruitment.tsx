@@ -270,14 +270,14 @@ export function GachaRecruitment({ }: GachaRecruitmentProps) {
     
     return (
       <Dialog open={showResults} onOpenChange={setShowResults}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] sm:max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl">
               Recruitment Results!
             </DialogTitle>
           </DialogHeader>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 mt-6">
             {pullResults.map((partner, index) => {
               const rarityStyle = RARITY_COLORS[partner.rarity];
               
@@ -362,7 +362,7 @@ export function GachaRecruitment({ }: GachaRecruitmentProps) {
             })}
           </div>
           
-          <div className="flex gap-3 mt-6">
+          <div className="flex flex-col sm:flex-row gap-3 mt-6">
             <Button
               onClick={() => setShowResults(false)}
               variant="outline"
@@ -390,11 +390,11 @@ export function GachaRecruitment({ }: GachaRecruitmentProps) {
   };
   
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-3xl font-bold mb-2 flex items-center gap-3">
-          <Sparkles className="w-8 h-8 text-purple-400" />
+      <div className="mb-4 sm:mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-2 sm:gap-3">
+          <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400" />
           Partner Recruitment
         </h2>
         <p className="text-gray-400">
@@ -403,21 +403,21 @@ export function GachaRecruitment({ }: GachaRecruitmentProps) {
       </div>
 
       {/* Current Resources */}
-      <Card className="mb-6 bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border-yellow-500/30">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
+      <Card className="mb-4 sm:mb-6 bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border-yellow-500/30">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6">
               <div className="flex items-center gap-2">
-                <Coins className="w-5 h-5 text-yellow-400" />
-                <span className="text-lg font-semibold">{currentTips.toLocaleString()} Tips</span>
+                <Coins className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
+                <span className="text-base sm:text-lg font-semibold">{currentTips.toLocaleString()} Tips</span>
               </div>
               <div className="flex items-center gap-2">
-                <Gem className="w-5 h-5 text-purple-400" />
-                <span className="text-lg">0 Gems</span>
+                <Gem className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+                <span className="text-base sm:text-lg">0 Gems</span>
                 <Badge variant="secondary" className="text-xs">Coming Soon</Badge>
               </div>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               Get More Tips
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
@@ -425,10 +425,10 @@ export function GachaRecruitment({ }: GachaRecruitmentProps) {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
         {/* Banner Selection */}
-        <div className="lg:col-span-2 space-y-4">
-          <h3 className="text-xl font-semibold mb-3">Available Banners</h3>
+        <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+          <h3 className="text-lg sm:text-xl font-semibold mb-3">Available Banners</h3>
           {MOCK_BANNERS.map(banner => renderBannerCard(banner))}
         </div>
 
