@@ -40,7 +40,7 @@ describe('UI Refactor Integration Tests', () => {
   beforeEach(() => {
     // Mock UI store
     vi.mocked(useUIStore).mockReturnValue({
-      currentState: 'COURIER_HUB',
+      currentState: 'courier_hub',
       panels: {},
       isLoading: false,
       settings: {
@@ -75,7 +75,7 @@ describe('UI Refactor Integration Tests', () => {
       );
 
       expect(container).toBeTruthy();
-      expect(screen.getByText('Game Content')).toBeInTheDocument();
+      expect(screen.getByText(/WHIX COURIER HUB/)).toBeInTheDocument();
     });
 
     it('should handle responsive design across devices', () => {
@@ -194,7 +194,7 @@ describe('UI Refactor Integration Tests', () => {
     it('should integrate all features in GameLayout', () => {
       // Enable all visual effects
       vi.mocked(useUIStore).mockReturnValue({
-        currentState: 'COURIER_HUB',
+        currentState: 'courier_hub',
         panels: {},
         isLoading: false,
         settings: {
@@ -227,7 +227,7 @@ describe('UI Refactor Integration Tests', () => {
       const mockSetState = vi.fn();
       
       vi.mocked(useUIStore).mockReturnValue({
-        currentState: 'COURIER_HUB',
+        currentState: 'courier_hub',
         panels: {},
         isLoading: false,
         settings: { theme: 'neura', reducedMotion: false },
@@ -256,7 +256,7 @@ describe('UI Refactor Integration Tests', () => {
     it('should respect accessibility settings', () => {
       // Test with reduced motion
       vi.mocked(useUIStore).mockReturnValue({
-        currentState: 'COURIER_HUB',
+        currentState: 'courier_hub',
         panels: {},
         isLoading: false,
         settings: {

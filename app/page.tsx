@@ -9,35 +9,35 @@ export default function LandingPage() {
   const features = [
     {
       icon: Brain,
-      title: 'Neurodivergent Partners',
-      description: 'Recruit and train partners with unique abilities based on real neurodivergent traits like hyperfocus, pattern recognition, and enhanced senses.',
+      title: 'Neurodivergent Protagonists',
+      description: 'Experience Mexico City through characters whose pattern recognition, hyperfocus, and sensory processing are both strength and target for corporate exploitation.',
       color: 'from-purple-600 to-pink-600'
     },
     {
       icon: Package,
-      title: 'Dystopian Delivery',
-      description: 'Navigate a gig economy dystopia where mega-corp Whix controls everything. Keep your humanity while fighting for fair wages.',
+      title: 'Surveillance Capitalism',
+      description: 'Navigate WHIX\'s comprehensive surveillance system that harvests neural data from neurodivergent delivery partners to enable community displacement.',
       color: 'from-blue-600 to-cyan-600'
     },
     {
       icon: Users,
-      title: 'Team Synergy',
-      description: 'Build the perfect delivery crew by combining different neurodivergent traits. Each partner brings unique strengths to your team.',
+      title: 'Community Resistance',
+      description: 'Build solidarity networks in Mexico City\'s barrios. Use mutual aid and collective action to resist algorithmic control and gentrification.',
       color: 'from-green-600 to-emerald-600'
     },
     {
       icon: Star,
-      title: 'Fight the System',
-      description: 'Earn Company Stars to reduce Whix\'s oppressive 75% tip cut. Every star is a victory against corporate exploitation.',
+      title: 'Cultural Identity',
+      description: 'Experience a unique Soviet-Aztec aesthetic in a Party-State system that merges communist imagery with indigenous Mexican symbolism.',
       color: 'from-yellow-600 to-orange-600'
     }
   ];
 
   const stats = [
-    { value: '100+', label: 'Unique Partners' },
-    { value: '50+', label: 'Story Missions' },
-    { value: '7', label: 'Neurodivergent Traits' },
-    { value: '5', label: 'Partner Classes' }
+    { value: '9', label: 'Story Chapters' },
+    { value: '15+', label: 'Major Characters' },
+    { value: '5', label: 'Mexico City Districts' },
+    { value: '100%', label: 'Authentic Representation' }
   ];
 
   return (
@@ -58,39 +58,39 @@ export default function LandingPage() {
             transition={{ duration: 0.5 }}
             className="text-center max-w-4xl mx-auto"
           >
-            {/* Game Logo/Title with neura-tech aesthetic */}
+            {/* Game Logo/Title with Soviet-Aztec aesthetic */}
             <div className="mb-6">
               <h1 className="text-6xl md:text-8xl font-bold mb-2">
-                <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
-                  WHIX
+                <span className="bg-gradient-to-r from-red-400 via-yellow-500 to-red-400 bg-clip-text text-transparent">
+                  ₩HIX
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-400 font-mono">
-                THE DELIVERY DYSTOPIA
+                MÉXICO • RESISTENCIA • COMUNIDAD
               </p>
             </div>
             
             <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
-              In 2045, mega-corp Whix controls the gig economy. You\'re a delivery partner fighting for survival, 
-              building a team of neurodivergent allies with extraordinary abilities. 
-              <span className="text-cyan-400 font-semibold"> Every delivery is a rebellion.</span>
+              En la Ciudad de México, WHIX harvests neural data from neurodivergent delivery partners. 
+              Join Miguel Santos and his community as they resist surveillance capitalism through 
+              <span className="text-red-400 font-semibold"> solidarity and mutual aid.</span>
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <Link href="/dashboard">
-                <Button size="lg" className="group bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+              <Link href="/hub">
+                <Button size="lg" className="group bg-gradient-to-r from-red-600 to-yellow-600 hover:from-red-700 hover:to-yellow-700">
                   <Truck className="mr-2 h-5 w-5" />
-                  Start Delivering
+                  Enter México City
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="border-cyan-600 text-cyan-400 hover:bg-cyan-600/10">
+              <Button size="lg" variant="outline" className="border-red-600 text-red-400 hover:bg-red-600/10">
                 <Shield className="mr-2 h-5 w-5" />
-                Join the Resistance
+                Únete a la Resistencia
               </Button>
             </div>
             
-            {/* Humanity Index Preview */}
+            {/* Neural Surveillance Warning */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -98,7 +98,7 @@ export default function LandingPage() {
               className="inline-block p-4 bg-red-900/20 border border-red-600/50 rounded-lg"
             >
               <p className="text-sm text-red-400 font-mono">
-                ⚠️ HUMANITY INDEX: <span className="font-bold">87%</span> - MAINTAIN YOUR HUMANITY
+                ⚠️ NEURAL SURVEILLANCE ACTIVE - PROTECT YOUR CONSCIOUSNESS
               </p>
             </motion.div>
           </motion.div>
@@ -116,12 +116,12 @@ export default function LandingPage() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                Fight the Algorithm
+              <span className="bg-gradient-to-r from-red-400 to-yellow-400 bg-clip-text text-transparent">
+                Resist Neural Harvesting
               </span>
             </h2>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              In a world where AI optimizes exploitation, your neurodivergent team is the key to breaking free.
+              WHIX targets neurodivergent minds for their pattern recognition abilities. Build community networks to protect consciousness itself.
             </p>
           </motion.div>
 
@@ -180,27 +180,26 @@ export default function LandingPage() {
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="bg-gradient-to-r from-purple-900/20 to-cyan-900/20 rounded-2xl p-8 md:p-12 border border-purple-600/30"
+            className="bg-gradient-to-r from-red-900/20 to-yellow-900/20 rounded-2xl p-8 md:p-12 border border-red-600/30"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">
-              Your Story Begins...
+              La Historia de Miguel Santos
             </h2>
             <div className="space-y-4 text-gray-300">
               <p className="text-lg leading-relaxed">
-                The year is 2045. Whix Corporation has monopolized the gig economy, 
-                taking <span className="text-red-400 font-bold">75% of every tip</span> while 
-                their AI algorithms push workers to their limits.
+                En Polanco District, México, Miguel Santos discovers WHIX's surveillance system 
+                targeting <span className="text-red-400 font-bold">neurodivergent delivery partners</span> for 
+                neural data harvesting and community displacement.
               </p>
               <p className="text-lg leading-relaxed">
-                But you\'re different. You\'ve discovered that neurodivergent individuals possess 
-                abilities that can outsmart the system. <span className="text-cyan-400 font-semibold">
-                Hyperfocus lets you navigate impossible routes. Pattern recognition reveals hidden paths. 
-                Enhanced senses detect danger before it strikes.</span>
+                When his partner Tania Volkov disappears into WHIX's "optimization" program, 
+                Miguel joins <span className="text-yellow-400 font-semibold">Father Santiago, Ricardo "Tech" Morales, 
+                and underground resistance networks</span> fighting algorithmic control.
               </p>
               <p className="text-lg leading-relaxed">
-                Build your team. Complete deliveries. Earn Company Stars to reduce Whix\'s cut. 
-                But remember - <span className="text-red-400 font-bold">keep your Humanity Index above zero</span>, 
-                or lose yourself to the machine.
+                Navigate Mexico City's barrios. Build solidarity networks. Resist Director Chen's 
+                surveillance capitalism. But remember - <span className="text-red-400 font-bold">protecting consciousness 
+                requires community action</span>, not individual heroism.
               </p>
             </div>
           </motion.div>
@@ -218,17 +217,17 @@ export default function LandingPage() {
             className="text-center"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                The Revolution Starts With You
+              <span className="bg-gradient-to-r from-red-400 to-yellow-400 bg-clip-text text-transparent">
+                La Resistencia Comienza Contigo
               </span>
             </h2>
             <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-              Every delivery is an act of resistance. Every partner recruited strikes back at the system.
+              Solidarity networks protect consciousness. Community action resists neural harvesting. ¡Juntos somos más fuertes!
             </p>
-            <Link href="/dashboard">
-              <Button size="lg" className="group bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-700 hover:to-purple-700">
+            <Link href="/hub">
+              <Button size="lg" className="group bg-gradient-to-r from-red-600 to-yellow-600 hover:from-red-700 hover:to-yellow-700">
                 <Zap className="mr-2 h-5 w-5" />
-                Begin Your Resistance
+                Join the Network
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -239,16 +238,16 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-gray-800">
         <div className="container mx-auto text-center text-gray-500">
-          <p className="font-mono text-sm">&copy; 2045 WHIX CORP. ALL TIPS SUBJECT TO PROCESSING FEES.</p>
+          <p className="font-mono text-sm">&copy; WHIX CORP MÉXICO. NEURAL DATA COLLECTION MANDATORY.</p>
           <div className="flex justify-center gap-4 mt-4 text-sm">
-            <Link href="/privacy" className="hover:text-cyan-400 transition-colors">
-              Privacy Policy
+            <Link href="/privacy" className="hover:text-red-400 transition-colors">
+              Surveillance Policy
             </Link>
-            <Link href="/terms" className="hover:text-cyan-400 transition-colors">
-              Terms of Service
+            <Link href="/terms" className="hover:text-red-400 transition-colors">
+              Neural Terms
             </Link>
-            <Link href="/support" className="hover:text-cyan-400 transition-colors">
-              Support
+            <Link href="/support" className="hover:text-red-400 transition-colors">
+              Community Support
             </Link>
           </div>
         </div>

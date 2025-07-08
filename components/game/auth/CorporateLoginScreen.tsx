@@ -204,7 +204,7 @@ function WelcomeScreen({ onContinue }: { onContinue: () => void }) {
 }
 
 // Login Form Component
-function LoginForm({
+export function LoginForm({
   credentials,
   setCredentials,
   showPassword,
