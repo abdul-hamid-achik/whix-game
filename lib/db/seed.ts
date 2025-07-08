@@ -1,12 +1,12 @@
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
-import { seed, reset } from 'drizzle-seed';
-import * as schema from './schema';
-import { PARTNER_CLASSES } from '../game/classes';
-import { NEURODIVERGENT_TRAITS } from '../game/traits';
+import { seed as _seed, reset as _reset } from 'drizzle-seed';
+import * as _schema from './schema';
+import { PARTNER_CLASSES as _PARTNER_CLASSES } from '../game/classes';
+import { NEURODIVERGENT_TRAITS as _NEURODIVERGENT_TRAITS } from '../game/traits';
 import { config } from 'dotenv';
 import { imageGenerator } from '../ai/image-generator';
-import { getImageGenerationService } from '../services/imageGenerationService';
+import { getImageGenerationService as _getImageGenerationService } from '../services/imageGenerationService';
 import { 
   loadAllCharacters, 
   loadAllChapters, 
@@ -15,8 +15,8 @@ import {
   loadAllMaps, 
   loadAllTraits 
 } from '../cms/content-loader';
-import { promises as fs } from 'fs';
-import { join } from 'path';
+import { promises as _fs } from 'fs';
+import { join as _join } from 'path';
 
 // Load environment variables
 config({ path: '.env.local' });
@@ -26,7 +26,7 @@ if (!process.env.DATABASE_URL) {
 }
 
 const sql = neon(process.env.DATABASE_URL);
-const db = drizzle(sql);
+const _db = drizzle(sql);
 
 // Character asset generation for seeded partners
 async function generateCharacterAssets(forceRegenerate: boolean = false) {
@@ -123,7 +123,7 @@ async function generateCharacterAssets(forceRegenerate: boolean = false) {
 // };
 
 // Predefined data for seeding
-const STORY_CHAPTERS = [
+const _STORY_CHAPTERS = [
   {
     id: 'chapter-1',
     title: 'Welcome to the Gig',
@@ -198,7 +198,7 @@ const STORY_CHAPTERS = [
   }
 ];
 
-const SAMPLE_CHARACTERS = [
+const _SAMPLE_CHARACTERS = [
   {
     name: 'Tania Volkov',
     description: 'A seasoned courier who discovered her hyperfocus gives her an edge in complex delivery routes.',
@@ -335,7 +335,7 @@ const SAMPLE_CHARACTERS = [
   }
 ];
 
-const SAMPLE_LEVELS = [
+const _SAMPLE_LEVELS = [
   {
     id: 'delivery-district-1',
     name: 'Neon Heights',
@@ -422,7 +422,7 @@ const SAMPLE_LEVELS = [
   }
 ];
 
-const SAMPLE_MAPS = [
+const _SAMPLE_MAPS = [
   {
     id: 'neo-singapore-central',
     name: 'Neo-Singapore Central',
@@ -473,7 +473,7 @@ const SAMPLE_MAPS = [
   }
 ];
 
-const SPECIAL_ENEMIES = [
+const _SPECIAL_ENEMIES = [
   {
     id: 'the_watcher',
     name: 'Marcus Dietrich - The Watcher',
@@ -554,7 +554,7 @@ const SPECIAL_ENEMIES = [
   }
 ];
 
-const STALKER_SAFE_ZONES = [
+const _STALKER_SAFE_ZONES = [
   {
     id: 'crowded_market_15_8',
     name: 'Neon Market Hub',
@@ -581,7 +581,7 @@ const STALKER_SAFE_ZONES = [
   }
 ];
 
-const CONFLICT_RESOLUTION_SCENARIOS = [
+const _CONFLICT_RESOLUTION_SCENARIOS = [
   {
     id: 'watcher_stalking_scenario',
     title: 'The Watcher\'s Pursuit',
@@ -620,7 +620,7 @@ const CONFLICT_RESOLUTION_SCENARIOS = [
 ];
 
 // Check if assets exist at predictable URLs
-async function checkAssetsExist(portraitUrl: string, spriteUrl: string): Promise<boolean> {
+async function checkAssetsExist(_portraitUrl: string, _spriteUrl: string): Promise<boolean> {
   // In a real implementation, you would check if the URLs return valid images
   // For now, we'll just return false to simulate assets not existing
   return false;

@@ -4,7 +4,7 @@ import React, { ReactNode } from 'react';
 import { useDeviceInfo } from '@/lib/hooks/useMediaQuery';
 import { GameState, useUIStore } from '@/lib/stores/uiStore';
 import { cn } from '@/lib/utils';
-import { Menu, X } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
@@ -19,7 +19,7 @@ export function ResponsiveGameLayout({
   sidebar, 
   header 
 }: ResponsiveGameLayoutProps) {
-  const { isMobile, isTablet, isTouch } = useDeviceInfo();
+  const { isMobile, isTablet } = useDeviceInfo();
   const { currentState } = useUIStore();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 

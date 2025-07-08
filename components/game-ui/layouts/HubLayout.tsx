@@ -34,7 +34,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
   const { currentTips: tips, level, experience, totalTipsEarned, missionsCompleted } = useGameStore();
   const { completedChapters, storyFlags } = useStoryStore();
   const { showPanel } = useUIStore();
-  const { isMobile, isTablet } = useDeviceInfo();
+  const { isMobile, isTablet: _isTablet } = useDeviceInfo();
   
   // Check for new character unlocks
   const gameState = {

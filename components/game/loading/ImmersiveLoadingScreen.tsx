@@ -25,7 +25,7 @@ export function ImmersiveLoadingScreen({
   
   // Load messages from CMS
   const messages = useLoadingMessages(variant);
-  const { loading: loadingContent } = useUIContent();
+  const { loading: _loadingContent } = useUIContent();
 
   React.useEffect(() => {
     if (!isLoading) return;
@@ -284,7 +284,7 @@ function CorporateLoadingSequence({ progress }: { progress: number }) {
 }
 
 // Helper function to get loading messages
-function getLoadingMessages(variant: string): string[] {
+function _getLoadingMessages(variant: string): string[] {
   switch (variant) {
     case 'mission':
       return [

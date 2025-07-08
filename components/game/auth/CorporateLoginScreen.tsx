@@ -26,7 +26,7 @@ interface CorporateLoginScreenProps {
 
 export function CorporateLoginScreen({ 
   onLogin, 
-  onSkip,
+  onSkip: _onSkip,
   isLoading = false,
   error,
   className 
@@ -40,7 +40,7 @@ export function CorporateLoginScreen({
   const [currentMessage, setCurrentMessage] = React.useState(0);
   
   // Load content from CMS
-  const { branding, messages, isLoading: contentLoading } = useLoginContent();
+  const { branding: _branding, messages, isLoading: _contentLoading } = useLoginContent();
   const securityMessages = messages.auth?.messages || [
     "Verifying employee credentials...",
     "Checking access permissions...",
