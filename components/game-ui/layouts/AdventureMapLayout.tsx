@@ -6,6 +6,7 @@ import { useUIStore, GameState } from '@/lib/stores/uiStore';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { NeuraPanel, NeuraButton } from '@/components/neura';
+import { getIcon } from '@/lib/config/delivery-mode-config';
 import { ArrowLeft, Map, Target, Clock, Users, AlertTriangle, Play, MapPin } from 'lucide-react';
 import { generateChapterMap, ChapterMap, MapNode, NodeType, NodeStatus, moveToNode } from '@/lib/game/chapterMap';
 
@@ -14,9 +15,10 @@ interface AdventureMapLayoutProps {
 }
 
 export function AdventureMapLayout({ children: _children }: AdventureMapLayoutProps) {
-  const { setState } = useUIStore();
+  const { setState, settings } = useUIStore();
   const { currentChapter, level } = useGameStore();
   const { partners } = usePartnerStore();
+  const appMode = settings.appMode || 'game';
   
   const [chapterMap, setChapterMap] = useState<ChapterMap | null>(null);
   const [selectedNode, setSelectedNode] = useState<MapNode | null>(null);
@@ -101,19 +103,38 @@ export function AdventureMapLayout({ children: _children }: AdventureMapLayoutPr
   };
 
   const getNodeIcon = (type: NodeType) => {
-    switch (type) {
-      case NodeType.START: return '🏠';
-      case NodeType.END: return '🚩';
-      case NodeType.DELIVERY: return '📦';
-      case NodeType.COMBAT: return '⚔️';
-      case NodeType.PUZZLE: return '🧩';
-      case NodeType.SOCIAL: return '💬';
-      case NodeType.REST: return '🛡️';
-      case NodeType.SHOP: return '🛒';
-      case NodeType.STORY: return '📖';
-      case NodeType.BOSS: return '👹';
-      case NodeType.BLOCKED: return '🚫';
-      default: return '❓';
+    if (appMode === 'delivery') {
+      // Delivery mode icons
+      switch (type) {
+        case NodeType.START: return '🏠'; // Home/Hub
+        case NodeType.END: return '🏁'; // Final destination
+        case NodeType.DELIVERY: return '📦'; // Package pickup/dropoff
+        case NodeType.COMBAT: return getIcon('COMBAT', appMode); // Traffic/obstacle
+        case NodeType.PUZZLE: return getIcon('PUZZLE', appMode); // Navigation challenge
+        case NodeType.SOCIAL: return getIcon('SOCIAL', appMode); // Customer interaction
+        case NodeType.REST: return getIcon('REST', appMode); // Break time
+        case NodeType.SHOP: return getIcon('SHOP', appMode); // Pickup location
+        case NodeType.STORY: return getIcon('STORY', appMode); // Special order
+        case NodeType.BOSS: return getIcon('BOSS', appMode); // VIP delivery
+        case NodeType.BLOCKED: return '🚫'; // Road closed
+        default: return '❓';
+      }
+    } else {
+      // Game mode icons (original)
+      switch (type) {
+        case NodeType.START: return '🏠';
+        case NodeType.END: return '🚩';
+        case NodeType.DELIVERY: return '📦';
+        case NodeType.COMBAT: return '⚔️';
+        case NodeType.PUZZLE: return '🧩';
+        case NodeType.SOCIAL: return '💬';
+        case NodeType.REST: return '🛡️';
+        case NodeType.SHOP: return '🛒';
+        case NodeType.STORY: return '📖';
+        case NodeType.BOSS: return '👹';
+        case NodeType.BLOCKED: return '🚫';
+        default: return '❓';
+      }
     }
   };
 
@@ -174,7 +195,7 @@ export function AdventureMapLayout({ children: _children }: AdventureMapLayoutPr
             </NeuraButton>
             <div>
               <h1 className="text-xl font-bold text-purple-400 font-mono">
-                ADVENTURE MAP
+                {appMode === 'delivery' ? 'DELIVERY ROUTE' : 'ADVENTURE MAP'}
               </h1>
               <p className="text-gray-400 text-sm">
                 {chapterMap.title}

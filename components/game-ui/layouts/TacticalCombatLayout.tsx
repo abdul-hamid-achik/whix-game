@@ -2,6 +2,7 @@
 
 import { ReactNode, useState } from 'react';
 import { useUIStore, GameState } from '@/lib/stores/uiStore';
+import { getTerm, getIcon } from '@/lib/config/delivery-mode-config';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { NeuraButton } from '@/components/neura';
@@ -15,9 +16,10 @@ interface TacticalCombatLayoutProps {
 }
 
 export function TacticalCombatLayout({ children: _children }: TacticalCombatLayoutProps) {
-  const { setState, contextData } = useUIStore();
+  const { setState, contextData, settings } = useUIStore();
   const { partners } = usePartnerStore();
   const { currentTips } = useGameStore();
+  const appMode = settings.appMode || 'game';
 
   const activePartners = Object.values(partners).slice(0, 3); // Take first 3 partners
   const encounterData = contextData?.nodeData;
@@ -42,10 +44,10 @@ export function TacticalCombatLayout({ children: _children }: TacticalCombatLayo
       maxEnergy: 100,
       armor: 10
     })),
-    // Example enemies
+    // Example enemies/obstacles
     {
       id: 'enemy1',
-      name: 'Corporate Drone',
+      name: appMode === 'delivery' ? 'Traffic Jam' : 'Corporate Drone',
       type: 'enemy' as const,
       position: { x: 6, y: 1 },
       health: 80,
@@ -56,7 +58,7 @@ export function TacticalCombatLayout({ children: _children }: TacticalCombatLayo
     },
     {
       id: 'enemy2',
-      name: 'Security Bot',
+      name: appMode === 'delivery' ? 'Road Construction' : 'Security Bot',
       type: 'enemy' as const,
       position: { x: 6, y: 3 },
       health: 120,
@@ -157,7 +159,10 @@ export function TacticalCombatLayout({ children: _children }: TacticalCombatLayo
                 'bg-yellow-500'
               }`}></div>
               <h1 className="text-lg font-bold text-red-400 font-mono">
-                {encounterType === 'boss' ? 'BOSS ENCOUNTER' : 'TACTICAL COMBAT'}
+                {appMode === 'delivery' ? 
+                  (encounterType === 'boss' ? 'VIP DELIVERY' : 'DELIVERY CHALLENGE') :
+                  (encounterType === 'boss' ? 'BOSS ENCOUNTER' : 'TACTICAL COMBAT')
+                }
               </h1>
             </div>
             <div className="text-gray-400 text-sm">

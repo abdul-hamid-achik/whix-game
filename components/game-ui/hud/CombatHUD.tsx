@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Shield, Zap, Sword, Target, SkipForward, Pause, Play } from 'lucide-react';
 import { useState } from 'react';
 import { NeuraButton } from '@/components/neura';
+import { useUIStore } from '@/lib/stores/uiStore';
+import { getTerm } from '@/lib/config/delivery-mode-config';
 
 interface CombatHUDProps {
   currentTurn: number;
@@ -31,8 +33,15 @@ export function CombatHUD({
   isPaused = false
 }: CombatHUDProps) {
   const [selectedAction, setSelectedAction] = useState<string | null>(null);
+  const { settings } = useUIStore();
+  const appMode = settings.appMode || 'game';
   
-  const actions = [
+  const actions = appMode === 'delivery' ? [
+    { id: 'move', name: 'Navigate', icon: Target, cost: 1 },
+    { id: 'attack', name: 'Bypass', icon: Sword, cost: 2 },
+    { id: 'defend', name: 'Wait', icon: Shield, cost: 1 },
+    { id: 'special', name: 'Rush', icon: Zap, cost: 3 }
+  ] : [
     { id: 'move', name: 'Move', icon: Target, cost: 1 },
     { id: 'attack', name: 'Attack', icon: Sword, cost: 2 },
     { id: 'defend', name: 'Defend', icon: Shield, cost: 1 },
@@ -54,12 +63,12 @@ export function CombatHUD({
         <div className="bg-gray-900/90 backdrop-blur-sm border border-red-500/30 rounded-lg px-6 py-3">
           <div className="flex items-center gap-8">
             <div className="text-center">
-              <p className="text-red-400 text-xs font-medium">TURN</p>
+              <p className="text-red-400 text-xs font-medium">{appMode === 'delivery' ? 'STAGE' : 'TURN'}</p>
               <p className="text-white text-2xl font-bold font-mono">{currentTurn}</p>
             </div>
             <div className="w-px h-10 bg-red-500/30" />
             <div className="text-center">
-              <p className="text-red-400 text-xs font-medium">ENEMIES</p>
+              <p className="text-red-400 text-xs font-medium">{appMode === 'delivery' ? 'OBSTACLES' : 'ENEMIES'}</p>
               <p className="text-white text-2xl font-bold font-mono">{enemyCount}</p>
             </div>
           </div>
@@ -84,7 +93,7 @@ export function CombatHUD({
                 <div className="flex items-center justify-between text-xs mb-1">
                   <span className="text-gray-400 flex items-center gap-1">
                     <Heart className="w-3 h-3" />
-                    Health
+                    {getTerm('HEALTH', appMode)}
                   </span>
                   <span className="text-white font-mono">
                     {activeUnit.health}/{activeUnit.maxHealth}
@@ -105,7 +114,7 @@ export function CombatHUD({
                 <div className="flex items-center justify-between text-xs mb-1">
                   <span className="text-gray-400 flex items-center gap-1">
                     <Zap className="w-3 h-3" />
-                    Energy
+                    {getTerm('ENERGY', appMode)}
                   </span>
                   <span className="text-white font-mono">
                     {activeUnit.energy}/{activeUnit.maxEnergy}
@@ -125,7 +134,7 @@ export function CombatHUD({
               {activeUnit.armor > 0 && (
                 <div className="flex items-center justify-center gap-2 text-sm">
                   <Shield className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-300">{activeUnit.armor} Armor</span>
+                  <span className="text-gray-300">{activeUnit.armor} {appMode === 'delivery' ? 'Protection' : 'Armor'}</span>
                 </div>
               )}
             </div>
@@ -172,7 +181,7 @@ export function CombatHUD({
                 className="flex items-center gap-2"
               >
                 <SkipForward className="w-4 h-4" />
-                End Turn
+                {appMode === 'delivery' ? 'Next Stage' : 'End Turn'}
               </NeuraButton>
             </div>
           </div>

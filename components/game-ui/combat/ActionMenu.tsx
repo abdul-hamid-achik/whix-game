@@ -17,6 +17,8 @@ import {
   Brain
 } from 'lucide-react';
 import { NeuraButton, NeuraPanel } from '@/components/neura';
+import { useUIStore } from '@/lib/stores/uiStore';
+import { getTerm } from '@/lib/config/delivery-mode-config';
 
 interface Action {
   id: string;
@@ -52,6 +54,8 @@ export function ActionMenu({
   isWaitingForTarget = false
 }: ActionMenuProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>('basic');
+  const { settings } = useUIStore();
+  const appMode = settings.appMode || 'game';
 
   const categorizedActions = actions.reduce((acc, action) => {
     if (!acc[action.category]) acc[action.category] = [];
@@ -66,7 +70,12 @@ export function ActionMenu({
     special: Brain
   };
 
-  const categoryLabels = {
+  const categoryLabels = appMode === 'delivery' ? {
+    basic: 'Navigation',
+    skill: 'Driver Skills',
+    item: 'Equipment',
+    special: 'Emergency'
+  } : {
     basic: 'Basic Actions',
     skill: 'Skills',
     item: 'Items',
@@ -80,7 +89,7 @@ export function ActionMenu({
           {/* Energy Bar */}
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-400">Energy</span>
+              <span className="text-sm text-gray-400">{getTerm('ENERGY', appMode)}</span>
               <span className="text-sm text-cyan-400 font-mono">
                 {currentEnergy}/{maxEnergy}
               </span>
@@ -223,7 +232,7 @@ export function ActionMenu({
               onClick={onEndTurn}
             >
               <Flag className="w-4 h-4 mr-2" />
-              End Turn
+              {appMode === 'delivery' ? 'Continue Route' : 'End Turn'}
             </NeuraButton>
           </div>
         </div>
@@ -249,7 +258,57 @@ export function ActionMenu({
 }
 
 // Example actions for testing
-export const exampleActions: Action[] = [
+export const getExampleActions = (appMode: 'game' | 'delivery' = 'game'): Action[] => appMode === 'delivery' ? [
+  {
+    id: 'move',
+    name: 'Navigate',
+    icon: Move,
+    description: 'Move to next location',
+    energyCost: 1,
+    category: 'basic'
+  },
+  {
+    id: 'attack',
+    name: 'Bypass Obstacle',
+    icon: Swords,
+    description: 'Clear traffic or construction',
+    energyCost: 2,
+    category: 'basic'
+  },
+  {
+    id: 'defend',
+    name: 'Safe Stop',
+    icon: Shield,
+    description: 'Wait safely for 1 turn',
+    energyCost: 1,
+    category: 'basic'
+  },
+  {
+    id: 'neural-surge',
+    name: 'Pattern Analysis',
+    icon: Brain,
+    description: 'Find optimal route through traffic',
+    energyCost: 4,
+    cooldown: 3,
+    category: 'skill'
+  },
+  {
+    id: 'heal',
+    name: 'Energy Drink',
+    icon: Heart,
+    description: 'Restore 30 stamina',
+    energyCost: 3,
+    category: 'item'
+  },
+  {
+    id: 'scan',
+    name: 'Traffic Scanner',
+    icon: Eye,
+    description: 'Reveal alternate routes',
+    energyCost: 2,
+    category: 'skill'
+  }
+] : [
   {
     id: 'move',
     name: 'Move',
@@ -300,3 +359,6 @@ export const exampleActions: Action[] = [
     category: 'skill'
   }
 ];
+
+// For backwards compatibility
+export const exampleActions = getExampleActions();
