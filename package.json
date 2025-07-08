@@ -61,6 +61,7 @@
     "react-dom": "^19.0.0",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
+    "robot3": "^1.1.1",
     "sharp": "^0.34.2",
     "stripe": "^18.3.0",
     "tailwind-merge": "^3.3.1",

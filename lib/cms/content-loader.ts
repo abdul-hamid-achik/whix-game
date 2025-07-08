@@ -14,6 +14,7 @@ import {
   TraitMetadata,
   DialogueMetadata
 } from './content-types';
+import { Encounter, EncounterSchema } from '@/lib/schemas/encounter-schemas';
 
 // Base content directory
 const CONTENT_DIR = path.join(process.cwd(), 'content');
@@ -28,6 +29,7 @@ const CONTENT_DIRECTORIES = {
   trait: 'traits',
   dialogue: 'dialogues',
   'ui-content': 'ui',
+  encounter: 'encounters',
 } as const;
 
 export interface ContentFile<T extends ContentMetadata = ContentMetadata> {

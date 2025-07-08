@@ -63,8 +63,20 @@ export default function StoryMapPage() {
     // Handle different node types
     switch (node.type) {
       case NodeType.DELIVERY:
-        // Start delivery mission
-        router.push('/missions');
+        // Start delivery navigation based on node district
+        const districtMapping: Record<string, string> = {
+          'cathedral': 'cathedral',
+          'industrial': 'industrial', 
+          'polanco': 'polanco',
+          'labyrinth': 'labyrinth',
+          'neon': 'polanco', // Default to polanco for neon heights
+        };
+        
+        // Get district from node metadata or default to cathedral
+        const nodeDistrict = node.metadata?.district || 'cathedral';
+        const district = districtMapping[nodeDistrict] || 'cathedral';
+        
+        router.push(`/combat?grid=true&district=${district}&story=true&nodeId=${nodeId}`);
         break;
         
       case NodeType.COMBAT:
