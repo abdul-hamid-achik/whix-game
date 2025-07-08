@@ -131,6 +131,9 @@ export function TransitionWrapper(props: TransitionWrapperProps) {
           }}
           className={className}
           style={isTransitioning ? transitionStyles : {}}
+          onAnimationComplete={() => {
+            console.log('Animation complete for state:', gameState);
+          }}
         >
           {children}
         </motion.div>

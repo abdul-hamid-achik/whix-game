@@ -101,7 +101,7 @@ export class ContentPartnerAdapter {
       isContentBased: true,
       unlockCondition: metadata.unlockCondition,
       voiceStyle: metadata.voiceStyle,
-      relationships: metadata.relationships || {},
+      relationships: this.normalizeRelationships(metadata.relationships || {}),
       backstory: this.extractBackstory(content)
     };
   }
@@ -209,6 +209,25 @@ export class ContentPartnerAdapter {
     return dislikes.slice(0, 3);
   }
   
+  /**
+   * Normalize relationships to ensure all values are numbers
+   */
+  private static normalizeRelationships(relationships: Record<string, string | number>): Record<string, number> {
+    const normalized: Record<string, number> = {};
+    
+    for (const [key, value] of Object.entries(relationships)) {
+      if (typeof value === 'string') {
+        // Try to parse string as number, default to 50 if invalid
+        const parsed = parseInt(value, 10);
+        normalized[key] = isNaN(parsed) ? 50 : parsed;
+      } else {
+        normalized[key] = value;
+      }
+    }
+    
+    return normalized;
+  }
+
   /**
    * Extract backstory from content
    */

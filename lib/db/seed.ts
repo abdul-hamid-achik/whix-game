@@ -21,6 +21,11 @@ import { join as _join } from 'path';
 // Load environment variables
 config({ path: '.env.local' });
 
+// Helper function for consistent error message formatting
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unknown error';
+}
+
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is not set');
 }
@@ -54,7 +59,7 @@ async function generateCharacterAssets(forceRegenerate: boolean = false) {
     
     console.log(`\n📝 ${character.metadata.name} (${character.metadata.class}):`);
     console.log(`   Primary Traits: ${traits.join(', ')}`);
-    console.log(`   Level: ${character.metadata.level || 1}, Rarity: ${character.metadata.rarity || 'common'}`);
+    console.log(`   Level: ${character.metadata.stats?.level || 1}, Class: ${character.metadata.class}`);
     console.log(`   Portrait Prompt: ${characterPrompt.substring(0, 100)}...`);
     
     // Generate predictable asset URLs based on content
@@ -83,7 +88,7 @@ async function generateCharacterAssets(forceRegenerate: boolean = false) {
         console.log('   🎨 Generating portrait with OpenAI...');
         const portraitResult = await imageGenerator.generateCharacterPortrait(
           character.metadata.name,
-          character.metadata.class,
+          character.metadata.class || 'courier',
           traits
         );
         console.log(`   ✅ Portrait generated: ${portraitResult.url.substring(0, 50)}...`);
@@ -94,7 +99,7 @@ async function generateCharacterAssets(forceRegenerate: boolean = false) {
         // 3. Add the URL to a character_assets table
         
       } catch (error) {
-        console.log(`   ❌ Failed to generate portrait: ${error.message}`);
+        console.log(`   ❌ Failed to generate portrait: ${getErrorMessage(error)}`);
       }
       
       // Add delay to respect API rate limits
@@ -666,7 +671,7 @@ async function generateLevelAssets(levels: any[], forceRegenerate: boolean = fal
         console.log(`   ✅ Background generated for ${level.metadata.title}`);
         
       } catch (error) {
-        console.log(`   ❌ Failed to generate background: ${error.message}`);
+        console.log(`   ❌ Failed to generate background: ${getErrorMessage(error)}`);
       }
       
       // Add delay to respect API rate limits
@@ -723,7 +728,7 @@ async function generateItemAssets(items: any[], forceRegenerate: boolean = false
         console.log(`   ✅ Icon generated for ${item.metadata.title}`);
         
       } catch (error) {
-        console.log(`   ❌ Failed to generate icon: ${error.message}`);
+        console.log(`   ❌ Failed to generate icon: ${getErrorMessage(error)}`);
       }
       
       // Add delay to respect API rate limits

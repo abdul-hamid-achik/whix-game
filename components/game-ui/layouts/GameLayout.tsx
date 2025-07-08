@@ -39,6 +39,18 @@ export function GameLayout({ children }: GameLayoutProps) {
   const { } = useDeviceInfo();
 
   const renderStateLayout = () => {
+    console.log('Current game state:', currentState);
+    console.log('Context data:', contextData);
+    console.log('GameState enum values:', {
+      COURIER_HUB: GameState.COURIER_HUB,
+      MISSION_BRIEFING: GameState.MISSION_BRIEFING,
+      PARTNER_SELECTION: GameState.PARTNER_SELECTION,
+      ADVENTURE_MAP: GameState.ADVENTURE_MAP,
+      TACTICAL_COMBAT: GameState.TACTICAL_COMBAT,
+      EVENT_RESOLUTION: GameState.EVENT_RESOLUTION,
+      AFTER_ACTION: GameState.AFTER_ACTION
+    });
+    
     switch (currentState) {
       case GameState.COURIER_HUB:
         return <HubLayout>{children}</HubLayout>;
@@ -49,6 +61,7 @@ export function GameLayout({ children }: GameLayoutProps) {
       case GameState.ADVENTURE_MAP:
         return <AdventureMapLayout>{children}</AdventureMapLayout>;
       case GameState.TACTICAL_COMBAT:
+        console.log('Rendering TacticalCombatLayout');
         return <TacticalCombatLayout>{children}</TacticalCombatLayout>;
       case GameState.EVENT_RESOLUTION:
         return <EventResolutionLayout>{children}</EventResolutionLayout>;

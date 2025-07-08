@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { VisualEffects, CRTEffect, TerminalText, MatrixRain } from '@/components/game/effects/VisualEffects';
 import { useUIStore } from '@/lib/stores/uiStore';
@@ -18,6 +18,10 @@ describe('VisualEffects', () => {
         effectsIntensity: 'low'
       }
     } as any);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   it('should render visual effects when enabled', () => {
@@ -179,18 +183,9 @@ describe('MatrixRain', () => {
   });
 
   it('should initialize canvas context', () => {
-    const mockGetContext = vi.fn().mockReturnValue({
-      fillStyle: '',
-      fillRect: vi.fn(),
-      font: '',
-      fillText: vi.fn()
-    });
-
-    HTMLCanvasElement.prototype.getContext = mockGetContext;
-
     render(<MatrixRain />);
     
-    expect(mockGetContext).toHaveBeenCalledWith('2d');
+    expect(HTMLCanvasElement.prototype.getContext).toHaveBeenCalledWith('2d');
   });
 });
 

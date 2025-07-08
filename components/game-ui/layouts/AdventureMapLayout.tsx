@@ -33,25 +33,41 @@ export function AdventureMapLayout({ children: _children }: AdventureMapLayoutPr
   const handleNodeClick = (node: MapNode) => {
     if (node.status === NodeStatus.AVAILABLE || node.status === NodeStatus.CURRENT) {
       setSelectedNode(node);
+      // Automatically enter the node if it's available or current
+      if (node.status === NodeStatus.AVAILABLE || node.status === NodeStatus.CURRENT) {
+        handleNodeEnter(node);
+      }
     }
   };
 
   const handleNodeEnter = (node: MapNode) => {
     if (!chapterMap || node.status === NodeStatus.LOCKED) return;
     
+    console.log('Entering node:', node);
+    
     // Update map and move to tactical encounter
-    const updatedMap = moveToNode(chapterMap, node.id);
+    // Create a deep copy to ensure React detects the state change
+    const mapCopy = {
+      ...chapterMap,
+      nodes: new Map(chapterMap.nodes)
+    };
+    const updatedMap = moveToNode(mapCopy, node.id);
     setChapterMap(updatedMap);
     
     // Transition to encounter based on node type
     switch (node.type) {
-      case NodeType.COMBAT:
-        setState(GameState.TACTICAL_COMBAT, {
-          encounterType: 'combat',
-          nodeData: node,
-          mapData: updatedMap
-        });
-        break;
+        case NodeType.COMBAT:
+          console.log('Transitioning to TACTICAL_COMBAT with data:', {
+            encounterType: 'combat',
+            nodeData: node,
+            mapData: updatedMap
+          });
+          setState(GameState.TACTICAL_COMBAT, {
+            encounterType: 'combat',
+            nodeData: node,
+            mapData: updatedMap
+          });
+          break;
       case NodeType.STORY:
         setState(GameState.EVENT_RESOLUTION, {
           encounterType: 'story',
@@ -136,6 +152,25 @@ export function AdventureMapLayout({ children: _children }: AdventureMapLayoutPr
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Briefing
+            </NeuraButton>
+            {/* DEBUG: Force combat */}
+            <NeuraButton
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                console.log('DEBUG: Forcing combat state');
+                setState(GameState.TACTICAL_COMBAT, {
+                  encounterType: 'combat',
+                  nodeData: {
+                    id: 'debug_node',
+                    type: 'combat',
+                    title: 'Debug Combat',
+                    description: 'Debug combat encounter'
+                  }
+                });
+              }}
+            >
+              DEBUG: Force Combat
             </NeuraButton>
             <div>
               <h1 className="text-xl font-bold text-purple-400 font-mono">

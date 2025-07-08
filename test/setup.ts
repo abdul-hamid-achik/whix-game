@@ -2,6 +2,38 @@ import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 
+// Fix for the ontouchstart delete error in Vitest
+// This is a known issue with jsdom and touch events
+if (typeof window !== 'undefined') {
+  // Make ontouchstart configurable so it can be deleted
+  const descriptor = Object.getOwnPropertyDescriptor(window, 'ontouchstart');
+  if (descriptor && !descriptor.configurable) {
+    Object.defineProperty(window, 'ontouchstart', {
+      value: descriptor.value,
+      writable: true,
+      configurable: true
+    });
+  }
+}
+
+// Mock HTMLCanvasElement globally to fix canvas-related test errors
+const mockContext = {
+  fillStyle: '',
+  fillRect: vi.fn(),
+  font: '',
+  fillText: vi.fn(),
+  clearRect: vi.fn(),
+  globalAlpha: 1,
+  canvas: {
+    width: 800,
+    height: 600
+  }
+};
+
+if (typeof HTMLCanvasElement !== 'undefined') {
+  HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(mockContext);
+}
+
 // Cleanup after each test
 afterEach(() => {
   cleanup();
