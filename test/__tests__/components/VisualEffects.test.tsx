@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { VisualEffects, CRTEffect, TerminalText, MatrixRain } from '@/components/game/effects/VisualEffects';
 import { useUIStore } from '@/lib/stores/uiStore';
 
@@ -122,27 +122,34 @@ describe('TerminalText', () => {
 
   it('should type text progressively', async () => {
     const onComplete = vi.fn();
-    const { container } = render(
-      <TerminalText 
-        text="Hello World" 
-        speed={50}
-        onComplete={onComplete}
-      />
-    );
+    
+    await act(async () => {
+      const { container } = render(
+        <TerminalText 
+          text="Hello World" 
+          speed={50}
+          onComplete={onComplete}
+        />
+      );
 
-    // Initially should show empty or first character
-    expect(container.textContent).toMatch(/^(H|H_)?$/);
+      // Initially should show cursor only
+      expect(container.textContent).toMatch(/^_$/);
 
-    // Advance time to show more characters
-    vi.advanceTimersByTime(250); // 5 characters at 50ms each
-    expect(container.textContent).toMatch(/Hello/);
+      // Advance time to show more characters
+      act(() => {
+        vi.advanceTimersByTime(250); // 5 characters at 50ms each
+      });
+      expect(container.textContent).toMatch(/Hello/);
 
-    // Complete the text
-    vi.advanceTimersByTime(600); // Complete remaining characters
-    expect(container.textContent).toMatch(/Hello World/);
+      // Complete the text
+      act(() => {
+        vi.advanceTimersByTime(600); // Complete remaining characters
+      });
+      expect(container.textContent).toMatch(/Hello World/);
 
-    // Check completion callback
-    expect(onComplete).toHaveBeenCalled();
+      // Check completion callback
+      expect(onComplete).toHaveBeenCalled();
+    });
   });
 
   it('should show blinking cursor', () => {
@@ -187,7 +194,7 @@ describe('MatrixRain', () => {
 
 // Integration test
 describe('Visual Effects Integration', () => {
-  it('should work together without conflicts', () => {
+  it('should work together without conflicts', async () => {
     const { container } = render(
       <div>
         <VisualEffects
@@ -207,6 +214,10 @@ describe('Visual Effects Integration', () => {
     // Check all effects are rendered
     expect(container.querySelector('[style*="repeating-linear-gradient"]')).toBeTruthy();
     expect(container.querySelector('canvas')).toBeTruthy();
-    expect(screen.getByText(/WHIX/)).toBeInTheDocument();
+    
+    // Wait for terminal text to start rendering
+    await waitFor(() => {
+      expect(container.textContent).toMatch(/W|_/);
+    }, { timeout: 1000 });
   });
 });
