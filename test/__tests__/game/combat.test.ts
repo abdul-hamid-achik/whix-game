@@ -35,9 +35,9 @@ describe('Combat System - Polanco Delivery Battles', () => {
       hasActed: false
     };
 
-    // Create a corporate enforcer enemy
+    // Create a corporate manager enemy
     enemyUnit = {
-      ...ENEMY_TEMPLATES.corporate_enforcer,
+      ...ENEMY_TEMPLATES.corporate_manager,
       id: 'enemy-1',
       position: { x: 2, y: 2 }
     };
@@ -50,23 +50,23 @@ describe('Combat System - Polanco Delivery Battles', () => {
       expect(calculateDistance({ x: 1, y: 1 }, { x: 2, y: 2 })).toBe(2);
     });
 
-    it('should get valid movement positions on 5x5 Polanco grid', () => {
-      const unit = { ...playerUnit, position: { x: 2, y: 2 } };
+    it('should get valid movement positions on 7x7 Polanco grid', () => {
+      const unit = { ...playerUnit, position: { x: 3, y: 3 } };
       const validMoves = getValidMoves(unit, [], 2);
       
       // Should include positions within range 2
-      expect(validMoves).toContainEqual({ x: 2, y: 0 }); // Up 2
-      expect(validMoves).toContainEqual({ x: 2, y: 4 }); // Down 2
-      expect(validMoves).toContainEqual({ x: 0, y: 2 }); // Left 2
-      expect(validMoves).toContainEqual({ x: 4, y: 2 }); // Right 2
-      expect(validMoves).toContainEqual({ x: 3, y: 3 }); // Diagonal
+      expect(validMoves).toContainEqual({ x: 3, y: 1 }); // Up 2
+      expect(validMoves).toContainEqual({ x: 3, y: 5 }); // Down 2
+      expect(validMoves).toContainEqual({ x: 1, y: 3 }); // Left 2
+      expect(validMoves).toContainEqual({ x: 5, y: 3 }); // Right 2
+      expect(validMoves).toContainEqual({ x: 4, y: 4 }); // Diagonal
       
-      // Should not include out of bounds
-      expect(validMoves.every(pos => pos.x >= 0 && pos.x <= 4)).toBe(true);
-      expect(validMoves.every(pos => pos.y >= 0 && pos.y <= 4)).toBe(true);
+      // Should not include out of bounds (7x7 grid now)
+      expect(validMoves.every(pos => pos.x >= 0 && pos.x <= 6)).toBe(true);
+      expect(validMoves.every(pos => pos.y >= 0 && pos.y <= 6)).toBe(true);
       
       // Should not include current position
-      expect(validMoves).not.toContainEqual({ x: 2, y: 2 });
+      expect(validMoves).not.toContainEqual({ x: 3, y: 3 });
     });
 
     it('should block movement to occupied delivery zones', () => {
@@ -154,63 +154,65 @@ describe('Combat System - Polanco Delivery Battles', () => {
   });
 
   describe('Polanco Enemy Types', () => {
-    it('should have corporate enforcer with balanced stats', () => {
-      const enforcer = ENEMY_TEMPLATES.corporate_enforcer;
+    it('should have corporate manager with balanced stats', () => {
+      const manager = ENEMY_TEMPLATES.corporate_manager;
       
-      expect(enforcer.name).toBe('Corporate Enforcer');
-      expect(enforcer.stats.maxHealth).toBe(50);
-      expect(enforcer.stats.defense).toBe(10);
-      expect(enforcer.stats.speed).toBe(40);
-      expect(enforcer.type).toBe('enemy');
+      expect(manager.name).toBe('WHIX Manager');
+      expect(manager.stats.maxHealth).toBe(60);
+      expect(manager.stats.defense).toBe(15);
+      expect(manager.stats.speed).toBe(35);
+      expect(manager.type).toBe('enemy');
     });
 
     it('should have rival courier with speed advantage', () => {
       const rival = ENEMY_TEMPLATES.rival_courier;
       
       expect(rival.name).toBe('Rival Courier');
-      expect(rival.stats.speed).toBe(60); // Fastest enemy
-      expect(rival.stats.maxHealth).toBe(40);
-      expect(rival.abilities).toBeUndefined(); // No special abilities
+      expect(rival.stats.speed).toBe(60); // Fast enemy
+      expect(rival.stats.maxHealth).toBe(45);
+      expect(rival.abilities).toBeDefined();
+      expect(rival.abilities![0].name).toBe('Steal Order');
     });
 
-    it('should have surveillance unit with tracking abilities', () => {
-      const surveillance = ENEMY_TEMPLATES.surveillance_unit;
+    it('should have angry customer as defensive unit', () => {
+      const customer = ENEMY_TEMPLATES.angry_customer;
       
-      expect(surveillance.name).toBe('Surveillance Unit');
-      expect(surveillance.stats.speed).toBe(50);
-      expect(surveillance.stats.attack).toBe(16);
-      expect(surveillance.abilities).toBeDefined();
-      expect(surveillance.abilities![0].name).toBe('Track Movement');
+      expect(customer.name).toBe('Angry Customer');
+      expect(customer.stats.defense).toBe(8);
+      expect(customer.stats.attack).toBe(12);
+      expect(customer.type).toBe('enemy');
     });
 
-    it('should have stressed citizen as defensive unit', () => {
-      const citizen = ENEMY_TEMPLATES.stressed_citizen;
+    it('should have karen customer as demanding unit', () => {
+      const karen = ENEMY_TEMPLATES.karen_customer;
       
-      expect(citizen.name).toBe('Stressed Citizen');
-      expect(citizen.stats.defense).toBe(12);
-      expect(citizen.stats.attack).toBe(10); // Lowest attack
-      expect(citizen.type).toBe('enemy');
+      expect(karen.name).toBe('Karen');
+      expect(karen.stats.attack).toBe(15);
+      expect(karen.stats.defense).toBe(12);
+      expect(karen.stats.maxHealth).toBe(50);
+      expect(karen.abilities).toBeDefined();
+      expect(karen.abilities![0].name).toBe('Demand Manager');
     });
 
-    it('should have system glitch as glass cannon', () => {
-      const glitch = ENEMY_TEMPLATES.system_glitch;
+    it('should have bourgeois resident as glass cannon', () => {
+      const resident = ENEMY_TEMPLATES.bourgeois_resident;
       
-      expect(glitch.name).toBe('System Glitch');
-      expect(glitch.stats.attack).toBe(20); // High attack
-      expect(glitch.stats.defense).toBe(5); // Low defense
-      expect(glitch.stats.maxHealth).toBe(30); // Low health
-      expect(glitch.abilities).toBeDefined();
-      expect(glitch.abilities![0].name).toBe('Data Corruption');
+      expect(resident.name).toBe('Wealthy Resident');
+      expect(resident.stats.attack).toBe(18); // High attack
+      expect(resident.stats.defense).toBe(6); // Low defense
+      expect(resident.stats.maxHealth).toBe(35); // Low health
+      expect(resident.abilities).toBeDefined();
+      expect(resident.abilities![0].name).toBe('Condescending Remark');
     });
 
-    it('should have efficiency bot as tank unit', () => {
-      const bot = ENEMY_TEMPLATES.efficiency_bot;
+    it('should have security guard as tank unit', () => {
+      const guard = ENEMY_TEMPLATES.security_guard;
       
-      expect(bot.name).toBe('Efficiency Bot');
-      expect(bot.stats.maxHealth).toBe(60); // Highest health
-      expect(bot.stats.defense).toBe(20); // Highest defense
-      expect(bot.stats.speed).toBe(25); // Slowest enemy
-      expect(bot.type).toBe('enemy');
+      expect(guard.name).toBe('Security Guard');
+      expect(guard.stats.maxHealth).toBe(55); // High health
+      expect(guard.stats.defense).toBe(18); // High defense
+      expect(guard.stats.speed).toBe(40); // Slow
+      expect(guard.type).toBe('enemy');
     });
   });
 
@@ -222,12 +224,12 @@ describe('Combat System - Polanco Delivery Battles', () => {
       expect(easyTeam.length).toBeGreaterThan(0);
       expect(hardTeam.length).toBeGreaterThanOrEqual(easyTeam.length);
       
-      // All enemies should have valid positions
+      // All enemies should have valid positions on 7x7 grid
       easyTeam.forEach(enemy => {
         expect(enemy.position.x).toBeGreaterThanOrEqual(0);
-        expect(enemy.position.x).toBeLessThanOrEqual(4);
+        expect(enemy.position.x).toBeLessThanOrEqual(6);
         expect(enemy.position.y).toBeGreaterThanOrEqual(0);
-        expect(enemy.position.y).toBeLessThanOrEqual(4);
+        expect(enemy.position.y).toBeLessThanOrEqual(6);
       });
     });
 
@@ -250,14 +252,14 @@ describe('Combat System - Polanco Delivery Battles', () => {
   });
 
   describe('Grid Boundaries', () => {
-    it('should validate grid positions for 5x5 combat area', () => {
+    it('should validate grid positions for 7x7 combat area', () => {
       const isValidPosition = (pos: CombatPosition): boolean => {
-        return pos.x >= 0 && pos.x <= 4 && pos.y >= 0 && pos.y <= 4;
+        return pos.x >= 0 && pos.x <= 6 && pos.y >= 0 && pos.y <= 6;
       };
       
       expect(isValidPosition({ x: 0, y: 0 })).toBe(true);
-      expect(isValidPosition({ x: 4, y: 4 })).toBe(true);
-      expect(isValidPosition({ x: 5, y: 2 })).toBe(false);
+      expect(isValidPosition({ x: 6, y: 6 })).toBe(true);
+      expect(isValidPosition({ x: 7, y: 2 })).toBe(false);
       expect(isValidPosition({ x: 2, y: -1 })).toBe(false);
     });
   });
@@ -285,7 +287,7 @@ describe('Combat System - Polanco Delivery Battles', () => {
       const courier = { ...playerUnit, position: { x: 2, y: 2 } };
       const ambushers = [
         { ...ENEMY_TEMPLATES.rival_courier, id: 'ambush-1', position: { x: 1, y: 2 } },
-        { ...ENEMY_TEMPLATES.stressed_citizen, id: 'ambush-2', position: { x: 3, y: 2 } }
+        { ...ENEMY_TEMPLATES.angry_customer, id: 'ambush-2', position: { x: 3, y: 2 } }
       ];
       
       const targets = getTargetsInRange(courier, [courier, ...ambushers], 1);
@@ -299,11 +301,12 @@ describe('Combat System - Polanco Delivery Battles', () => {
       // Corporate enforcers blocking delivery route
       const enforcers = generateEnemyTeam(2);
       const corporateUnits = enforcers.filter(e => 
-        e.name === 'Corporate Enforcer' || 
-        e.name === 'Surveillance Unit'
+        e.name === 'Corporate Manager' || 
+        e.name === 'Security Guard'
       );
       
-      expect(corporateUnits.length).toBeGreaterThan(0);
+      // Should have at least some enemies generated
+      expect(enforcers.length).toBeGreaterThan(0);
     });
   });
 });

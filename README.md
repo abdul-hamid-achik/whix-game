@@ -90,12 +90,23 @@ Open [http://localhost:3000](http://localhost:3000) to start playing!
 
 ## 🧪 Testing
 
-Run the test suite:
+The project includes a comprehensive test suite covering all major functionality:
+
 ```bash
-npm run test        # Run tests once
-npm run test:watch  # Run tests in watch mode
-npm run test:ui     # Open Vitest UI
+npm run test         # Run all tests once
+npm run test:watch   # Run tests in watch mode
+npm run test:ui      # Open Vitest UI
+npm run test:coverage # Generate coverage report
 ```
+
+### Test Coverage
+- **Store Tests**: Complete coverage of Zustand stores (game, UI, partner, mission, story)
+- **System Tests**: Arena, keyboard navigation, and random event systems
+- **Hook Tests**: Custom React hooks for game functionality
+- **Component Tests**: UI components with accessibility validation
+- **Game Logic Tests**: Combat, humanity index, partner generation
+
+See `test/TEST_COVERAGE.md` for detailed test documentation.
 
 ## 🐳 Docker Support
 

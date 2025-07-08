@@ -45,22 +45,27 @@ async function markdownToHtml(markdown: string): Promise<string> {
 
 // Get all files in a directory recursively
 function getAllFiles(dirPath: string, arrayOfFiles: string[] = []): string[] {
-  if (!fs.existsSync(dirPath)) {
+  try {
+    if (!fs.existsSync(dirPath)) {
+      return arrayOfFiles;
+    }
+
+    const files = fs.readdirSync(dirPath);
+
+    files.forEach((file) => {
+      const filePath = path.join(dirPath, file);
+      if (fs.statSync(filePath).isDirectory()) {
+        arrayOfFiles = getAllFiles(filePath, arrayOfFiles);
+      } else if (file.endsWith('.md')) {
+        arrayOfFiles.push(filePath);
+      }
+    });
+
+    return arrayOfFiles;
+  } catch (error) {
+    console.error(`Error reading directory ${dirPath}:`, error);
     return arrayOfFiles;
   }
-
-  const files = fs.readdirSync(dirPath);
-
-  files.forEach((file) => {
-    const filePath = path.join(dirPath, file);
-    if (fs.statSync(filePath).isDirectory()) {
-      arrayOfFiles = getAllFiles(filePath, arrayOfFiles);
-    } else if (file.endsWith('.md')) {
-      arrayOfFiles.push(filePath);
-    }
-  });
-
-  return arrayOfFiles;
 }
 
 // Load a single content file

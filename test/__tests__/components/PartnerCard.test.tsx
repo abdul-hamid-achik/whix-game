@@ -29,7 +29,7 @@ describe('PartnerCard', () => {
     expect(screen.getByText('Test Partner')).toBeInTheDocument();
     expect(screen.getByText(/Courier/)).toBeInTheDocument();
     expect(screen.getByText(/Lv\.5/)).toBeInTheDocument();
-    expect(screen.getByText('RARE')).toBeInTheDocument();
+    expect(screen.getByText('rare')).toBeInTheDocument();
   });
 
   it('displays neurodivergent traits', () => {
@@ -84,9 +84,9 @@ describe('PartnerCard', () => {
 
   it('applies correct rarity gradient', () => {
     const { rerender } = render(<PartnerCard partner={mockPartner} />);
-    expect(screen.getByText('RARE')).toHaveClass('from-blue-400', 'to-cyan-500');
+    expect(screen.getByText('rare')).toHaveClass('text-rarity-rare');
 
     rerender(<PartnerCard partner={{ ...mockPartner, rarity: 'legendary' }} />);
-    expect(screen.getByText('LEGENDARY')).toHaveClass('from-yellow-400', 'to-orange-500');
+    expect(screen.getByText('legendary')).toHaveClass('text-rarity-legendary');
   });
 });

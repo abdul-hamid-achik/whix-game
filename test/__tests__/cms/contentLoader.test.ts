@@ -1,10 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
 import fs from 'fs';
+import path from 'path';
 import matter from 'gray-matter';
+import { remark } from 'remark';
+import html from 'remark-html';
 
-// Mock modules at the top
+// Mock modules
 vi.mock('fs');
 vi.mock('gray-matter');
+vi.mock('remark', () => ({
+  remark: vi.fn(() => ({
+    use: vi.fn().mockReturnThis(),
+    process: vi.fn().mockResolvedValue({ toString: () => '<p>Processed HTML</p>' })
+  }))
+}));
 
 import {
   loadCharacter,
@@ -18,415 +27,437 @@ import {
   loadTrait,
   loadAllTraits,
   loadDialogue,
-  loadAllDialogues
+  loadAllDialogues,
+  ContentFile
 } from '@/lib/cms/content-loader';
 import { 
-  characterMetadataSchema,
-  levelMetadataSchema,
-  itemMetadataSchema,
-  mapMetadataSchema,
-  chapterMetadataSchema,
-  traitMetadataSchema,
-  dialogMetadataSchema
-} from '@/lib/cms/content-schemas';
+  CharacterMetadata,
+  LevelMetadata,
+  ItemMetadata,
+  ChapterMetadata,
+  TraitMetadata,
+  DialogueMetadata
+} from '@/lib/cms/content-types';
 
-describe('ContentLoader - Polanco Theme', () => {
+describe('ContentLoader - CMS Integration', () => {
+  const mockContentDir = '/test/content';
+  
   beforeEach(() => {
     vi.clearAllMocks();
     
+    // Mock process.cwd to return a consistent path
+    vi.spyOn(process, 'cwd').mockReturnValue('/test');
+    
     // Setup default mocks
-    vi.mocked(fs.promises).readdir = vi.fn();
-    vi.mocked(fs.promises).readFile = vi.fn();
-    vi.mocked(fs.promises).access = vi.fn();
-    vi.mocked(fs.promises).stat = vi.fn();
-    vi.mocked(fs).existsSync = vi.fn().mockReturnValue(true);
-    vi.mocked(fs).readFileSync = vi.fn().mockReturnValue('[]');
-    vi.mocked(fs).readdirSync = vi.fn().mockReturnValue([]);
-    vi.mocked(fs).statSync = vi.fn().mockReturnValue({ isDirectory: () => false } as any);
+    vi.mocked(fs.existsSync).mockReturnValue(true);
+    vi.mocked(fs.readFileSync).mockReturnValue('');
+    vi.mocked(fs.readdirSync).mockReturnValue([]);
+    vi.mocked(fs.statSync).mockReturnValue({ isDirectory: () => false } as any);
   });
 
-  describe('Character Loading with Zod Validation', () => {
-    it('should load and validate Polanco courier character', async () => {
+  describe('Character Loading', () => {
+    it('should load and validate character from content file', async () => {
       const mockCharacterContent = {
         data: {
-          id: 'miguel-courier',
+          id: 'miguel-lopez',
           type: 'character',
-          title: 'Miguel Rodriguez - WHIX Courier',
-          description: 'Veteran WHIX courier navigating Polanco dystopia',
-          name: 'Miguel Rodriguez',
-          role: 'protagonist',
-          class: 'courier',
-          traits: ['hyperfocus', 'pattern_recognition'],
-          backStory: 'Former tech worker forced into gig economy after algorithmic layoffs',
-          stats: {
-            level: 1,
-            health: 100,
-            speed: 60,
-            efficiency: 75,
-            humanity: 50
-          },
-          relationships: {},
-          published: true
+          title: 'Miguel Lopez',
+          description: 'Anxious but determined delivery partner awakening to resistance consciousness',
+          name: 'Miguel Lopez',
+          role: 'protagonist' as const,
+          class: 'protagonist', // From the actual content file
+          traits: ['pattern_recognition', 'hyperfocus', 'social_anxiety', 'protective_instinct'],
+          personality: 'Anxious but determined delivery partner awakening to resistance consciousness',
+          published: true,
+          tags: ['protagonist', 'main_character']
         },
-        content: 'Character story content...'
+        content: '# Miguel Lopez - The Reluctant Revolutionary\n\nCharacter story content...'
       };
 
-      vi.mocked(fs.promises.readdir).mockResolvedValue(['miguel-courier.md'] as any);
-      vi.mocked(fs.promises.readFile).mockResolvedValue(Buffer.from('mock file content'));
+      // Mock file system operations
+      const mockFilePath = path.join(mockContentDir, 'characters', 'miguel-lopez.md');
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue('mock file content');
       vi.mocked(matter).mockReturnValue(mockCharacterContent as any);
 
-      const character = await loadCharacter('miguel-courier');
+      const character = await loadCharacter('miguel-lopez');
 
       expect(character).toBeDefined();
-      expect(character?.name).toBe('Miguel Rodriguez');
-      expect(character?.class).toBe('courier');
-      expect(character?.traits).toContain('hyperfocus');
-      
-      // Verify Zod schema validation was applied
-      expect(() => characterMetadataSchema.parse(character)).not.toThrow();
+      expect(character?.metadata.name).toBe('Miguel Lopez');
+      expect(character?.metadata.role).toBe('protagonist');
+      expect(character?.metadata.traits).toContain('hyperfocus');
+      expect(character?.metadata.traits).toContain('pattern_recognition');
+      expect(character?.slug).toBe('miguel-lopez');
+      expect(character?.htmlContent).toBe('<p>Processed HTML</p>');
     });
 
-    it('should reject character with invalid medieval theme', async () => {
-      const mockInvalidCharacter = {
+    it('should load character with non-standard class', async () => {
+      const mockCharacterWithCustomClass = {
         data: {
-          id: 'invalid-knight',
+          id: 'custom-character',
           type: 'character',
-          title: 'Sir Lancelot',
-          description: 'Medieval knight - wrong theme!',
-          name: 'Sir Lancelot', // Wrong theme!
-          role: 'protagonist',
-          class: 'knight', // Invalid class
-          traits: ['swordsmanship'], // Invalid trait
-          stats: {
-            level: 1,
-            health: 100,
-            speed: 50,
-            efficiency: 50,
-            humanity: 50
-          },
+          title: 'Custom Character',
+          description: 'Character with custom class',
+          name: 'Custom',
+          role: 'npc' as const,
+          class: 'custom-class', // Non-standard class is allowed
           published: true
         },
-        content: 'Medieval content...'
+        content: 'Custom content...'
       };
 
-      vi.mocked(fs.promises.readdir).mockResolvedValue(['invalid-knight.md'] as any);
-      vi.mocked(fs.promises.readFile).mockResolvedValue(Buffer.from('mock file content'));
-      vi.mocked(matter).mockReturnValue(mockInvalidCharacter as any);
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue('mock file content');
+      vi.mocked(matter).mockReturnValue(mockCharacterWithCustomClass as any);
 
-      const character = await loadCharacter('invalid-knight');
+      const character = await loadCharacter('custom-character');
       
-      // Should return null due to validation failure
-      expect(character).toBeNull();
+      // Should successfully load with custom class
+      expect(character).toBeDefined();
+      expect(character?.metadata.class).toBe('custom-class');
     });
   });
 
-  describe('Level Loading with Zod Validation', () => {
-    it('should load and validate Polanco district level', async () => {
+  describe('Level Loading', () => {
+    it('should load and validate mission level', async () => {
       const mockLevelContent = {
         data: {
-          id: 'polanco-central',
+          id: 'rush-hour-rebellion',
           type: 'level',
-          title: 'Polanco Central District',
-          description: 'Heart of the gig economy dystopia',
-          difficulty: 'normal',
-          missionType: 'standard_delivery',
-          zone: 'downtown',
+          title: 'Rush Hour Rebellion',
+          description: 'Deliver critical supplies to striking workers while avoiding corporate enforcers',
+          difficulty: 'hard' as const,
+          missionType: 'rush_delivery' as const,
+          objectives: [
+            {
+              id: 'deliver_supplies',
+              description: 'Deliver food and medical supplies to the strike camp',
+              type: 'deliver' as const,
+              target: 5,
+              optional: false
+            }
+          ],
           rewards: {
-            tips: 500,
-            experience: 100,
-            items: ['enhanced-scanner']
+            tips: 2500,
+            experience: 500,
+            starFragments: 5,
+            items: ['encrypted_comm_device'],
+            unlocksChapter: 'the-strike-breaks'
           },
-          hazards: ['surveillance_drones', 'corporate_security'],
           requirements: {
-            level: 5
+            level: 10,
+            completedMissions: ['first-day-jitters', 'corporate-surveillance'],
+            humanityIndex: 60
           },
+          enemyGroups: ['whix_enforcers_squad', 'surveillance_drones'],
+          dialogueNodes: ['strike_leader_intro', 'enforcer_threats', 'courier_solidarity'],
+          tags: ['story_critical', 'rebellion', 'high_stakes', 'timed_mission'],
           published: true
         },
-        content: 'Level narrative...'
+        content: '# Rush Hour Rebellion\n\nMission briefing...'
       };
 
-      vi.mocked(fs.promises.readdir).mockResolvedValue(['polanco-central.md'] as any);
-      vi.mocked(fs.promises.readFile).mockResolvedValue(Buffer.from('mock file content'));
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue('mock file content');
       vi.mocked(matter).mockReturnValue(mockLevelContent as any);
 
-      const level = await loadLevel('polanco-central');
+      const level = await loadLevel('rush-hour-rebellion');
 
       expect(level).toBeDefined();
-      expect(level?.name).toBe('Polanco Central District');
-      expect(level?.enemies).toContain('corporate-enforcer');
-      expect(level?.enemies).toContain('aggressive-neighbor');
-      expect(level?.enemies).not.toContain('goblin'); // No fantasy enemies
-      
-      // Verify Zod schema validation
-      expect(() => levelMetadataSchema.parse(level)).not.toThrow();
+      expect(level?.metadata.title).toBe('Rush Hour Rebellion');
+      expect(level?.metadata.difficulty).toBe('hard');
+      expect(level?.metadata.missionType).toBe('rush_delivery');
+      expect(level?.metadata.objectives).toHaveLength(1);
+      expect(level?.metadata.rewards.tips).toBe(2500);
+      expect(level?.metadata.enemyGroups).toContain('whix_enforcers_squad');
     });
   });
 
-  describe('Item Loading with Zod Validation', () => {
-    it('should load and validate WHIX delivery equipment', async () => {
+  describe('Item Loading', () => {
+    it('should load and validate neural interface item', async () => {
       const mockItemContent = {
         data: {
-          id: 'enhanced-scanner',
+          id: 'neural-interface-headset',
           type: 'item',
-          title: 'Enhanced Delivery Scanner',
-          description: 'Modified WHIX scanner with resistance hacks',
-          category: 'equipment',
-          rarity: 'rare',
-          value: 150,
+          title: 'Neural Interface Headset',
+          name: 'NeuroLink Professional Headset',
+          description: 'Advanced neural interface designed specifically for neurodivergent cognitive enhancement',
+          category: 'equipment' as const,
+          subcategory: 'headgear',
+          rarity: 'rare' as const,
+          itemLevel: 15,
+          value: 2500,
           stackable: false,
-          effects: {
-            statBoosts: {
-              efficiency: 10,
-              speed: 5
-            }
+          tradeable: true,
+          stats: {
+            focus: 12,
+            perception: 8,
+            social: 5
           },
-          published: true
+          effects: [
+            {
+              type: 'boost' as const,
+              value: 15,
+              target: 'self' as const,
+              duration: 300
+            }
+          ],
+          requirements: {
+            level: 10,
+            trait: 'Any neurodivergent trait'
+          },
+          published: true,
+          tags: ['equipment', 'neurodivergent', 'cognitive_enhancement']
         },
-        content: 'Item lore...'
+        content: '# NeuroLink Professional Headset\n\nItem description...'
       };
 
-      vi.mocked(fs.promises.readdir).mockResolvedValue(['enhanced-scanner.md'] as any);
-      vi.mocked(fs.promises.readFile).mockResolvedValue(Buffer.from('mock file content'));
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue('mock file content');
       vi.mocked(matter).mockReturnValue(mockItemContent as any);
 
-      const item = await loadItem('enhanced-scanner');
+      const item = await loadItem('neural-interface-headset');
 
       expect(item).toBeDefined();
-      expect(item?.name).toBe('Enhanced Delivery Scanner');
-      expect(item?.itemType).toBe('equipment');
-      expect(item?.usableBy).toContain('courier');
-      
-      // Should not have medieval items
-      expect(item?.name).not.toContain('sword');
-      expect(item?.name).not.toContain('armor');
-      expect(item?.name).not.toContain('potion');
-      
-      // Verify Zod schema validation
-      expect(() => itemMetadataSchema.parse(item)).not.toThrow();
+      expect(item?.metadata.title).toBe('Neural Interface Headset');
+      expect(item?.metadata.category).toBe('equipment');
+      expect(item?.metadata.rarity).toBe('rare');
+      expect(item?.metadata.value).toBe(2500);
+      expect(item?.metadata.stackable).toBe(false);
     });
   });
 
-  describe('Chapter Loading with Zod Validation', () => {
-    it('should load and validate dystopian story chapter', async () => {
+  describe('Chapter Loading', () => {
+    it('should load and validate story chapter', async () => {
       const mockChapterContent = {
         data: {
           id: 'chapter-1-first-day',
           type: 'chapter',
           title: 'Chapter 1: First Day on the Job',
-          description: 'Your introduction to the gig economy dystopia of Polanco',
+          description: 'Your introduction to the gig economy dystopia',
           chapterNumber: 1,
           act: 1,
           setting: 'WHIX Distribution Center - Onboarding Facility',
-          requiredLevel: 1,
-          characters: ['miguel', 'whix_ai', 'kai'],
+          timeOfDay: 'morning' as const,
+          weather: 'clear' as const,
+          mainCharacters: ['miguel', 'whix_ai', 'kai'],
           choices: [
             {
               id: 'accept_terms',
-              text: 'Accept WHIX terms without reading',
-              consequence: {
+              description: 'Accept WHIX terms without reading',
+              consequences: {
                 humanityChange: -5,
                 relationshipChanges: { whix_ai: 10 }
               }
             }
           ],
-          published: true
+          musicTrack: 'corporate_ambience',
+          backgroundImage: 'whix_center.jpg',
+          published: true,
+          tags: ['chapter', 'story', 'act1']
         },
-        content: 'Chapter narrative...'
+        content: '# Chapter 1\n\nChapter narrative...'
       };
 
-      vi.mocked(fs.promises.readdir).mockResolvedValue(['chapter-1-first-day.md'] as any);
-      vi.mocked(fs.promises.readFile).mockResolvedValue(Buffer.from('mock file content'));
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue('mock file content');
       vi.mocked(matter).mockReturnValue(mockChapterContent as any);
 
       const chapter = await loadChapter('chapter-1-first-day');
 
       expect(chapter).toBeDefined();
-      expect(chapter?.title).toContain('First Day on the Job');
-      expect(chapter?.setting).toContain('WHIX');
-      expect(chapter?.mainCharacters).toContain('whix_ai');
-      
-      // Verify Zod schema validation
-      expect(() => chapterMetadataSchema.parse(chapter)).not.toThrow();
+      expect(chapter?.metadata.title).toContain('First Day on the Job');
+      expect(chapter?.metadata.setting).toContain('WHIX');
+      expect(chapter?.metadata.mainCharacters).toContain('miguel');
+      expect(chapter?.metadata.chapterNumber).toBe(1);
+      expect(chapter?.metadata.timeOfDay).toBe('morning');
     });
   });
 
-  describe('Trait Loading with Zod Validation', () => {
-    it('should load and validate neurodivergent traits', async () => {
+  describe('Trait Loading', () => {
+    it('should load and validate neurodivergent trait', async () => {
       const mockTraitContent = {
         data: {
           id: 'hyperfocus',
           type: 'trait',
           title: 'Hyperfocus',
+          name: 'Hyperfocus',
           description: 'Intense concentration that turns the chaotic world into manageable data streams',
-          category: 'cognitive',
-          gameplayEffects: {
-            statBoosts: { efficiency: 20, speed: 10 },
-            specialAbilities: ['time_dilation', 'pattern_surge'],
-            synergyWith: ['pattern_recognition', 'systematic_thinking']
+          category: 'neurodivergent' as const,
+          rarity: 'common' as const,
+          statBonus: {
+            focus: 20,
+            perception: 10
           },
-          narrativeImpact: 'Changes dialog options and story paths',
-          published: true
+          personalityTraits: ['determined', 'focused', 'single-minded'],
+          strengths: ['Enhanced productivity', 'Deep problem solving'],
+          challenges: ['Difficulty switching tasks', 'Time blindness'],
+          abilityUnlocks: [
+            {
+              level: 5,
+              ability: 'Time Dilation',
+              description: 'Slow perception of time during intense focus'
+            }
+          ],
+          compatibleClasses: ['analyst', 'investigator'],
+          positiveRepresentation: {
+            description: 'Hyperfocus is portrayed as a powerful cognitive tool',
+            examples: ['Deep analysis', 'Pattern detection']
+          },
+          gameplayMechanics: {
+            passiveEffect: 'Increased efficiency during focused tasks',
+            activeAbility: 'Enter hyperfocus mode for enhanced performance'
+          },
+          published: true,
+          tags: ['trait', 'neurodivergent', 'cognitive']
         },
-        content: 'Trait details...'
+        content: '# Hyperfocus\n\nTrait details...'
       };
 
-      vi.mocked(fs.promises.readdir).mockResolvedValue(['hyperfocus.md'] as any);
-      vi.mocked(fs.promises.readFile).mockResolvedValue(Buffer.from('mock file content'));
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue('mock file content');
       vi.mocked(matter).mockReturnValue(mockTraitContent as any);
 
       const trait = await loadTrait('hyperfocus');
 
       expect(trait).toBeDefined();
-      expect(trait?.name).toBe('Hyperfocus');
-      expect(trait?.traitType).toBe('primary');
-      expect(trait?.gameplayEffects.statModifiers.focus).toBe(20);
-      
-      // Verify it's not a fantasy trait
-      expect(trait?.description).not.toContain('magic');
-      expect(trait?.description).not.toContain('spell');
-      
-      // Verify Zod schema validation
-      expect(() => traitMetadataSchema.parse(trait)).not.toThrow();
+      expect(trait?.metadata.name).toBe('Hyperfocus');
+      expect(trait?.metadata.category).toBe('neurodivergent');
+      expect(trait?.metadata.statBonus?.focus).toBe(20);
+      expect(trait?.metadata.description).not.toContain('magic');
     });
   });
 
-  describe('Dialog Loading with Zod Validation', () => {
-    it('should load and validate Polanco citizen dialog', async () => {
-      const mockDialogContent = {
+  describe('Dialogue Loading', () => {
+    it('should load and validate character dialogue', async () => {
+      const mockDialogueContent = {
         data: {
           id: 'neighbor-complaint',
-          type: 'dialog',
+          type: 'dialogue',
           title: 'Angry Neighbor Complaint',
-          description: 'Confrontation with stressed Polanco resident',
-          speaker: 'Angry Neighbor',
-          location: 'polanco-residential',
-          context: 'delivery-disruption',
-          lines: [
+          description: 'Confrontation with stressed resident',
+          characters: ['miguel', 'angry_neighbor'],
+          location: 'residential_district',
+          trigger: 'interaction' as const,
+          priority: 'side' as const,
+          repeatable: true,
+          conditions: {
+            minimumLevel: 3,
+            timeOfDay: 'day'
+          },
+          branches: [
             {
-              id: 'complaint-1',
-              text: 'You couriers are always making noise! Some of us work from home!',
-              emotion: 'angry',
-              conditions: {},
-              responses: [
-                {
-                  id: 'apologize',
-                  text: 'Sorry, just trying to make my delivery quota',
-                  requirements: {},
-                  effects: { relationshipChanges: { neighbors: -5 } }
-                },
-                {
-                  id: 'retort',
-                  text: 'And some of us work in the streets. Deal with it.',
-                  requirements: { trait: 'assertive' },
-                  effects: { humanityChange: -5 }
-                }
-              ]
+              id: 'apologetic_branch',
+              condition: 'humanity > 50',
+              nextDialogue: 'neighbor_calmed'
+            },
+            {
+              id: 'defiant_branch',
+              condition: 'humanity < 30',
+              nextDialogue: 'neighbor_angered'
             }
           ],
-          triggerConditions: { location: 'residential', time: 'day' },
-          priority: 5,
-          repeatable: true,
-          published: true
+          published: true,
+          tags: ['dialogue', 'social', 'conflict']
         },
-        content: 'Dialog context...'
+        content: '# Neighbor Complaint\n\nDialogue script...'
       };
 
-      vi.mocked(fs.promises.readdir).mockResolvedValue(['neighbor-complaint.md'] as any);
-      vi.mocked(fs.promises.readFile).mockResolvedValue(Buffer.from('mock file content'));
-      vi.mocked(matter).mockReturnValue(mockDialogContent as any);
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue('mock file content');
+      vi.mocked(matter).mockReturnValue(mockDialogueContent as any);
 
-      const dialog = await loadDialogue('neighbor-complaint');
+      const dialogue = await loadDialogue('neighbor-complaint');
 
-      expect(dialog).toBeDefined();
-      expect(dialog?.speaker).toBe('Angry Neighbor');
-      expect(dialog?.location).toBe('polanco-residential');
-      expect(dialog?.lines[0].text).toContain('couriers');
-      expect(dialog?.lines[0].text).not.toContain('adventurer'); // No fantasy dialog
-      
-      // Verify Zod schema validation
-      expect(() => dialogMetadataSchema.parse(dialog)).not.toThrow();
+      expect(dialogue).toBeDefined();
+      expect(dialogue?.metadata.title).toBe('Angry Neighbor Complaint');
+      expect(dialogue?.metadata.characters).toContain('angry_neighbor');
+      expect(dialogue?.metadata.location).toBe('residential_district');
+      expect(dialogue?.metadata.trigger).toBe('interaction');
+      expect(dialogue?.metadata.repeatable).toBe(true);
     });
   });
 
-  describe('Batch Loading with Theme Verification', () => {
-    it('should load all content and verify Polanco theme consistency', async () => {
-      // Mock multiple files
-      vi.mocked(fs.promises.readdir).mockImplementation(async (dir) => {
+  describe('Batch Loading', () => {
+    it('should load all characters with proper structure', async () => {
+      // Mock directory structure
+      vi.mocked(fs.readdirSync).mockImplementation((dir) => {
         if (dir.includes('characters')) {
-          return ['miguel.md', 'kai.md'] as any;
-        }
-        if (dir.includes('levels')) {
-          return ['polanco-central.md', 'underground-market.md'] as any;
+          return ['miguel-lopez.md', 'tania-volkov.md'] as any;
         }
         return [] as any;
       });
+      
+      vi.mocked(fs.statSync).mockReturnValue({ isDirectory: () => false } as any);
 
       // Mock character files
       const characters = [
         {
           data: {
-            id: 'miguel',
+            id: 'miguel-lopez',
             type: 'character',
-            name: 'Miguel',
-            role: 'protagonist',
-            class: 'courier',
-            traits: ['hyperfocus'],
-            stats: { focus: 80, perception: 75, social: 60, logic: 70, stamina: 65 },
+            title: 'Miguel Lopez',
+            description: 'Protagonist',
+            name: 'Miguel Lopez',
+            role: 'protagonist' as const,
             published: true
           },
-          content: ''
+          content: 'Miguel story...'
         },
         {
           data: {
-            id: 'kai',
+            id: 'tania-volkov',
             type: 'character', 
-            name: 'Kai Chen',
-            role: 'partner',
-            class: 'analyst',
-            traits: ['pattern_recognition'],
-            stats: { focus: 85, perception: 90, social: 50, logic: 95, stamina: 55 },
+            title: 'Tania Volkov',
+            description: 'Partner character',
+            name: 'Tania Volkov',
+            role: 'partner' as const,
+            class: 'courier' as const,
+            traits: ['hyperfocus', 'enhanced_senses'],
             published: true
           },
-          content: ''
+          content: 'Tania story...'
         }
       ];
 
       let fileIndex = 0;
-      vi.mocked(fs.promises.readFile).mockImplementation(async () => Buffer.from('mock content'));
+      vi.mocked(fs.readFileSync).mockImplementation(() => 'mock content');
       vi.mocked(matter).mockImplementation(() => {
         return characters[fileIndex++ % characters.length] as any;
       });
 
       const allCharacters = await loadAllCharacters();
 
-      expect(allCharacters.length).toBe(2);
+      expect(allCharacters).toHaveLength(2);
+      expect(allCharacters[0].metadata.name).toBe('Miguel Lopez');
+      expect(allCharacters[1].metadata.name).toBe('Tania Volkov');
+      expect(allCharacters[0].htmlContent).toBe('<p>Processed HTML</p>');
       
-      // Verify all characters fit the Polanco theme
+      // Verify content structure
       allCharacters.forEach(char => {
-        expect(['courier', 'analyst', 'negotiator', 'specialist', 'investigator']).toContain(char.class);
-        expect(char.name).not.toMatch(/Sir|Lord|Lady|Knight/); // No medieval titles
-        expect(char.traits.every(t => 
-          ['hyperfocus', 'pattern_recognition', 'enhanced_senses', 'systematic_thinking', 
-           'attention_to_detail', 'routine_mastery', 'sensory_processing'].includes(t)
-        )).toBe(true);
+        expect(char.metadata).toBeDefined();
+        expect(char.content).toBeDefined();
+        expect(char.htmlContent).toBeDefined();
+        expect(char.slug).toBeDefined();
+        expect(char.filePath).toBeDefined();
       });
     });
   });
 
-  describe('Error Handling with Zod Validation', () => {
+  describe('Error Handling', () => {
     it('should handle invalid content gracefully', async () => {
       const mockInvalidContent = {
         data: {
           id: 'broken-character',
           type: 'character',
           name: 'Broken',
-          // Missing required fields like role, class, stats
+          // Missing required fields like title, description
         },
         content: ''
       };
 
-      vi.mocked(fs.promises.readdir).mockResolvedValue(['broken-character.md'] as any);
-      vi.mocked(fs.promises.readFile).mockResolvedValue(Buffer.from('mock content'));
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue('mock content');
       vi.mocked(matter).mockReturnValue(mockInvalidContent as any);
 
       const character = await loadCharacter('broken-character');
@@ -435,13 +466,175 @@ describe('ContentLoader - Polanco Theme', () => {
       expect(character).toBeNull();
     });
 
-    it('should handle file read errors', async () => {
-      vi.mocked(fs.promises.readdir).mockRejectedValue(new Error('Permission denied'));
+    it('should handle file not found', async () => {
+      vi.mocked(fs.existsSync).mockReturnValue(false);
+      vi.mocked(fs.readdirSync).mockReturnValue([]);
+
+      const character = await loadCharacter('non-existent');
+      
+      // Should return null when file doesn't exist
+      expect(character).toBeNull();
+    });
+
+    it('should handle directory read errors', async () => {
+      // Mock console.error to avoid noise in test output
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      
+      vi.mocked(fs.readdirSync).mockImplementation(() => {
+        throw new Error('Permission denied');
+      });
 
       const characters = await loadAllCharacters();
       
       // Should return empty array on error
       expect(characters).toEqual([]);
+      
+      // Restore console.error
+      consoleErrorSpy.mockRestore();
+    });
+  });
+
+  describe('Content Integration with Game Systems', () => {
+    it('should convert CMS character to game partner entity', async () => {
+      const mockCharacterContent = {
+        data: {
+          id: 'tania-volkov',
+          type: 'character',
+          title: 'Tania Volkov',
+          description: 'Elite courier with enhanced sensory abilities',
+          name: 'Tania Volkov',
+          role: 'partner' as const,
+          class: 'courier' as const,
+          traits: ['enhanced_senses', 'hyperfocus'],
+          stats: {
+            focus: 85,
+            perception: 95,
+            social: 70,
+            logic: 75,
+            stamina: 80
+          },
+          published: true
+        },
+        content: 'Character details...'
+      };
+
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue('mock content');
+      vi.mocked(matter).mockReturnValue(mockCharacterContent as any);
+
+      const characterContent = await loadCharacter('tania-volkov');
+      
+      // Verify character can be converted to game partner
+      expect(characterContent).toBeDefined();
+      expect(characterContent?.metadata.role).toBe('partner');
+      expect(characterContent?.metadata.class).toBe('courier');
+      expect(characterContent?.metadata.traits).toContain('enhanced_senses');
+      expect(characterContent?.metadata.stats).toBeDefined();
+    });
+
+    it('should convert CMS item to game inventory item', async () => {
+      const mockItemContent = {
+        data: {
+          id: 'stim-pack',
+          type: 'item',
+          title: 'WHIX Stim Pack',
+          description: 'Corporate-issued stimulant for extended shifts',
+          category: 'consumable' as const,
+          rarity: 'common' as const,
+          value: 50,
+          stackable: true,
+          maxStack: 10,
+          effects: [
+            {
+              type: 'boost' as const,
+              value: 25,
+              duration: 600,
+              target: 'self' as const
+            }
+          ],
+          published: true
+        },
+        content: 'Item lore...'
+      };
+
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue('mock content');
+      vi.mocked(matter).mockReturnValue(mockItemContent as any);
+
+      const itemContent = await loadItem('stim-pack');
+      
+      // Verify item can be used in game inventory
+      expect(itemContent).toBeDefined();
+      expect(itemContent?.metadata.category).toBe('consumable');
+      expect(itemContent?.metadata.stackable).toBe(true);
+      expect(itemContent?.metadata.effects).toHaveLength(1);
+      expect(itemContent?.metadata.effects?.[0].type).toBe('boost');
+    });
+
+    it('should load mission level with objectives and rewards', async () => {
+      const mockMissionContent = {
+        data: {
+          id: 'corporate-sabotage',
+          type: 'level',
+          title: 'Corporate Sabotage',
+          description: 'Infiltrate WHIX servers to expose their exploitation',
+          difficulty: 'extreme' as const,
+          missionType: 'sabotage' as const,
+          objectives: [
+            {
+              id: 'infiltrate',
+              description: 'Access the server room undetected',
+              type: 'interact' as const,
+              target: 'server_terminal',
+              optional: false
+            },
+            {
+              id: 'download_data',
+              description: 'Download exploitation evidence',
+              type: 'collect' as const,
+              target: 3,
+              optional: false
+            },
+            {
+              id: 'escape',
+              description: 'Escape without triggering alarms',
+              type: 'survive' as const,
+              optional: true
+            }
+          ],
+          rewards: {
+            tips: 5000,
+            experience: 1000,
+            starFragments: 10,
+            items: ['encrypted_data_drive', 'resistance_badge'],
+            unlocksChapter: 'the-truth-revealed'
+          },
+          requirements: {
+            level: 15,
+            completedMissions: ['rush-hour-rebellion', 'underground-network'],
+            humanityIndex: 75,
+            hasTrait: 'systematic_thinking'
+          },
+          enemyGroups: ['corporate_security_elite', 'ai_defense_system'],
+          published: true
+        },
+        content: 'Mission briefing...'
+      };
+
+      vi.mocked(fs.existsSync).mockReturnValue(true);
+      vi.mocked(fs.readFileSync).mockReturnValue('mock content');
+      vi.mocked(matter).mockReturnValue(mockMissionContent as any);
+
+      const missionContent = await loadLevel('corporate-sabotage');
+      
+      // Verify complex mission structure
+      expect(missionContent).toBeDefined();
+      expect(missionContent?.metadata.objectives).toHaveLength(3);
+      expect(missionContent?.metadata.objectives[0].type).toBe('interact');
+      expect(missionContent?.metadata.objectives[2].optional).toBe(true);
+      expect(missionContent?.metadata.rewards.tips).toBe(5000);
+      expect(missionContent?.metadata.rewards.items).toContain('resistance_badge');
+      expect(missionContent?.metadata.requirements?.hasTrait).toBe('systematic_thinking');
     });
   });
 });

@@ -15,20 +15,39 @@ export const BaseMetadataSchema = z.object({
 export const CharacterMetadataSchema = BaseMetadataSchema.extend({
   type: z.literal('character'),
   name: z.string(),
-  role: z.enum(['protagonist', 'partner', 'npc', 'antagonist']),
-  class: z.enum(['courier', 'analyst', 'negotiator', 'specialist', 'investigator']).optional(),
+  role: z.enum(['protagonist', 'partner', 'npc', 'antagonist']).optional(),
+  class: z.string().optional(), // Allow any string for class since content uses various values
   traits: z.array(z.string()).optional(),
+  personality: z.string().optional(),
+  backstory: z.string().optional(),
   stats: z.object({
     focus: z.number().optional(),
     perception: z.number().optional(),
     social: z.number().optional(),
     logic: z.number().optional(),
     stamina: z.number().optional(),
+    level: z.number().optional(),
+    health: z.number().optional(),
+    speed: z.number().optional(),
+    efficiency: z.number().optional(),
+    humanity: z.number().optional(),
   }).optional(),
-  relationships: z.record(z.string(), z.number()).optional(),
+  relationships: z.record(z.string(), z.union([z.number(), z.string()])).optional(),
   unlockCondition: z.string().optional(),
   voiceStyle: z.string().optional(),
   sprite: z.string().optional(),
+  portrait: z.string().optional(),
+  level: z.string().optional(),
+  character_development_arc: z.record(z.string(), z.string()).optional(),
+  core_relationships: z.record(z.string(), z.string()).optional(),
+  psychological_profile: z.string().optional(),
+  moral_philosophy: z.string().optional(),
+  gameplay_mechanics: z.record(z.string(), z.any()).optional(),
+  neurodivergent_representation: z.string().optional(),
+  resistance_role: z.record(z.string(), z.any()).optional(),
+  internal_conflicts: z.record(z.string(), z.string()).optional(),
+  victory_conditions: z.record(z.string(), z.string()).optional(),
+  narrative_voice: z.string().optional(),
 });
 
 // Level/Mission metadata schema
@@ -144,23 +163,45 @@ export const MapMetadataSchema = BaseMetadataSchema.extend({
 // Item metadata schema
 export const ItemMetadataSchema = BaseMetadataSchema.extend({
   type: z.literal('item'),
+  name: z.string().optional(), // Some items have a separate name field
   category: z.enum(['consumable', 'equipment', 'key', 'collectible', 'currency']),
+  subcategory: z.string().optional(),
   rarity: z.enum(['common', 'rare', 'epic', 'legendary']),
   stackable: z.boolean().default(true),
+  tradeable: z.boolean().optional(),
   maxStack: z.number().default(99),
   value: z.number().default(0),
+  itemLevel: z.number().optional(),
   soulbound: z.boolean().default(false),
-  effects: z.array(z.object({
-    type: z.enum(['heal', 'boost', 'damage', 'unlock', 'story']),
-    value: z.number().optional(),
-    duration: z.number().optional(),
-    target: z.enum(['self', 'partner', 'team', 'enemy']).optional(),
-  })).optional(),
+  stats: z.record(z.string(), z.number()).optional(),
+  effects: z.union([
+    z.array(z.object({
+      type: z.enum(['heal', 'boost', 'damage', 'unlock', 'story']),
+      value: z.number().optional(),
+      duration: z.number().optional(),
+      target: z.enum(['self', 'partner', 'team', 'enemy']).optional(),
+    })),
+    z.object({
+      passive: z.array(z.any()).optional(),
+      active: z.array(z.any()).optional(),
+    })
+  ]).optional(),
+  traitSynergies: z.record(z.string(), z.any()).optional(),
   requirements: z.object({
     level: z.number().optional(),
     class: z.string().optional(),
     trait: z.string().optional(),
+    traits: z.string().optional(),
+    certification: z.string().optional(),
   }).optional(),
+  acquisition: z.record(z.string(), z.any()).optional(),
+  designPhilosophy: z.record(z.string(), z.string()).optional(),
+  technicalSpecs: z.record(z.string(), z.string()).optional(),
+  customization: z.record(z.string(), z.any()).optional(),
+  realWorldInspiration: z.record(z.string(), z.any()).optional(),
+  ethicalConsiderations: z.record(z.string(), z.string()).optional(),
+  gameplayBalance: z.record(z.string(), z.string()).optional(),
+  narrativeIntegration: z.record(z.string(), z.string()).optional(),
   icon: z.string().optional(),
 });
 
