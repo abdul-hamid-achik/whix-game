@@ -6,6 +6,7 @@ import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { useStoryStore } from '@/lib/stores/storyStore';
 import { useUIStore } from '@/lib/stores/uiStore';
+import { getTerm, getTerms } from '@/lib/config/delivery-mode-config';
 import { NeuraPanel, NeuraButton, NeuraProgressBar } from '@/components/neura';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,7 +34,8 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
   const { partners, unlockedCharacters, getNextUnlocks, checkForUnlocks } = usePartnerStore();
   const { currentTips: tips, level, experience, totalTipsEarned, missionsCompleted } = useGameStore();
   const { completedChapters, storyFlags } = useStoryStore();
-  const { showPanel } = useUIStore();
+  const { showPanel, settings } = useUIStore();
+  const appMode = settings.appMode || 'game';
   const { isMobile, isTablet: _isTablet } = useDeviceInfo();
   
   // Check for new character unlocks
@@ -76,7 +78,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
               "font-bold text-cyan-400 font-mono",
               isMobile ? "text-xl" : "text-2xl"
             )}>
-              WHIX COURIER HUB
+              {getTerm('COURIER_HUB', appMode)}
             </h1>
             <p className={cn(
               "text-gray-400",
@@ -143,12 +145,12 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
               <div className="flex items-center gap-2 mb-4">
                 <Users className="w-5 h-5 text-cyan-400" />
                 <h3 className="text-cyan-400 font-mono font-bold uppercase tracking-wide">
-                  ACTIVE ROSTER
+                  {getTerm('ACTIVE_ROSTER', appMode)}
                 </h3>
               </div>
               <div className="flex items-center justify-between mb-6">
                 <p className="text-gray-400 text-sm">
-                  Your current team of delivery partners
+                  Your current team of {appMode === 'delivery' ? 'drivers' : 'delivery partners'}
                 </p>
                 <Button
                   size="sm"
@@ -211,11 +213,11 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
               <div className="flex items-center gap-2 mb-4">
                 <Play className="w-5 h-5 text-purple-400" />
                 <h3 className="text-purple-400 font-mono font-bold uppercase tracking-wide">
-                  CAMPAIGNS
+                  {getTerm('CAMPAIGNS', appMode)}
                 </h3>
               </div>
               <p className="text-gray-400 text-sm mb-6">
-                Choose your mission type
+                Choose your {appMode === 'delivery' ? 'delivery' : 'mission'} type
               </p>
               <div className="space-y-3">
                 <NeuraButton 
@@ -227,7 +229,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
                   })}
                 >
                   <Sword className="w-4 h-4 mr-2" />
-                  Campaign Mode
+                  {appMode === 'delivery' ? 'Route Planning' : 'Campaign Mode'}
                   <ChevronRight className="w-4 h-4 ml-auto" />
                 </NeuraButton>
                 
@@ -240,7 +242,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
                   })}
                 >
                   <Calendar className="w-4 h-4 mr-2" />
-                  Daily Contracts
+                  {getTerm('DAILY_CONTRACTS', appMode)}
                   <ChevronRight className="w-4 h-4 ml-auto" />
                 </NeuraButton>
                 
@@ -266,7 +268,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
               <div className="flex items-center gap-2 mb-4">
                 <Zap className="w-5 h-5 text-green-400" />
                 <h3 className="text-green-400 font-mono font-bold uppercase tracking-wide">
-                  UNLOCK PARTNERS
+                  {appMode === 'delivery' ? 'UNLOCK DRIVERS' : 'UNLOCK PARTNERS'}
                 </h3>
               </div>
               <p className="text-gray-400 text-sm mb-6">
@@ -365,7 +367,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
               className="px-8"
             >
               <Play className="w-5 h-5 mr-2" />
-              START MISSION
+              {appMode === 'delivery' ? 'START DELIVERY' : 'START MISSION'}
             </NeuraButton>
             
             <NeuraButton 
@@ -375,7 +377,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
               onClick={() => showPanel('gachaRecruitment', { position: 'overlay', size: 'large' })}
             >
               <Zap className="w-5 h-5 mr-2" />
-              RECRUITMENT
+              {getTerm('RECRUIT', appMode).toUpperCase()}
             </NeuraButton>
             
             <NeuraButton 
@@ -401,7 +403,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span>WHIX COURIER NETWORK</span>
+            <span>{appMode === 'delivery' ? 'WHIX DELIVERY NETWORK' : 'WHIX COURIER NETWORK'}</span>
           </div>
         </div>
       </div>

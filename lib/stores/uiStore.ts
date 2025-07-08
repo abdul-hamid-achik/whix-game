@@ -37,6 +37,7 @@ export interface UIState {
     showTutorials: boolean;
     reducedMotion: boolean;
     effectsIntensity: 'low' | 'medium' | 'high';
+    appMode: 'game' | 'delivery';
   };
   
   // Navigation history for back button functionality
@@ -83,6 +84,7 @@ const initialState: UIState = {
     showTutorials: true,
     reducedMotion: false,
     effectsIntensity: 'low',
+    appMode: 'game',
   },
   navigationHistory: [],
   isLoading: false,

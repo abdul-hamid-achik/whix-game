@@ -186,6 +186,21 @@ function VideoSettings({ settings, onChange }: { settings: any; onChange: (key: 
         value={settings.reduceMotion || false}
         onChange={(value) => onChange('reduceMotion', value)}
       />
+      <div className="border-t border-purple-500/20 pt-6 mt-6">
+        <h4 className="text-purple-400 font-medium mb-4">APP MODE</h4>
+        <SettingSelect
+          label="Interface Mode"
+          value={settings.appMode || 'game'}
+          options={[
+            { value: 'game', label: 'Game Mode (Original)' },
+            { value: 'delivery', label: 'Delivery App Mode' }
+          ]}
+          onChange={(value) => onChange('appMode', value)}
+        />
+        <p className="text-sm text-gray-400 mt-2">
+          Switch between game interface and delivery app interface. Maintains Soviet-Aztec aesthetic.
+        </p>
+      </div>
     </div>
   );
 }
@@ -294,9 +309,10 @@ function AboutSection() {
       
       <div className="bg-gray-800/50 p-6 rounded-lg border border-purple-500/20">
         <p className="text-gray-300 text-sm leading-relaxed">
-          WHIX is a cyberpunk-themed game about neurodivergent delivery partners navigating 
-          a dystopian gig economy. Battle corporate exploitation while managing your team 
-          of unique individuals in the neon-lit streets of Polanco.
+          WHIX is a Soviet-Aztec themed delivery management platform that doubles as a tactical RPG.
+          Help neurodivergent delivery partners navigate a surveillance capitalism dystopia while 
+          providing essential services to the community. Switch between game and delivery app modes 
+          to experience both revolutionary gameplay and practical delivery management.
         </p>
       </div>
       

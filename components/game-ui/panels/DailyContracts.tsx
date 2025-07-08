@@ -13,6 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
+import { useUIStore } from '@/lib/stores/uiStore';
+import { getTerm, transformText } from '@/lib/config/delivery-mode-config';
 import { 
   DailyContract, 
   ContractType, 
@@ -45,6 +47,8 @@ const DIFFICULTY_COLORS = {
 export function DailyContracts({ onSelectContract }: DailyContractsProps) {
   const { level, missionsCompleted } = useGameStore();
   const { getActivePartners } = usePartnerStore();
+  const { settings } = useUIStore();
+  const appMode = settings.appMode || 'game';
   const [contracts, setContracts] = useState<DailyContract[]>([]);
   const [selectedContract, setSelectedContract] = useState<DailyContract | null>(null);
   const [timeUntilReset, setTimeUntilReset] = useState<string>('');
@@ -104,10 +108,10 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
-              Daily Contracts
+              {getTerm('DAILY_CONTRACTS', appMode)}
             </h2>
             <p className="text-gray-400 mt-1">
-              Complete time-limited challenges for bonus rewards
+              {appMode === 'delivery' ? 'Accept and complete delivery orders for extra earnings' : 'Complete time-limited challenges for bonus rewards'}
             </p>
           </div>
           <div className="text-right">
@@ -121,7 +125,7 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">Contracts Available</p>
+                  <p className="text-sm text-gray-400">{appMode === 'delivery' ? 'Orders Available' : 'Contracts Available'}</p>
                   <p className="text-2xl font-bold">{contracts.length}</p>
                 </div>
                 <Trophy className="w-8 h-8 text-yellow-400" />
@@ -147,7 +151,7 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-400">Tips Earned</p>
+                  <p className="text-sm text-gray-400">{getTerm('TIPS', appMode)} Earned</p>
                   <p className="text-2xl font-bold">
                     {contracts
                       .filter(c => c.completed && c.claimed)
@@ -164,14 +168,14 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Contract List */}
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold mb-3">Available Contracts</h3>
+          <h3 className="text-xl font-semibold mb-3">{appMode === 'delivery' ? 'Available Orders' : 'Available Contracts'}</h3>
           
           {contracts.length === 0 ? (
             <Card className="bg-gray-800/50 border-gray-700">
               <CardContent className="p-8 text-center">
                 <Clock className="w-12 h-12 text-gray-600 mx-auto mb-3" />
                 <p className="text-gray-400">
-                  Loading today's contracts...
+                  {appMode === 'delivery' ? "Loading today's delivery orders..." : "Loading today's contracts..."}
                 </p>
               </CardContent>
             </Card>
@@ -214,7 +218,7 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
                             </div>
                             <div>
                               <h4 className="font-semibold text-lg">{contract.title}</h4>
-                              <p className="text-sm text-gray-400">by {contract.clientName}</p>
+                              <p className="text-sm text-gray-400">{appMode === 'delivery' ? 'from' : 'by'} {contract.clientName}</p>
                             </div>
                           </div>
                           <Badge 
@@ -263,7 +267,7 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
 
         {/* Contract Details */}
         <div>
-          <h3 className="text-xl font-semibold mb-3">Contract Details</h3>
+          <h3 className="text-xl font-semibold mb-3">{appMode === 'delivery' ? 'Order Details' : 'Contract Details'}</h3>
           
           {selectedContract ? (
             <motion.div
@@ -284,7 +288,7 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <h4 className="font-semibold mb-2">Client</h4>
+                    <h4 className="font-semibold mb-2">{appMode === 'delivery' ? 'Customer' : 'Client'}</h4>
                     <p className="text-gray-400">{selectedContract.clientName}</p>
                   </div>
                   
@@ -294,7 +298,7 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
                   </div>
                   
                   <div>
-                    <h4 className="font-semibold mb-2">Objectives</h4>
+                    <h4 className="font-semibold mb-2">{appMode === 'delivery' ? 'Delivery Requirements' : 'Objectives'}</h4>
                     <div className="space-y-2">
                       {selectedContract.objectives.map((obj) => (
                         <div key={obj.id} className="flex items-center gap-2">
@@ -370,7 +374,7 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
                         missionsCompleted
                       ).canAccept}
                     >
-                      Accept Contract
+                      {appMode === 'delivery' ? 'Accept Order' : 'Accept Contract'}
                     </Button>
                   )}
                 </CardContent>
@@ -381,7 +385,7 @@ export function DailyContracts({ onSelectContract }: DailyContractsProps) {
               <CardContent className="p-8 text-center">
                 <Target className="w-12 h-12 text-gray-600 mx-auto mb-3" />
                 <p className="text-gray-400">
-                  Select a contract to view details
+                  {appMode === 'delivery' ? 'Select an order to view details' : 'Select a contract to view details'}
                 </p>
               </CardContent>
             </Card>
