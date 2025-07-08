@@ -35,6 +35,8 @@ export interface UIState {
     soundEffects: boolean;
     uiScale: number;
     showTutorials: boolean;
+    reducedMotion: boolean;
+    effectsIntensity: 'low' | 'medium' | 'high';
   };
   
   // Navigation history for back button functionality
@@ -79,6 +81,8 @@ const initialState: UIState = {
     soundEffects: true,
     uiScale: 1,
     showTutorials: true,
+    reducedMotion: false,
+    effectsIntensity: 'low',
   },
   navigationHistory: [],
   isLoading: false,

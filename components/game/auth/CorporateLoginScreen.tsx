@@ -3,7 +3,8 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TerminalText, CRTEffect } from '../effects/VisualEffects';
-import { NeuraButton, NeuraInput } from '@/components/neura';
+import { NeuraButton } from '@/components/neura';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { 
   Eye, 
@@ -240,7 +241,7 @@ export function LoginForm({
           <label className="block text-sm font-mono text-gray-400 mb-2">
             Employee Email
           </label>
-          <NeuraInput
+          <Input
             type="email"
             value={credentials.email}
             onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
@@ -255,7 +256,7 @@ export function LoginForm({
             Corporate Password
           </label>
           <div className="relative">
-            <NeuraInput
+            <Input
               type={showPassword ? "text" : "password"}
               value={credentials.password}
               onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
@@ -303,7 +304,7 @@ export function LoginForm({
       </div>
 
       <NeuraButton
-        variant="outline"
+        variant="ghost"
         onClick={onSkipDemo}
         className="w-full"
         disabled={isLoading}

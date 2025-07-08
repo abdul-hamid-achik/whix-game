@@ -13,6 +13,7 @@ import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { useChapterMapStore } from '@/lib/stores/chapterMapStore';
 import { useUIStore, GameState } from '@/lib/stores/uiStore';
+import { ContentPartnerSchema } from '@/lib/schemas/game-schemas';
 import { 
   CombatUnit, 
   CombatPosition, 
@@ -171,12 +172,12 @@ export default function CombatPage() {
       if (allPartners.length === 0) {
         console.log('🚨 No partners exist! Creating emergency demo partners...');
         
-        // Create a simple demo partner for combat
-        const demoPartner = {
+        // Create a simple demo partner for combat that matches ContentPartner interface
+        const demoPartnerData = {
           id: 'demo-partner-1',
           name: 'Demo Courier',
           class: 'courier' as const,
-          primaryTrait: 'hyperactive' as const,
+          primaryTrait: 'hyperfocus' as const,
           level: 1,
           rarity: 'common' as const,
           stats: {
@@ -191,9 +192,19 @@ export default function CombatPage() {
             likes: ['Fast delivery', 'City exploration'],
             dislikes: ['Waiting', 'Bureaucracy'],
             backstory: 'A hyperactive courier ready for action.'
-          }
+          },
+          // ContentPartner required fields
+          contentId: 'demo-partner-1',
+          isContentBased: true as const,
+          relationships: {
+            player: 50,
+            whix_corporate: -20
+          },
+          backstory: 'A hyperactive courier ready for action.'
         };
         
+        // Validate with Zod schema
+        const demoPartner = ContentPartnerSchema.parse(demoPartnerData);
         const newPartner = addPartner(demoPartner);
         setActiveTeam([newPartner.id]);
         partners = [newPartner];

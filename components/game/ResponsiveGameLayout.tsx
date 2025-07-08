@@ -27,7 +27,7 @@ export function ResponsiveGameLayout({
   const shouldShowSidebar = ![
     GameState.TACTICAL_COMBAT,
     GameState.EVENT_RESOLUTION,
-    GameState.MISSION_ACTIVE,
+    GameState.MISSION_BRIEFING,
   ].includes(currentState);
 
   // Mobile layout (single column, collapsible menu)

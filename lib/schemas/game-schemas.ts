@@ -26,6 +26,15 @@ export const GeneratedPartnerSchema = z.object({
   }),
 });
 
+export const ContentPartnerSchema = GeneratedPartnerSchema.extend({
+  contentId: z.string(),
+  isContentBased: z.literal(true),
+  unlockCondition: z.string().optional(),
+  voiceStyle: z.string().optional(),
+  relationships: z.record(z.string(), z.number()),
+  backstory: z.string(),
+});
+
 export const StoredPartnerSchema = GeneratedPartnerSchema.extend({
   experience: z.number(),
   currentEnergy: z.number(),
@@ -125,6 +134,7 @@ export const UIContextDataSchema = z.object({
   combatResult: z.string().optional(),
   eventResult: z.string().optional(),
   rewards: RewardsDataSchema,
+  loadingVariant: z.enum(['boot', 'mission', 'sync', 'corporate']).optional(),
   // Mission performance data
   objectives: z.array(MissionObjectiveSchema).optional(),
   timeSpent: z.number().optional(),
@@ -183,6 +193,7 @@ export const GameStatsSchema = z.object({
 
 // Export types
 export type GeneratedPartner = z.infer<typeof GeneratedPartnerSchema>;
+export type ContentPartner = z.infer<typeof ContentPartnerSchema>;
 export type StoredPartner = z.infer<typeof StoredPartnerSchema>;
 // GameState is exported as enum above
 export type UIContextData = z.infer<typeof UIContextDataSchema>;
