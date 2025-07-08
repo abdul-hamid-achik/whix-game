@@ -6,13 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DeliveryGridView } from './DeliveryGridView';
 import { SocialEncounterView } from './SocialEncounterView';
+import { DeliveryHUD } from '@/components/game-ui/hud/DeliveryHUD';
 import { DeliveryGridEngine, DeliveryUnit, DeliveryPosition } from '@/lib/game/delivery-grid';
 import { DISTRICT_TEMPLATES, DistrictId } from '@/lib/game/district-templates';
 import { useEncounterFromMarkdown } from '@/lib/hooks/useEncounter';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useMissionStore } from '@/lib/stores/missionStore';
 import { useGameStore } from '@/lib/stores/gameStore';
-import { CheckCircle, XCircle, Navigation, Package } from 'lucide-react';
+import { useCustomerStore } from '@/lib/stores/customerStore';
+import { CheckCircle, XCircle, Navigation, Package, User } from 'lucide-react';
 
 interface DeliveryNavigationViewProps {
   districtId: DistrictId;
@@ -30,6 +32,7 @@ export function DeliveryNavigationView({
   const { getActivePartners } = usePartnerStore();
   const { currentMissionId, getMissionById, updateMissionProgress, completeMission } = useMissionStore();
   const { earnTips, gainExperience } = useGameStore();
+  const { generateRandomCustomer, setActiveCustomer, recordInteraction } = useCustomerStore();
   
   // Game state
   const [gamePhase, setGamePhase] = useState<GamePhase>('navigation');
@@ -39,6 +42,14 @@ export function DeliveryNavigationView({
   const [currentEncounterId, setCurrentEncounterId] = useState<string | null>(null);
   const [turnNumber, setTurnNumber] = useState(1);
   const [gameResult, setGameResult] = useState<{ success: boolean; message: string } | null>(null);
+  
+  // HUD state
+  const [packageCondition, setPackageCondition] = useState(100);
+  const [customerMood, setCustomerMood] = useState<'happy' | 'neutral' | 'impatient' | 'angry'>('neutral');
+  const [encounterCount, setEncounterCount] = useState(0);
+  
+  // Customer state
+  const [currentCustomer, setCurrentCustomer] = useState<ReturnType<typeof generateRandomCustomer> | null>(null);
   
   // Load encounter if needed
   const { encounter, loading: encounterLoading } = useEncounterFromMarkdown(currentEncounterId || '');
@@ -77,7 +88,12 @@ export function DeliveryNavigationView({
     setGridEngine(engine);
     setSelectedUnit(deliveryUnit);
     setValidMoves(engine.getValidMoves(deliveryUnit));
-  }, [districtId, getActivePartners]);
+    
+    // Generate customer for this delivery
+    const customer = generateRandomCustomer(districtId);
+    setCurrentCustomer(customer);
+    setActiveCustomer(customer.id);
+  }, [districtId, getActivePartners, generateRandomCustomer, setActiveCustomer]);
   
   // Handle cell clicks
   const handleCellClick = useCallback((position: DeliveryPosition) => {
@@ -100,6 +116,26 @@ export function DeliveryNavigationView({
         // Check for delivery completion
         if (gridEngine.checkDeliveryComplete(selectedUnit.id)) {
           setGamePhase('completed');
+          
+          // Record customer interaction
+          if (currentCustomer && selectedUnit) {
+            const interaction = recordInteraction({
+              customerId: currentCustomer.id,
+              deliveryId: `delivery-${Date.now()}`,
+              partnerId: selectedUnit.partnerId,
+              deliveryTime: turnNumber * 2, // Approximate minutes (2 min per turn)
+              packageCondition,
+              orderAccuracy: true, // For now, assume order is correct
+              specialRequestsMet: packageCondition > 70, // Simple logic for demo
+              partnerBehavior: encounterCount === 0 ? 'professional' : 'rushed',
+              customerResponse: customerMood
+            });
+            
+            // Update rewards based on customer satisfaction
+            const baseTips = 25;
+            earnTips(interaction.tipAmount);
+            gainExperience(Math.floor(50 * (packageCondition / 100)));
+          }
           
           // Update mission progress if applicable
           const currentMission = currentMissionId ? getMissionById(currentMissionId) : null;
@@ -135,10 +171,11 @@ export function DeliveryNavigationView({
         if (result.encounter) {
           setCurrentEncounterId(result.encounter);
           setGamePhase('encounter');
+          setEncounterCount(prev => prev + 1);
         }
       }
     }
-  }, [gridEngine, selectedUnit, validMoves, gamePhase, currentMissionId, getMissionById, updateMissionProgress, completeMission, earnTips, gainExperience, turnNumber]);
+  }, [gridEngine, selectedUnit, validMoves, gamePhase, currentMissionId, getMissionById, updateMissionProgress, completeMission, earnTips, gainExperience, turnNumber, currentCustomer, packageCondition, customerMood, encounterCount, recordInteraction]);
   
   // Handle unit selection
   const handleUnitSelect = useCallback((unitId: string) => {
@@ -201,8 +238,27 @@ export function DeliveryNavigationView({
     gridEngine.resetTurn();
     setTurnNumber(prev => prev + 1);
     
-    // Check if time ran out
+    // Update package condition (degrades over time)
+    setPackageCondition(prev => Math.max(0, prev - 5)); // Lose 5% per turn
+    
+    // Update customer mood based on time remaining
     const units = gridEngine.getAllUnits();
+    if (units.length > 0) {
+      const unit = units[0];
+      const timeRemainingPercent = (unit.package.timeRemaining / 15) * 100; // Assuming 15 minutes initial
+      
+      if (timeRemainingPercent > 60) {
+        setCustomerMood('happy');
+      } else if (timeRemainingPercent > 40) {
+        setCustomerMood('neutral');
+      } else if (timeRemainingPercent > 20) {
+        setCustomerMood('impatient');
+      } else {
+        setCustomerMood('angry');
+      }
+    }
+    
+    // Check if time ran out
     if (units.some(unit => unit.package.timeRemaining <= 0)) {
       setGamePhase('failed');
       setGameResult({
@@ -288,7 +344,20 @@ export function DeliveryNavigationView({
   // Navigation phase
   return (
     <div className={className}>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
+      {/* Delivery HUD */}
+      {selectedUnit && (
+        <DeliveryHUD
+          deliveryUnit={selectedUnit}
+          timeRemaining={selectedUnit.package.timeRemaining * 60} // Convert to seconds
+          packageCondition={packageCondition}
+          customerMood={customerMood}
+          estimatedTips={Math.floor(25 * (packageCondition / 100) * (customerMood === 'happy' ? 1.2 : customerMood === 'angry' ? 0.7 : 1))}
+          currentDistrict={districtId}
+          encounterCount={encounterCount}
+        />
+      )}
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full pt-24">
         {/* Main grid view */}
         <div className="lg:col-span-2">
           <Card className="h-full">
@@ -328,6 +397,44 @@ export function DeliveryNavigationView({
               </div>
             </CardContent>
           </Card>
+          
+          {/* Customer info */}
+          {currentCustomer && (
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="font-semibold mb-2 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Customer
+                </h3>
+                <div className="space-y-2">
+                  <div>
+                    <p className="font-medium">{currentCustomer.name}</p>
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {currentCustomer.tier} Customer • {currentCustomer.currentMood}
+                    </p>
+                  </div>
+                  <div className="text-sm space-y-1">
+                    <p>{currentCustomer.address.street}</p>
+                    {currentCustomer.address.specialInstructions && (
+                      <p className="text-xs text-muted-foreground">
+                        {currentCustomer.address.specialInstructions}
+                      </p>
+                    )}
+                  </div>
+                  {currentCustomer.defaultRequests.length > 0 && (
+                    <div className="pt-2 border-t">
+                      <p className="text-xs font-medium mb-1">Special Requests:</p>
+                      {currentCustomer.defaultRequests.map((req, idx) => (
+                        <p key={idx} className="text-xs text-muted-foreground">
+                          • {req.type.replace(/_/g, ' ')}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
           
           {/* District info */}
           <Card>
