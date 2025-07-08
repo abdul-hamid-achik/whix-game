@@ -227,6 +227,29 @@ export const dialogMetadataSchema = baseMetadataSchema.extend({
   animation: z.string().optional(),
 });
 
+// UI Content Schema
+export const uiContentMetadataSchema = baseMetadataSchema.extend({
+  type: z.literal('ui-content'),
+  version: z.string(),
+  category: z.enum(['loading', 'login', 'error', 'general']),
+  screens: z.record(z.string(), z.any()).optional(),
+  messages: z.record(z.string(), z.union([z.string(), z.array(z.string())])).optional(),
+  branding: z.object({
+    company_name: z.string().optional(),
+    logo_text: z.string().optional(),
+    slogan: z.string().optional(),
+    colors: z.record(z.string(), z.string()).optional(),
+  }).optional(),
+  animations: z.object({
+    timings: z.record(z.string(), z.number()).optional(),
+    effects: z.record(z.string(), z.boolean()).optional(),
+  }).optional(),
+  accessibility: z.object({
+    screen_reader_text: z.record(z.string(), z.string()).optional(),
+    keyboard_shortcuts: z.record(z.string(), z.string()).optional(),
+  }).optional(),
+});
+
 // Union type for all content metadata
 export const contentMetadataSchema = z.discriminatedUnion('type', [
   characterMetadataSchema,
@@ -236,6 +259,7 @@ export const contentMetadataSchema = z.discriminatedUnion('type', [
   chapterMetadataSchema,
   traitMetadataSchema,
   dialogMetadataSchema,
+  uiContentMetadataSchema,
 ]);
 
 // Content file schema (includes the parsed content)
@@ -255,6 +279,7 @@ export type MapMetadata = z.infer<typeof mapMetadataSchema>;
 export type ChapterMetadata = z.infer<typeof chapterMetadataSchema>;
 export type TraitMetadata = z.infer<typeof traitMetadataSchema>;
 export type DialogMetadata = z.infer<typeof dialogMetadataSchema>;
+export type UIContentMetadata = z.infer<typeof uiContentMetadataSchema>;
 export type ContentMetadata = z.infer<typeof contentMetadataSchema>;
 export type ContentFile<T> = z.infer<ReturnType<typeof contentFileSchema<z.ZodType<T>>>>;
 

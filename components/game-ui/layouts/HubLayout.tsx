@@ -22,6 +22,8 @@ import {
   ShoppingBag,
   BarChart3
 } from 'lucide-react';
+import { useDeviceInfo } from '@/lib/hooks/useMediaQuery';
+import { cn } from '@/lib/utils';
 
 interface HubLayoutProps {
   children: ReactNode;
@@ -32,6 +34,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
   const { currentTips: tips, level, experience, totalTipsEarned, missionsCompleted } = useGameStore();
   const { completedChapters, storyFlags } = useStoryStore();
   const { showPanel } = useUIStore();
+  const { isMobile, isTablet } = useDeviceInfo();
   
   // Check for new character unlocks
   const gameState = {
@@ -60,25 +63,46 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="bg-gray-900/80 backdrop-blur-sm border-b border-cyan-500/30 p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-cyan-400 font-mono">
+      <div className={cn(
+        "bg-gray-900/80 backdrop-blur-sm border-b border-cyan-500/30",
+        isMobile ? "p-3" : "p-4"
+      )}>
+        <div className={cn(
+          "flex items-center justify-between",
+          isMobile && "flex-col gap-2"
+        )}>
+          <div className={isMobile ? "text-center" : ""}>
+            <h1 className={cn(
+              "font-bold text-cyan-400 font-mono",
+              isMobile ? "text-xl" : "text-2xl"
+            )}>
               WHIX COURIER HUB
             </h1>
-            <p className="text-gray-400 text-sm">
-              Active Partners: {activePartners.length}/{maxPartners} | 
-              Current Operation: Chapter {currentChapter}
+            <p className={cn(
+              "text-gray-400",
+              isMobile ? "text-xs" : "text-sm"
+            )}>
+              Active: {activePartners.length}/{maxPartners} | 
+              Chapter {currentChapter}
             </p>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-yellow-400 font-mono text-lg">
-                💰 {tips.toLocaleString()} TIPS
+          <div className={cn(
+            "flex items-center gap-4",
+            isMobile && "gap-2"
+          )}>
+            <div className={isMobile ? "text-center" : "text-right"}>
+              <p className={cn(
+                "text-yellow-400 font-mono",
+                isMobile ? "text-base" : "text-lg"
+              )}>
+                💰 {tips.toLocaleString()}
               </p>
-              <p className="text-blue-400 text-sm">
-                Level {level} | {experience} XP
+              <p className={cn(
+                "text-blue-400",
+                isMobile ? "text-xs" : "text-sm"
+              )}>
+                Lv.{level} | {experience}XP
               </p>
             </div>
             

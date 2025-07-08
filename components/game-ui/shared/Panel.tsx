@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/lib/stores/uiStore';
 import { cn } from '@/lib/utils';
+import { useDeviceInfo } from '@/lib/hooks/useMediaQuery';
 
 interface PanelProps {
   id: string;
@@ -29,6 +30,7 @@ export function Panel({
   closable = true 
 }: PanelProps) {
   const { hidePanel } = useUIStore();
+  const { isMobile, isTablet } = useDeviceInfo();
 
   if (!visible) return null;
 
@@ -52,6 +54,38 @@ export function Panel({
   const getSizeClasses = () => {
     if (position === 'fullscreen') return 'w-full h-full';
     
+    // Mobile: Full width panels
+    if (isMobile) {
+      switch (size) {
+        case 'small':
+          return 'w-full max-h-[50vh]';
+        case 'medium':
+          return 'w-full max-h-[70vh]';
+        case 'large':
+        case 'fullscreen':
+          return 'w-full h-full';
+        default:
+          return 'w-full max-h-[70vh]';
+      }
+    }
+    
+    // Tablet: Slightly smaller panels
+    if (isTablet) {
+      switch (size) {
+        case 'small':
+          return 'w-72 max-h-96';
+        case 'medium':
+          return 'w-80 max-h-[70vh]';
+        case 'large':
+          return 'w-[600px] max-w-[90vw] max-h-[90vh]';
+        case 'fullscreen':
+          return 'w-full h-full';
+        default:
+          return 'w-80 max-h-[70vh]';
+      }
+    }
+    
+    // Desktop: Original sizes
     switch (size) {
       case 'small':
         return 'w-80 max-h-96';

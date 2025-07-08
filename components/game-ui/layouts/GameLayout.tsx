@@ -26,6 +26,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Settings } from 'lucide-react';
 import { NeuraButton } from '@/components/neura';
 import { TransitionWrapper } from '../TransitionWrapper';
+import { useDeviceInfo } from '@/lib/hooks/useMediaQuery';
+import { cn } from '@/lib/utils';
+import { VisualEffects } from '@/components/game/effects/VisualEffects';
 
 interface GameLayoutProps {
   children: React.ReactNode;
@@ -34,6 +37,7 @@ interface GameLayoutProps {
 export function GameLayout({ children }: GameLayoutProps) {
   const { currentState, panels, isLoading, settings, contextData, hidePanel, setState } = useUIStore();
   const [showSettings, setShowSettings] = useState(false);
+  const { isMobile, isTablet, isTouch } = useDeviceInfo();
 
   const renderStateLayout = () => {
     switch (currentState) {
@@ -218,6 +222,18 @@ export function GameLayout({ children }: GameLayoutProps) {
         isOpen={showSettings} 
         onClose={() => setShowSettings(false)} 
       />
+
+      {/* Visual Effects Layer */}
+      {settings.theme === 'neura' && !settings.reducedMotion && (
+        <VisualEffects
+          scanlines={true}
+          glitch={true}
+          noise={true}
+          vignette={true}
+          flicker={false}
+          intensity={settings.effectsIntensity || 'low'}
+        />
+      )}
     </div>
   );
 }
