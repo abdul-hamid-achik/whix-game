@@ -6,7 +6,7 @@ import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { useStoryStore } from '@/lib/stores/storyStore';
 import { useUIStore } from '@/lib/stores/uiStore';
-import { getTerm, getTerms } from '@/lib/config/delivery-mode-config';
+import { getTerm } from '@/lib/config/delivery-mode-config';
 import { NeuraPanel, NeuraButton, NeuraProgressBar } from '@/components/neura';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

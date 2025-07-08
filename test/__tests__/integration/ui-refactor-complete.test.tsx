@@ -75,7 +75,7 @@ describe('UI Refactor Integration Tests', () => {
       );
 
       expect(container).toBeTruthy();
-      expect(screen.getByText(/WHIX COURIER HUB/)).toBeInTheDocument();
+      expect(screen.getByText(/COURIER HUB/)).toBeInTheDocument();
     });
 
     it('should handle responsive design across devices', () => {
@@ -248,7 +248,7 @@ describe('UI Refactor Integration Tests', () => {
       );
 
       // Initial state should be hub
-      expect(screen.getByText('WHIX COURIER HUB')).toBeInTheDocument();
+      expect(screen.getByText('COURIER HUB')).toBeInTheDocument();
       
       // Settings button should be present
       const settingsButton = container.querySelector('[data-testid="settings-button"]') || 

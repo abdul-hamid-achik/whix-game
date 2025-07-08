@@ -49,9 +49,14 @@ export function AdventureMapLayout({ children: _children }: AdventureMapLayoutPr
     
     // Update map and move to tactical encounter
     // Create a deep copy to ensure React detects the state change
-    const mapCopy = {
+    const nodesCopy: Map<string, MapNode> = new (globalThis.Map)();
+    chapterMap.nodes.forEach((value, key) => {
+      nodesCopy.set(key, value);
+    });
+    
+    const mapCopy: ChapterMap = {
       ...chapterMap,
-      nodes: new Map(chapterMap.nodes)
+      nodes: nodesCopy
     };
     const updatedMap = moveToNode(mapCopy, node.id);
     setChapterMap(updatedMap);

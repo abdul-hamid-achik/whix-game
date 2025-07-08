@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useUIStore } from '@/lib/stores/uiStore';
-import { getTerm, transformText } from '@/lib/config/delivery-mode-config';
+import { getTerm } from '@/lib/config/delivery-mode-config';
 import { 
   DailyContract, 
   ContractType, 

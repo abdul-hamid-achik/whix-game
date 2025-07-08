@@ -2,7 +2,6 @@
 
 import { ReactNode, useState } from 'react';
 import { useUIStore, GameState } from '@/lib/stores/uiStore';
-import { getTerm, getIcon } from '@/lib/config/delivery-mode-config';
 import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { NeuraButton } from '@/components/neura';
