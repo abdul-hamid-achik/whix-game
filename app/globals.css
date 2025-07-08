@@ -3,6 +3,77 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Pixel Art Game Styles */
+.pixel-perfect {
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.game-viewport {
+  /* Ensure crisp pixel rendering */
+  image-rendering: pixelated;
+  /* Prevent blur on transform */
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  /* Lock to pixel grid */
+  transform: translateZ(0);
+}
+
+/* CRT Monitor Effect for wide screens */
+.crt-bezel {
+  background: linear-gradient(
+    45deg,
+    #1a1a1a 0%,
+    #2a2a2a 25%,
+    #1a1a1a 50%,
+    #2a2a2a 75%,
+    #1a1a1a 100%
+  );
+  border-radius: 8px;
+  box-shadow: 
+    inset 0 0 0 2px #333,
+    inset 0 0 0 4px #111,
+    0 0 20px rgba(0, 0, 0, 0.8),
+    0 0 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Game aspect ratio containers */
+.aspect-16-9 {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect-16-10 {
+  aspect-ratio: 16 / 10;
+}
+
+.aspect-4-3 {
+  aspect-ratio: 4 / 3;
+}
+
+/* Retro scan lines effect */
+.retro-scanlines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    transparent 50%,
+    rgba(0, 255, 0, 0.03) 50%
+  );
+  background-size: 100% 4px;
+  animation: scanlines 0.1s linear infinite;
+}
+
+@keyframes scanlines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
 :root {
   /* Soviet-Aztec theme colors */
   --color-soviet-50: #fef2f2;

@@ -3,15 +3,15 @@ id: "neon-heights-corporate"
 type: "level"
 title: "Neon Heights Corporate District"
 name: "Neon Heights"
-description: "The glittering towers of the corporate district, where data flows like water and secrets hide in plain sight"
-chapter: "chapter-1"
+description: "Miguel's first delivery to the corporate towers reveals the surveillance state while building crucial partnerships with fellow neurodivergent couriers"
+chapter: "chapter-1-first-day"
 unlockLevel: 1
 difficulty: "easy"
 estimatedTime: 20
 environment: "urban-towers"
 timeOfDay: "night"
 weatherConditions: "neon-lit fog"
-mainObjective: "Deliver encrypted data package to the 47th floor of DataCorp Tower"
+mainObjective: "Complete first delivery while discovering corporate surveillance and building partner relationships"
 rewards:
   experience: 150
   tips: 500

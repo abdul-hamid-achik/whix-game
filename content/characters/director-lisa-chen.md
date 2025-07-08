@@ -1,8 +1,12 @@
 ---
+id: "director-lisa-chen"
+type: "character"
+title: "Director Lisa Chen"
 name: "Director Lisa Chen"
-class: "executive_manipulator"
-type: "boss"
-level: 18
+description: "Cold corporate predator who specializes in surveillance capitalism and community displacement"
+role: "antagonist"
+class: "specialist"
+published: true
 traits:
   - "surveillance_profiling"
   - "psychological_manipulation"

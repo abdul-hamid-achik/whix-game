@@ -1,8 +1,12 @@
 ---
+id: "miguel-lopez"
+type: "character"
+title: "Miguel Lopez"
 name: "Miguel Lopez"
-class: "protagonist"
-type: "player_character"
-level: "varies_with_progression"
+description: "Anxious but determined delivery partner awakening to resistance consciousness"
+role: "protagonist"
+class: "courier"
+published: true
 traits:
   - "pattern_recognition"
   - "hyperfocus"

@@ -1,8 +1,12 @@
 ---
+id: "father-santiago"
+type: "character"
+title: "Father Santiago Delgado"
 name: "Father Santiago Delgado"
-class: "support_ally"
-type: "npc_ally"
-level: 20
+description: "Compassionate priest who remembers what faith meant before the corporate merger"
+role: "partner"
+class: "negotiator"
+published: true
 traits:
   - "genuine_faith"
   - "community_organizer"

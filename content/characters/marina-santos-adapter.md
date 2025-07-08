@@ -1,8 +1,12 @@
 ---
+id: "marina-santos-adapter"
+type: "character"
+title: "Marina Santos"
 name: "Marina Santos"
-class: "adapted_survivor"
-type: "morally_complex_ally"
-level: 17
+description: "Calculating survivor who chose adaptation over destruction"
+role: "partner"
+class: "negotiator"
+published: true
 traits:
   - "adaptive_numbness"
   - "strategic_compliance"

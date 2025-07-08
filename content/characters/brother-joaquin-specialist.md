@@ -1,8 +1,13 @@
 ---
+id: "brother-joaquin-specialist"
+type: "character"
+title: "Brother Joaquín 'Joaq' Martinez"
 name: "Brother Joaquín 'Joaq' Martinez"
+description: "Former seminary student turned liberation theologist hacker"
+role: "partner"
 class: "specialist"
 rarity: "rare"
-level: 12
+published: true
 traits:
   - "hyperfocus"
   - "sensory_difference"

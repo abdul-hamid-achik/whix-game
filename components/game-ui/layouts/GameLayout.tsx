@@ -27,7 +27,6 @@ import { Settings } from 'lucide-react';
 import { NeuraButton } from '@/components/neura';
 import { TransitionWrapper } from '../TransitionWrapper';
 import { useDeviceInfo } from '@/lib/hooks/useMediaQuery';
-import { cn } from '@/lib/utils';
 import { VisualEffects } from '@/components/game/effects/VisualEffects';
 
 interface GameLayoutProps {
@@ -37,7 +36,7 @@ interface GameLayoutProps {
 export function GameLayout({ children }: GameLayoutProps) {
   const { currentState, panels, isLoading, settings, contextData, hidePanel, setState } = useUIStore();
   const [showSettings, setShowSettings] = useState(false);
-  const { isMobile, isTablet, isTouch } = useDeviceInfo();
+  const { } = useDeviceInfo();
 
   const renderStateLayout = () => {
     switch (currentState) {
@@ -61,7 +60,8 @@ export function GameLayout({ children }: GameLayoutProps) {
   };
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-gray-950">
+    <div className="min-h-screen w-full bg-black flex items-center justify-center">
+      <div className="relative w-full max-w-[1920px] h-screen overflow-hidden bg-gray-950 game-viewport pixel-perfect">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-blue-950/30 to-gray-950" />
       <div 
@@ -238,6 +238,7 @@ export function GameLayout({ children }: GameLayoutProps) {
           intensity={settings.effectsIntensity || 'low'}
         />
       )}
+      </div>
     </div>
   );
 }

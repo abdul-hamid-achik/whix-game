@@ -2,7 +2,9 @@
 id: "rush-hour-rebellion"
 type: "level"
 title: "Rush Hour Rebellion"
-description: "Deliver critical supplies to striking workers while avoiding corporate enforcers"
+description: "Support the growing labor rebellion while navigating corporate crackdowns and building resistance networks"
+chapter: "chapter-6-gathering-storm"
+unlockLevel: 15
 difficulty: "hard"
 missionType: "rush_delivery"
 objectives:

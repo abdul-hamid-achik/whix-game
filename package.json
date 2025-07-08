@@ -15,7 +15,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx lib/db/seed-basic.ts"
+    "db:seed": "tsx lib/db/seed.ts",
+    "assets:generate": "tsx scripts/generate-character-assets.ts",
+    "assets:generate:dry": "tsx scripts/generate-character-assets.ts --dry-run"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",

@@ -1,8 +1,13 @@
 ---
+id: "ricardo-morales-technician"
+type: "character"
+title: "Ricardo 'Tech' Morales"
 name: "Ricardo 'Tech' Morales"
+description: "Brilliant technician who sees the world in systems and patterns"
+role: "partner"
 class: "specialist"
 rarity: "rare"
-level: 14
+published: true
 traits:
   - "systematic_thinking"
   - "pattern_recognition"

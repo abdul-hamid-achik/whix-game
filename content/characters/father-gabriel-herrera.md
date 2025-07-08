@@ -1,8 +1,12 @@
 ---
+id: "father-gabriel-herrera"
+type: "character"
+title: "Father Gabriel Herrera"
 name: "Father Gabriel Herrera"
-class: "corrupt_priest"
-type: "predatory_boss"
-level: 16
+description: "Handsome manipulator who uses religious authority to enable corporate abuse"
+role: "antagonist"
+class: "negotiator"
+published: true
 traits:
   - "religious_manipulation"
   - "false_charisma"

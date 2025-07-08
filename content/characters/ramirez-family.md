@@ -1,6 +1,12 @@
 ---
+id: "ramirez-family"
+type: "character"
 title: "The Ramirez Family"
+name: "The Ramirez Family"
 description: "A family in crisis representing the human cost of corporate gig economy exploitation"
+role: "npc"
+class: "courier"
+published: true
 family_unit: "Nuclear family with grandmother"
 location: "Calle de las Esperanzas, Apartment 3B"
 context: "Alejandro's 7th birthday during family breakdown"

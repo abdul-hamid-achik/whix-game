@@ -7,7 +7,6 @@ description: "A frustrated customer who refuses to tip after delayed deliveries"
 role: "antagonist"
 class: "negotiator"
 rarity: "common"
-level: 5
 traits: ["attention_to_detail"]
 personalityProfile:
   primary: "aggressive"

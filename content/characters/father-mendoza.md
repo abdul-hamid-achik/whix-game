@@ -1,8 +1,12 @@
 ---
+id: "father-mendoza"
+type: "character"
+title: "Father Alejandro Mendoza"
 name: "Father Alejandro Mendoza"
-class: "corporate_priest"
-type: "boss"
-level: 15
+description: "Charismatic zealot who merged Catholic doctrine with corporate efficiency gospel"
+role: "antagonist"
+class: "specialist"
+published: true
 traits:
   - "algorithmic_zealotry"
   - "neural_augmentation"

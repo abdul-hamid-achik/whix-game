@@ -1,8 +1,13 @@
 ---
+id: "isabella-reyes-analyst"
+type: "character"
+title: "Isabella 'Izzy' Reyes"
 name: "Isabella 'Izzy' Reyes"
+description: "Obsessive-compulsive data analyst who sees hidden patterns everywhere"
+role: "partner"
 class: "analyst"
 rarity: "rare"
-level: 10
+published: true
 traits:
   - "pattern_recognition"
   - "enhanced_memory"

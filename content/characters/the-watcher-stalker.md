@@ -1,8 +1,12 @@
 ---
+id: "the-watcher-stalker"
+type: "character"
+title: "The Watcher"
 name: "The Watcher"
-class: "persistent_stalker"
-type: "special_enemy"
-level: 18
+description: "Silent predator who uses surveillance technology and psychological manipulation"
+role: "antagonist"
+class: "specialist"
+published: true
 traits:
   - "neural_tracking"
   - "predictive_behavior"

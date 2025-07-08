@@ -1,8 +1,12 @@
 ---
+id: "ekaterina-petrov-resistor"
+type: "character"
+title: "Ekaterina 'Katya' Petrov"
 name: "Ekaterina 'Katya' Petrov"
-class: "hidden_resistor"
-type: "revolutionary_ally"
-level: 19
+description: "Steel-willed revolutionary hiding behind perfect compliance"
+role: "partner"
+class: "specialist"
+published: true
 traits:
   - "strategic_deception"
   - "righteous_fury"

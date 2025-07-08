@@ -1,6 +1,12 @@
 ---
+id: "street-enemies"
+type: "character"
 title: "Street Enemies of Neo-Singapore"
+name: "Street Enemies of Neo-Singapore"
 description: "Various antagonists players encounter in different districts"
+role: "antagonist"
+class: "courier"
+published: true
 enemy_types:
   
   - id: "desperate-cholo"

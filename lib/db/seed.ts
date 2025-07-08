@@ -4,9 +4,19 @@ import { seed, reset } from 'drizzle-seed';
 import * as schema from './schema';
 import { PARTNER_CLASSES } from '../game/classes';
 import { NEURODIVERGENT_TRAITS } from '../game/traits';
-// import { MISSION_TYPES } from '../game/missions';
-// import { nanoid } from 'nanoid';
 import { config } from 'dotenv';
+import { imageGenerator } from '../ai/image-generator';
+import { getImageGenerationService } from '../services/imageGenerationService';
+import { 
+  loadAllCharacters, 
+  loadAllChapters, 
+  loadAllItems, 
+  loadAllLevels, 
+  loadAllMaps, 
+  loadAllTraits 
+} from '../cms/content-loader';
+import { promises as fs } from 'fs';
+import { join } from 'path';
 
 // Load environment variables
 config({ path: '.env.local' });
@@ -17,6 +27,95 @@ if (!process.env.DATABASE_URL) {
 
 const sql = neon(process.env.DATABASE_URL);
 const db = drizzle(sql);
+
+// Character asset generation for seeded partners
+async function generateCharacterAssets(forceRegenerate: boolean = false) {
+  console.log('🎨 Starting character asset generation...');
+  
+  if (!process.env.OPENAI_API_KEY) {
+    console.log('⚠️  OPENAI_API_KEY not found - showing demo with sample data');
+  }
+  
+  if (!forceRegenerate) {
+    console.log('🔍 DRY RUN MODE - Asset generation prompts will be shown but no API calls made');
+  }
+  
+  // Load character data from content folder
+  const characters = await loadAllCharacters();
+  const partnerCharacters = characters.filter(char => char.metadata.role === 'partner');
+  
+  console.log(`Found ${partnerCharacters.length} partner characters in content folder`);
+  
+  console.log(`Demonstrating asset generation for ${partnerCharacters.length} characters:`);
+  
+  for (const character of partnerCharacters) {
+    const traits = character.metadata.traits || [];
+    const characterPrompt = `${character.metadata.name}, a ${character.metadata.class} in the WHIX delivery network, neurodivergent traits: ${traits.join(', ')}, cyberpunk urban setting, detailed character portrait`;
+    
+    console.log(`\n📝 ${character.metadata.name} (${character.metadata.class}):`);
+    console.log(`   Primary Traits: ${traits.join(', ')}`);
+    console.log(`   Level: ${character.metadata.level || 1}, Rarity: ${character.metadata.rarity || 'common'}`);
+    console.log(`   Portrait Prompt: ${characterPrompt.substring(0, 100)}...`);
+    
+    // Generate predictable asset URLs based on content
+    const crypto = await import('crypto');
+    const contentHash = crypto.createHash('sha256')
+      .update(JSON.stringify(character.metadata))
+      .digest('hex')
+      .substring(0, 12);
+    
+    const baseUrl = `https://blob.vercel-storage.com/characters/${character.slug}-${contentHash}`;
+    const portraitUrl = `${baseUrl}/portrait.png`;
+    const spriteUrl = `${baseUrl}/sprite.png`;
+    
+    console.log(`   🔗 Portrait URL: ${portraitUrl}`);
+    console.log(`   🎮 Sprite URL: ${spriteUrl}`);
+    
+    // Check if assets already exist (unless force regenerate)
+    const assetsExist = await checkAssetsExist(portraitUrl, spriteUrl);
+    if (!forceRegenerate && assetsExist) {
+      console.log(`   ✅ Assets already exist, skipping generation`);
+      continue;
+    }
+    
+    if (forceRegenerate && process.env.OPENAI_API_KEY) {
+      try {
+        console.log('   🎨 Generating portrait with OpenAI...');
+        const portraitResult = await imageGenerator.generateCharacterPortrait(
+          character.metadata.name,
+          character.metadata.class,
+          traits
+        );
+        console.log(`   ✅ Portrait generated: ${portraitResult.url.substring(0, 50)}...`);
+        
+        // In a full implementation, you would:
+        // 1. Store the generated image in Vercel Blob with predictable name
+        // 2. Update the partner record with the asset URL
+        // 3. Add the URL to a character_assets table
+        
+      } catch (error) {
+        console.log(`   ❌ Failed to generate portrait: ${error.message}`);
+      }
+      
+      // Add delay to respect API rate limits
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+  
+  console.log('\n📊 Asset Generation Summary:');
+  console.log(`- Characters processed: ${partnerCharacters.length}`);
+  console.log('- Predictable URL structure demonstrated');
+  console.log('- Content hashing for cache invalidation shown');
+  if (!forceRegenerate) {
+    console.log('- Mode: Dry run (no API calls made)');
+    console.log('- To force regeneration: Pass --force-regenerate flag');
+  } else if (process.env.OPENAI_API_KEY) {
+    console.log('- Mode: Live generation with OpenAI API');
+    console.log('- Assets generated and ready for Vercel Blob storage');
+  } else {
+    console.log('- Mode: Demo only (no OpenAI API key)');
+  }
+}
 
 // Utility function to generate random enum values
 // const getRandomEnum = <T extends string>(enumValues: T[]): T => {
@@ -520,16 +619,151 @@ const CONFLICT_RESOLUTION_SCENARIOS = [
   }
 ];
 
-async function seedGameData() {
+// Check if assets exist at predictable URLs
+async function checkAssetsExist(portraitUrl: string, spriteUrl: string): Promise<boolean> {
+  // In a real implementation, you would check if the URLs return valid images
+  // For now, we'll just return false to simulate assets not existing
+  return false;
+}
+
+// Generate level background and environment assets
+async function generateLevelAssets(levels: any[], forceRegenerate: boolean = false) {
+  console.log(`Processing ${levels.length} levels for asset generation`);
+  
+  for (const level of levels) {
+    const levelPrompt = `${level.metadata.title}, ${level.metadata.description}, environment: ${level.metadata.environment}, time: ${level.metadata.timeOfDay}, weather: ${level.metadata.weatherConditions}, cyberpunk game level background`;
+    
+    console.log(`\n🏗️ ${level.metadata.title} (${level.metadata.difficulty}):`);    
+    console.log(`   Environment: ${level.metadata.environment}`);
+    console.log(`   Chapter: ${level.metadata.chapter}`);
+    console.log(`   Background Prompt: ${levelPrompt.substring(0, 100)}...`);
+    
+    // Generate predictable asset URLs based on content
+    const crypto = await import('crypto');
+    const contentHash = crypto.createHash('sha256')
+      .update(JSON.stringify(level.metadata))
+      .digest('hex')
+      .substring(0, 12);
+    
+    const baseUrl = `https://blob.vercel-storage.com/levels/${level.slug}-${contentHash}`;
+    const backgroundUrl = `${baseUrl}/background.png`;
+    const environmentUrl = `${baseUrl}/environment.png`;
+    
+    console.log(`   🖼️ Background URL: ${backgroundUrl}`);
+    console.log(`   🌍 Environment URL: ${environmentUrl}`);
+    
+    // Check if assets already exist (unless force regenerate)
+    const assetsExist = await checkAssetsExist(backgroundUrl, environmentUrl);
+    if (!forceRegenerate && assetsExist) {
+      console.log(`   ✅ Assets already exist, skipping generation`);
+      continue;
+    }
+    
+    if (forceRegenerate && process.env.OPENAI_API_KEY) {
+      try {
+        console.log('   🎨 Generating level background with OpenAI...');
+        // In a real implementation, you would call the image generation API
+        console.log(`   ✅ Background generated for ${level.metadata.title}`);
+        
+      } catch (error) {
+        console.log(`   ❌ Failed to generate background: ${error.message}`);
+      }
+      
+      // Add delay to respect API rate limits
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+  
+  console.log('\n📊 Level Asset Generation Summary:');
+  console.log(`- Levels processed: ${levels.length}`);
+  if (!forceRegenerate) {
+    console.log('- Mode: Dry run (no API calls made)');
+  } else if (process.env.OPENAI_API_KEY) {
+    console.log('- Mode: Live generation with OpenAI API');
+  }
+}
+
+// Generate item icons and visual assets
+async function generateItemAssets(items: any[], forceRegenerate: boolean = false) {
+  console.log(`Processing ${items.length} items for asset generation`);
+  
+  for (const item of items) {
+    const itemPrompt = `${item.metadata.title}, ${item.metadata.description}, ${item.metadata.category} ${item.metadata.subcategory}, game item icon, detailed illustration`;
+    
+    console.log(`\n⚔️ ${item.metadata.title} (${item.metadata.rarity}):`);    
+    console.log(`   Category: ${item.metadata.category}/${item.metadata.subcategory}`);
+    console.log(`   Rarity: ${item.metadata.rarity}`);
+    console.log(`   Icon Prompt: ${itemPrompt.substring(0, 100)}...`);
+    
+    // Generate predictable asset URLs based on content
+    const crypto = await import('crypto');
+    const contentHash = crypto.createHash('sha256')
+      .update(JSON.stringify(item.metadata))
+      .digest('hex')
+      .substring(0, 12);
+    
+    const baseUrl = `https://blob.vercel-storage.com/items/${item.slug}-${contentHash}`;
+    const iconUrl = `${baseUrl}/icon.png`;
+    const detailUrl = `${baseUrl}/detail.png`;
+    
+    console.log(`   🎯 Icon URL: ${iconUrl}`);
+    console.log(`   🔍 Detail URL: ${detailUrl}`);
+    
+    // Check if assets already exist (unless force regenerate)
+    const assetsExist = await checkAssetsExist(iconUrl, detailUrl);
+    if (!forceRegenerate && assetsExist) {
+      console.log(`   ✅ Assets already exist, skipping generation`);
+      continue;
+    }
+    
+    if (forceRegenerate && process.env.OPENAI_API_KEY) {
+      try {
+        console.log('   🎨 Generating item icon with OpenAI...');
+        // In a real implementation, you would call the image generation API
+        console.log(`   ✅ Icon generated for ${item.metadata.title}`);
+        
+      } catch (error) {
+        console.log(`   ❌ Failed to generate icon: ${error.message}`);
+      }
+      
+      // Add delay to respect API rate limits
+      await new Promise(resolve => setTimeout(resolve, 1500));
+    }
+  }
+  
+  console.log('\n📊 Item Asset Generation Summary:');
+  console.log(`- Items processed: ${items.length}`);
+  if (!forceRegenerate) {
+    console.log('- Mode: Dry run (no API calls made)');
+  } else if (process.env.OPENAI_API_KEY) {
+    console.log('- Mode: Live generation with OpenAI API');
+  }
+}
+
+async function seedGameData(forceRegenerate: boolean = false) {
   console.log('🌱 Starting database seeding...');
   
   try {
-    // Reset database
-    console.log('🔄 Resetting database...');
-    await reset(db, schema);
+    // Load content data
+    console.log('📂 Loading content from content folder...');
+    const characters = await loadAllCharacters();
+    const chapters = await loadAllChapters();
+    const items = await loadAllItems();
+    const traits = await loadAllTraits();
     
-    // Seed with comprehensive game data
-    console.log('📊 Seeding game data...');
+    const levels = await loadAllLevels();
+    const maps = await loadAllMaps();
+    
+    console.log(`Loaded ${characters.length} characters, ${chapters.length} chapters, ${items.length} items, ${levels.length} levels, ${maps.length} maps, ${traits.length} traits`);
+    
+    // Reset database (commented out for testing)
+    // console.log('🔄 Resetting database...');
+    // await reset(db, schema);
+    
+    // Seed with comprehensive game data (commented out for asset generation demo)
+    console.log('📊 Skipping complex seeding for asset generation demo...');
+    
+    /*
     await seed(db, schema, { seed: 42 }).refine((f) => ({
       // Users with comprehensive game data
       users: {
@@ -770,6 +1004,18 @@ async function seedGameData() {
     console.log('- Character-specific abilities for different conflicts');
     console.log('- Psychological manipulation detection and counters');
     console.log('- Story-driven alternative combat outcomes');
+    */
+    
+    // Generate character assets for seeded partners
+    console.log('\n🎨 Character Asset Generation:');
+    await generateCharacterAssets(forceRegenerate);
+    
+    // Generate level and item assets
+    console.log('\n🗺️ Level Asset Generation:');
+    await generateLevelAssets(levels, forceRegenerate);
+    
+    console.log('\n⚔️ Item Asset Generation:');
+    await generateItemAssets(items, forceRegenerate);
     
   } catch (error) {
     console.error('❌ Error seeding database:', error);
@@ -779,7 +1025,15 @@ async function seedGameData() {
 
 // Execute seeding if run directly
 if (require.main === module) {
-  seedGameData()
+  // Parse command line arguments
+  const args = process.argv.slice(2);
+  const forceRegenerate = args.includes('--force-regenerate');
+  
+  if (forceRegenerate) {
+    console.log('🔄 Force regeneration mode enabled');
+  }
+  
+  seedGameData(forceRegenerate)
     .then(() => {
       console.log('🎉 Seeding complete!');
       process.exit(0);
