@@ -112,9 +112,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Create guest user
         const newGuest = await db.insert(users).values({
           id: guestId,
+          email: null, // Guest users don't have emails
           name: guestName,
+          password: null, // Guest users don't have passwords
           role: 'free',
           guestId: guestId,
+          emailVerified: null,
           createdAt: new Date(),
           updatedAt: new Date()
         }).returning();
