@@ -109,12 +109,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const guestId = `guest_${nanoid(10)}`;
         const guestName = `Courier_${Math.random().toString(36).substring(2, 7)}`;
         
-        // Create guest user
+        // Create guest user with unique email to satisfy DB constraints
         const newGuest = await db.insert(users).values({
           id: guestId,
-          email: null, // Guest users don't have emails
+          email: `${guestId}@guest.whix.local`, // Unique email for DB constraint
           name: guestName,
-          password: null, // Guest users don't have passwords
+          password: '', // Empty password for guest users
           role: 'free',
           guestId: guestId,
           emailVerified: null,

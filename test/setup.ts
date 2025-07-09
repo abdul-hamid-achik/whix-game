@@ -1,6 +1,10 @@
 import '@testing-library/jest-dom/vitest';
 import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import { config } from 'dotenv';
+
+// Load environment variables from .env.local
+config({ path: '.env.local' });
 
 // Fix for the ontouchstart delete error in Vitest
 // This is a known issue with jsdom and touch events
