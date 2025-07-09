@@ -13,7 +13,7 @@ import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { useChapterMapStore } from '@/lib/stores/chapterMapStore';
 import { useUIStore, GameState } from '@/lib/stores/uiStore';
-import { ContentPartnerSchema } from '@/lib/schemas/game-schemas';
+import { ContentPartnerSchema, RewardsData } from '@/lib/schemas/game-schemas';
 import { 
   CombatUnit, 
   CombatPosition, 
@@ -60,7 +60,7 @@ export default function CombatPage() {
   
   // If this is a story combat, use the enhanced view
   if (isStoryCombat) {
-    const handleCombatEnd = (victory: boolean, rewards?: any) => {
+    const handleCombatEnd = (victory: boolean, rewards?: RewardsData) => {
       if (victory) {
         if (rewards) {
           earnTips(rewards.tips || 0);

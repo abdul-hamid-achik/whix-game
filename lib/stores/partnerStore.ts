@@ -33,9 +33,14 @@ interface PartnerState {
   
   // Partner Management
   updatePartnerEnergy: (partnerId: string, energy: number) => void;
+  drainPartnerEnergy: (partnerId: string, amount: number) => void;
+  restorePartnerEnergy: (partnerId: string, amount: number) => void;
+  fatiguePartner: (partnerId: string) => void;
+  restPartner: (partnerId: string, restQuality: 'poor' | 'normal' | 'good') => void;
   injurePartner: (partnerId: string, recoveryTime: number) => void;
   healPartner: (partnerId: string) => void;
   checkInjuryRecovery: () => void;
+  checkFatigueStatus: () => void;
   
   // Experience and Progression
   addPartnerExperience: (partnerId: string, experience: number) => void;
@@ -167,6 +172,58 @@ export const usePartnerStore = create<PartnerState>()(
           }
         }),
         
+        drainPartnerEnergy: (partnerId, amount) => set((state) => {
+          const partner = state.partners.find(p => p.id === partnerId);
+          if (partner) {
+            partner.currentEnergy = Math.max(0, partner.currentEnergy - amount);
+            
+            // Check for exhaustion
+            if (partner.currentEnergy === 0) {
+              partner.isInjured = true;
+              partner.injuryRecoveryTime = Date.now() + (4 * 60 * 60 * 1000); // 4 hours
+              state.activeTeam = state.activeTeam.filter(id => id !== partnerId);
+            }
+          }
+        }),
+        
+        restorePartnerEnergy: (partnerId, amount) => set((state) => {
+          const partner = state.partners.find(p => p.id === partnerId);
+          if (partner && !partner.isInjured) {
+            partner.currentEnergy = Math.min(partner.maxEnergy, partner.currentEnergy + amount);
+          }
+        }),
+        
+        fatiguePartner: (partnerId) => set((state) => {
+          const partner = state.partners.find(p => p.id === partnerId);
+          if (partner) {
+            // Reduce max energy temporarily (fatigue effect)
+            const fatigueReduction = Math.floor(partner.maxEnergy * 0.2); // 20% reduction
+            partner.currentEnergy = Math.min(partner.currentEnergy, partner.maxEnergy - fatigueReduction);
+          }
+        }),
+        
+        restPartner: (partnerId, restQuality) => set((state) => {
+          const partner = state.partners.find(p => p.id === partnerId);
+          if (partner) {
+            const restAmount = {
+              poor: 0.3,
+              normal: 0.6,
+              good: 1.0
+            };
+            
+            partner.currentEnergy = Math.floor(partner.maxEnergy * restAmount[restQuality]);
+            
+            // Clear fatigue if good rest
+            if (restQuality === 'good' && partner.isInjured && partner.injuryRecoveryTime) {
+              const remainingTime = partner.injuryRecoveryTime - Date.now();
+              if (remainingTime < 2 * 60 * 60 * 1000) { // Less than 2 hours
+                partner.isInjured = false;
+                partner.injuryRecoveryTime = undefined;
+              }
+            }
+          }
+        }),
+        
         injurePartner: (partnerId, recoveryTime) => set((state) => {
           const partner = state.partners.find(p => p.id === partnerId);
           if (partner) {
@@ -195,6 +252,20 @@ export const usePartnerStore = create<PartnerState>()(
               partner.isInjured = false;
               partner.injuryRecoveryTime = undefined;
               partner.currentEnergy = Math.floor(partner.maxEnergy * 0.5);
+            }
+          });
+        }),
+        
+        checkFatigueStatus: () => set((state) => {
+          state.partners.forEach(partner => {
+            // Check for burnout risk
+            const energyPercent = (partner.currentEnergy / partner.maxEnergy) * 100;
+            
+            if (energyPercent < 20 && !partner.isInjured) {
+              // High burnout risk - force rest
+              partner.isInjured = true;
+              partner.injuryRecoveryTime = Date.now() + (2 * 60 * 60 * 1000); // 2 hour forced rest
+              state.activeTeam = state.activeTeam.filter(id => id !== partner.id);
             }
           });
         }),

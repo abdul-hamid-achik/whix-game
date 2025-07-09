@@ -1,18 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
-  User, Heart, AlertTriangle, Clock, DollarSign, 
+  Clock, DollarSign, 
   Star, Package, MessageSquare, Utensils, Home 
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { CustomerProfile, CustomerMood } from '@/lib/schemas/customer-schemas';
+import { CustomerMood } from '@/lib/schemas/customer-schemas';
 import { useCustomerStore } from '@/lib/stores/customerStore';
 
 interface CustomerProfilePanelProps {
@@ -21,7 +20,7 @@ interface CustomerProfilePanelProps {
   onClose?: () => void;
 }
 
-export function CustomerProfilePanel({ customerId, className, onClose }: CustomerProfilePanelProps) {
+export function CustomerProfilePanel({ customerId, className }: CustomerProfilePanelProps) {
   const { getCustomer, getCustomerHistory } = useCustomerStore();
   const [activeTab, setActiveTab] = useState('overview');
   
@@ -76,12 +75,11 @@ export function CustomerProfilePanel({ customerId, className, onClose }: Custome
           <div className={cn("absolute inset-0 opacity-10", getTierColor(customer.tier))} />
           <div className="relative flex items-start justify-between">
             <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16 border-2 border-background">
-                <AvatarImage src={customer.avatar} />
-                <AvatarFallback>
+              <div className="h-16 w-16 border-2 border-background rounded-full bg-muted flex items-center justify-center">
+                <span className="text-lg font-bold">
                   {customer.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
+                </span>
+              </div>
               <div>
                 <CardTitle className="text-2xl">{customer.name}</CardTitle>
                 <div className="flex items-center gap-2 mt-1">

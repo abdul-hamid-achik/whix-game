@@ -14,7 +14,6 @@ import {
   TraitMetadata,
   DialogueMetadata
 } from './content-types';
-import { Encounter, EncounterSchema } from '@/lib/schemas/encounter-schemas';
 
 // Base content directory
 const CONTENT_DIR = path.join(process.cwd(), 'content');

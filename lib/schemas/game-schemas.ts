@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { PartnerClassSchema, NeurodivergentTraitSchema, RaritySchema } from '../game/classes';
+import { RequirementSchema, RewardSchema, MapDataSchema } from './common-schemas';
 
 // Partner Schemas
 export const GeneratedPartnerSchema = z.object({
@@ -94,8 +95,8 @@ export const NodeDataSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
   difficulty: z.number().optional(),
-  requirements: z.any().optional(),
-  rewards: z.any().optional(),
+  requirements: z.array(RequirementSchema).optional(),
+  rewards: z.array(RewardSchema).optional(),
 }).optional();
 
 // Rewards data schema
@@ -130,7 +131,7 @@ export const UIContextDataSchema = z.object({
   returnState: GameStateSchema.optional(),
   encounterType: z.string().optional(),
   nodeData: NodeDataSchema,
-  mapData: z.any().optional(),
+  mapData: MapDataSchema.optional(),
   combatResult: z.string().optional(),
   eventResult: z.string().optional(),
   rewards: RewardsDataSchema,

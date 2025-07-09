@@ -72,8 +72,8 @@ export default function StoryMapPage() {
           'neon': 'polanco', // Default to polanco for neon heights
         };
         
-        // Get district from node metadata or default to cathedral
-        const nodeDistrict = node.metadata?.district || 'cathedral';
+        // Get district from node encounterData or default to cathedral
+        const nodeDistrict = (node.encounterData as any)?.district || 'cathedral';
         const district = districtMapping[nodeDistrict] || 'cathedral';
         
         router.push(`/combat?grid=true&district=${district}&story=true&nodeId=${nodeId}`);

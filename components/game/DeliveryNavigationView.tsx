@@ -29,7 +29,7 @@ export function DeliveryNavigationView({
   onDeliveryComplete,
   className,
 }: DeliveryNavigationViewProps) {
-  const { getActivePartners } = usePartnerStore();
+  const { getActivePartners, drainPartnerEnergy, checkFatigueStatus } = usePartnerStore();
   const { currentMissionId, getMissionById, updateMissionProgress, completeMission } = useMissionStore();
   const { earnTips, gainExperience } = useGameStore();
   const { generateRandomCustomer, setActiveCustomer, recordInteraction } = useCustomerStore();
@@ -113,6 +113,9 @@ export function DeliveryNavigationView({
         setSelectedUnit(updatedUnit);
         setValidMoves(gridEngine.getValidMoves(updatedUnit));
         
+        // Drain partner energy for movement (2 energy per move)
+        drainPartnerEnergy(updatedUnit.partnerId, 2);
+        
         // Check for delivery completion
         if (gridEngine.checkDeliveryComplete(selectedUnit.id)) {
           setGamePhase('completed');
@@ -132,14 +135,13 @@ export function DeliveryNavigationView({
             });
             
             // Update rewards based on customer satisfaction
-            const baseTips = 25;
             earnTips(interaction.tipAmount);
             gainExperience(Math.floor(50 * (packageCondition / 100)));
           }
           
           // Update mission progress if applicable
           const currentMission = currentMissionId ? getMissionById(currentMissionId) : null;
-          if (currentMission) {
+          if (currentMission && currentMissionId) {
             // Find delivery objective and update progress
             const deliveryObjective = currentMission.objectives.find(obj => obj.type === 'deliver');
             if (deliveryObjective) {
@@ -175,7 +177,7 @@ export function DeliveryNavigationView({
         }
       }
     }
-  }, [gridEngine, selectedUnit, validMoves, gamePhase, currentMissionId, getMissionById, updateMissionProgress, completeMission, earnTips, gainExperience, turnNumber, currentCustomer, packageCondition, customerMood, encounterCount, recordInteraction]);
+  }, [gridEngine, selectedUnit, validMoves, gamePhase, currentMissionId, getMissionById, updateMissionProgress, completeMission, earnTips, gainExperience, turnNumber, currentCustomer, packageCondition, customerMood, encounterCount, recordInteraction, drainPartnerEnergy]);
   
   // Handle unit selection
   const handleUnitSelect = useCallback((unitId: string) => {
@@ -195,7 +197,7 @@ export function DeliveryNavigationView({
     
     // Update mission progress for talk/survive objectives
     const currentMission = currentMissionId ? getMissionById(currentMissionId) : null;
-    if (currentMission && outcome === 'victory') {
+    if (currentMission && currentMissionId && outcome === 'victory') {
       // Update talk objectives (social encounters)
       const talkObjective = currentMission.objectives.find(obj => obj.type === 'talk');
       if (talkObjective) {
@@ -274,9 +276,12 @@ export function DeliveryNavigationView({
       if (updatedUnit) {
         setSelectedUnit(updatedUnit);
         setValidMoves(gridEngine.getValidMoves(updatedUnit));
+        
+        // Check fatigue status at end of turn
+        checkFatigueStatus();
       }
     }
-  }, [gridEngine, selectedUnit]);
+  }, [gridEngine, selectedUnit, checkFatigueStatus]);
   
   // Handle game end
   useEffect(() => {

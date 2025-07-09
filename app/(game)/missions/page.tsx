@@ -16,8 +16,9 @@ import { usePartnerStore } from '@/lib/stores/partnerStore';
 import { Mission, MissionType } from '@/lib/game/missions';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { LucideIcon } from 'lucide-react';
 
-const missionTypeIcons: Record<MissionType, any> = {
+const missionTypeIcons: Record<MissionType, LucideIcon> = {
   standard_delivery: Package,
   customer_negotiation: Users,
   quality_control: Search,

@@ -286,8 +286,8 @@ export class EncounterEngine {
   getCurrentState(): EncounterState & { id: string } {
     const stateId = this.service.machine.current;
     return {
-      id: stateId,
       ...this.encounter.states[stateId],
+      id: stateId,
     };
   }
   

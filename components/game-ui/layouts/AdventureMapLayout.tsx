@@ -66,34 +66,34 @@ export function AdventureMapLayout({ children: _children }: AdventureMapLayoutPr
         case NodeType.COMBAT:
           console.log('Transitioning to TACTICAL_COMBAT with data:', {
             encounterType: 'combat',
-            nodeData: node,
-            mapData: updatedMap
+            nodeData: node as any,
+            mapData: updatedMap as any as any
           });
           setState(GameState.TACTICAL_COMBAT, {
             encounterType: 'combat',
-            nodeData: node,
-            mapData: updatedMap
+            nodeData: node as any,
+            mapData: updatedMap as any as any
           });
           break;
       case NodeType.STORY:
         setState(GameState.EVENT_RESOLUTION, {
           encounterType: 'story',
-          nodeData: node,
-          mapData: updatedMap
+          nodeData: node as any,
+          mapData: updatedMap as any
         });
         break;
       case NodeType.BOSS:
         setState(GameState.TACTICAL_COMBAT, {
           encounterType: 'boss',
-          nodeData: node,
-          mapData: updatedMap
+          nodeData: node as any,
+          mapData: updatedMap as any
         });
         break;
       default:
         setState(GameState.EVENT_RESOLUTION, {
           encounterType: node.type,
-          nodeData: node,
-          mapData: updatedMap
+          nodeData: node as any,
+          mapData: updatedMap as any
         });
     }
   };

@@ -1,5 +1,4 @@
 import NextAuth from "next-auth";
-import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import { nanoid } from "nanoid";
@@ -7,6 +6,7 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { authConfig } from "./auth.config";
 
 // Custom fields are extended in types/next-auth.d.ts
 
@@ -19,7 +19,8 @@ const signupSchema = credentialsSchema.extend({
   name: z.string().min(2),
 });
 
-export const config: NextAuthConfig = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       id: "credentials",
@@ -52,9 +53,9 @@ export const config: NextAuthConfig = {
           // Create user
           const newUser = await db.insert(users).values({
             id: nanoid(),
+            name,
             email,
             password: hashedPassword,
-            name,
             role: 'free',
             createdAt: new Date(),
             updatedAt: new Date()
@@ -62,14 +63,14 @@ export const config: NextAuthConfig = {
           
           return {
             id: newUser[0].id,
-            email: newUser[0].email,
             name: newUser[0].name,
+            email: newUser[0].email,
             role: newUser[0].role,
-            guestId: newUser[0].guestId
+            isGuest: false
           };
         }
         
-        // Handle login
+        // Handle signin
         const validation = credentialsSchema.safeParse(credentials);
         if (!validation.success) {
           return null;
@@ -77,22 +78,24 @@ export const config: NextAuthConfig = {
         
         const { email, password } = validation.data;
         
+        // Find user
         const user = await db.select().from(users).where(eq(users.email, email)).limit(1);
         if (user.length === 0) {
           return null;
         }
         
-        const validPassword = await bcrypt.compare(password, user[0].password || "");
-        if (!validPassword) {
+        // Verify password
+        const isValidPassword = await bcrypt.compare(password, user[0].password || '');
+        if (!isValidPassword) {
           return null;
         }
         
         return {
           id: user[0].id,
-          email: user[0].email,
           name: user[0].name,
+          email: user[0].email,
           role: user[0].role,
-          guestId: user[0].guestId
+          isGuest: false
         };
       }
     }),
@@ -120,41 +123,14 @@ export const config: NextAuthConfig = {
           id: newGuest[0].id,
           name: newGuest[0].name,
           role: newGuest[0].role,
-          guestId: newGuest[0].guestId || undefined
+          guestId: newGuest[0].guestId || undefined,
+          isGuest: true
         };
       }
     })
   ],
-  
-  pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
-  },
-  
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
-      if (user) {
-        token.id = user.id!;
-        token.role = user.role;
-        token.guestId = user.guestId || undefined;
-      }
-      
-      // Handle user update (guest to registered conversion)
-      if (trigger === "update" && session) {
-        return { ...token, ...session.user };
-      }
-      
-      return token;
-    },
-    
-    async session({ session, token }) {
-      session.user.id = token.id as string;
-      session.user.role = token.role as string;
-      session.user.guestId = token.guestId as string | undefined;
-      
-      return session;
-    },
-    
+    ...authConfig.callbacks,
     async signIn({ user }) {
       // Trigger character generation for new users
       if (user) {
@@ -164,14 +140,5 @@ export const config: NextAuthConfig = {
       return true;
     }
   },
-  
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
-  },
-  
   secret: process.env.AUTH_SECRET,
-};
-
-export const { handlers, auth, signIn, signOut } = NextAuth(config);
+});

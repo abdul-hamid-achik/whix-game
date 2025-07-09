@@ -124,7 +124,7 @@ export function TacticalCombatLayout({ children: _children }: TacticalCombatLayo
     setState(GameState.AFTER_ACTION, {
       ...contextData,
       combatResult: 'victory',
-      rewards: encounterData?.rewards
+      rewards: encounterData?.rewards as any
     });
   };
 

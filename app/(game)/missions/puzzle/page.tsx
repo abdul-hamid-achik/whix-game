@@ -11,19 +11,9 @@ import { Progress } from '@/components/ui/progress';
 import { useMissionStore } from '@/lib/stores/missionStore';
 import { useGameStore } from '@/lib/stores/gameStore';
 import { cn } from '@/lib/utils';
-
-// Polanco-themed puzzle types
-type PuzzleType = 'route_optimization' | 'package_sorting' | 'schedule_analysis' | 'pattern_decode';
-
-interface Puzzle {
-  id: string;
-  type: PuzzleType;
-  difficulty: number;
-  timeLimit: number;
-  description: string;
-  data: any;
-  solution: any;
-}
+import { 
+  Puzzle
+} from '@/lib/schemas/puzzle-schemas';
 
 // Route optimization puzzle - find the most efficient delivery path
 const generateRouteOptimizationPuzzle = (difficulty: number): Puzzle => {
@@ -94,7 +84,7 @@ const generatePackageSortingPuzzle = (difficulty: number): Puzzle => {
 export default function PuzzleMissionPage() {
   const [currentPuzzle, setCurrentPuzzle] = useState<Puzzle | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
-  const [_playerSolution, _setPlayerSolution] = useState<any>(null);
+  const [_playerSolution, _setPlayerSolution] = useState<unknown>(null);
   const [puzzleComplete, setPuzzleComplete] = useState(false);
   const [score, setScore] = useState(0);
   
@@ -312,11 +302,23 @@ export default function PuzzleMissionPage() {
 // Route Optimization Puzzle Component
 function RouteOptimizationPuzzle({ puzzle, onSolve }: { puzzle: Puzzle; onSolve: () => void }) {
   const [selectedPath, setSelectedPath] = useState<Array<{x: number, y: number}>>([]);
-  const { gridSize, startPosition, deliveryPoints } = puzzle.data;
+  
+  // Type guard to ensure we have route optimization data
+  if (puzzle.type !== 'route_optimization') {
+    return null;
+  }
+  
+  const data = puzzle.data as { 
+    gridSize: number; 
+    startPosition: { x: number; y: number }; 
+    deliveryPoints: Array<{ x: number; y: number; priority?: string }>; 
+    obstacles: Array<{ x: number; y: number }> 
+  };
+  const { gridSize, startPosition, deliveryPoints } = data;
   
   // Simplified puzzle - just click deliveries in order
   const handleCellClick = (x: number, y: number) => {
-    const delivery = deliveryPoints.find((d: any) => d.x === x && d.y === y);
+    const delivery = deliveryPoints.find((d: {x: number; y: number; priority?: string}) => d.x === x && d.y === y);
     if (delivery && !selectedPath.find(p => p.x === x && p.y === y)) {
       setSelectedPath([...selectedPath, { x, y }]);
       
@@ -335,7 +337,7 @@ function RouteOptimizationPuzzle({ puzzle, onSolve }: { puzzle: Puzzle; onSolve:
             const x = i % gridSize;
             const y = Math.floor(i / gridSize);
             const isStart = x === startPosition.x && y === startPosition.y;
-            const delivery = deliveryPoints.find((d: any) => d.x === x && d.y === y);
+            const delivery = deliveryPoints.find((d: {x: number; y: number; priority?: string}) => d.x === x && d.y === y);
             const isSelected = selectedPath.find(p => p.x === x && p.y === y);
             
             return (
@@ -372,8 +374,7 @@ function RouteOptimizationPuzzle({ puzzle, onSolve }: { puzzle: Puzzle; onSolve:
 
 // Package Sorting Puzzle Component
 function PackageSortingPuzzle({ puzzle, onSolve }: { puzzle: Puzzle; onSolve: () => void }) {
-  const [_sortedPackages, _setSortedPackages] = useState<any[]>([]);
-  const { packages } = puzzle.data;
+  const [_sortedPackages, _setSortedPackages] = useState<Array<{id: string; district: string; priority: string; weight: number}>>([]);
   
   // Simple implementation - just displays packages
   useEffect(() => {
@@ -383,13 +384,24 @@ function PackageSortingPuzzle({ puzzle, onSolve }: { puzzle: Puzzle; onSolve: ()
     }, 5000);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [onSolve]);
+  
+  // Type guard to ensure we have package sorting data
+  if (puzzle.type !== 'package_sorting') {
+    return null;
+  }
+  
+  const data = puzzle.data as {
+    packages: Array<{id: string; district: string; priority: string; weight: number; fragile?: boolean}>;
+    sortingCriteria?: string[];
+  };
+  const { packages } = data;
   
   return (
     <Card>
       <CardContent className="p-6">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          {packages.map((pkg: any) => (
+          {packages.map((pkg) => (
             <div
               key={pkg.id}
               className={cn(

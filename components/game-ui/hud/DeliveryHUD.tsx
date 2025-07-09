@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Package, Timer, Thermometer, AlertCircle, 
+  Timer, Thermometer, AlertCircle, 
   TrendingUp, MapPin, Battery, Star 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';

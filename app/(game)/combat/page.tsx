@@ -142,7 +142,9 @@ export default function CombatPage() {
         >
           <DeliveryNavigationView
             districtId={districtId}
-            onDeliveryComplete={handleCombatEnd}
+            onDeliveryComplete={(success, rewards) => {
+              handleCombatEnd(success ? 'victory' : 'defeat', rewards);
+            }}
             className="h-full"
           />
         </motion.div>
