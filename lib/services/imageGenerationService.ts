@@ -1,4 +1,4 @@
-import { put } from '@vercel/blob';
+import { blobStorage } from './blob-storage';
 import { 
   CharacterVisualAttributes, 
   generateCharacterVisualAttributes,
@@ -159,10 +159,11 @@ export class CharacterImageGenerationService {
     
     const imageBlob = await imageResponse.blob();
     
-    // Upload to Vercel Blob
-    const { url } = await put(`characters/${imageId}.png`, imageBlob, {
+    // Upload to blob storage (Vercel Blob in prod, MinIO in dev)
+    const { url } = await blobStorage.put(`characters/${imageId}.png`, imageBlob, {
       access: 'public',
-      addRandomSuffix: false
+      addRandomSuffix: false,
+      contentType: 'image/png'
     });
     
     return url;

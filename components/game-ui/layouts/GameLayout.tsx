@@ -113,7 +113,7 @@ export function GameLayout({ children }: GameLayoutProps) {
               {...panel}
               title={
                 panelId === 'dailyContracts' ? 'Daily Contracts' :
-                panelId === 'campaignSelection' ? 'Select Campaign' :
+                panelId === 'campaignSelection' ? 'Choose Your Next Run' :
                 panelId === 'partnerManagement' ? 'Partner Management' :
                 panelId === 'gachaRecruitment' ? 'Partner Recruitment' :
                 panelId === 'shopSystem' ? 'WHIX Company Store' :

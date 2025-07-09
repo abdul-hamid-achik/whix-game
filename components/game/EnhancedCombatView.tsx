@@ -138,14 +138,27 @@ export function EnhancedCombatView({
     if (!selectedUnit || !selectedAction || selectedAction !== 'move') return;
     
     if (validMoves.some(pos => pos.x === position.x && pos.y === position.y)) {
-      // Move unit
+      // Move unit with animation and sound feedback
       const updatedUnits = playerUnits.map(unit => 
         unit.id === selectedUnit.id 
           ? { ...unit, position } 
           : unit
       );
       setPlayerUnits(updatedUnits);
-      addToLog(`${selectedUnit.name} moved to (${position.x}, ${position.y})`);
+      
+      // Update turn order positions
+      setTurnOrder(prev => prev.map(unit => 
+        unit.id === selectedUnit.id 
+          ? { ...unit, position }
+          : unit
+      ));
+      
+      addToLog(`${selectedUnit.name} repositioned to sector (${position.x}, ${position.y})`);
+      
+      // Clear selection and end turn
+      setSelectedAction(null);
+      setValidMoves([]);
+      setValidTargets([]);
       endTurn();
     }
   };
@@ -252,20 +265,21 @@ export function EnhancedCombatView({
   };
 
   const handleAITurn = (aiUnit: CombatUnit) => {
-    // Simple AI - move towards closest player and attack
-    const closestPlayer = playerUnits
-      .filter(p => p.stats.currentHealth > 0)
-      .sort((a, b) => calculateDistance(aiUnit.position, a.position) - calculateDistance(aiUnit.position, b.position))[0];
+    // Enhanced AI - move towards closest player and attack
+    const alivePlayers = playerUnits.filter(p => p.stats.currentHealth > 0);
     
-    if (!closestPlayer) {
+    if (alivePlayers.length === 0) {
       endTurn();
       return;
     }
     
+    const closestPlayer = alivePlayers
+      .sort((a, b) => calculateDistance(aiUnit.position, a.position) - calculateDistance(aiUnit.position, b.position))[0];
+    
     const distance = calculateDistance(aiUnit.position, closestPlayer.position);
     
     if (distance === 1) {
-      // Attack
+      // Attack the closest player
       const enemyType = aiUnit.name.toLowerCase().replace(/ /g, '_') as EnemyType;
       const dialogue = ENEMY_DIALOGUE[enemyType];
       if (dialogue) {
@@ -282,20 +296,33 @@ export function EnhancedCombatView({
       setPlayerUnits(updatedPlayers);
       
       addToLog(`${aiUnit.name} attacks ${closestPlayer.name} for ${damage} damage!`);
-    } else {
-      // Move towards player
-      const moves = getValidMoves(aiUnit, [...playerUnits, ...enemyUnits], 2);
-      const bestMove = moves
-        .sort((a, b) => calculateDistance(a, closestPlayer.position) - calculateDistance(b, closestPlayer.position))[0];
       
-      if (bestMove) {
+      // Check if player is defeated
+      if (updatedPlayers.find(p => p.id === closestPlayer.id)?.stats.currentHealth === 0) {
+        addToLog(`${closestPlayer.name} has been defeated!`);
+        // Remove from turn order
+        setTurnOrder(prev => prev.filter(u => u.id !== closestPlayer.id));
+      }
+    } else {
+      // Move towards player using improved pathfinding
+      const allUnits = [...playerUnits, ...enemyUnits];
+      const moves = getValidMoves(aiUnit, allUnits, 2);
+      
+      if (moves.length > 0) {
+        // Choose the move that gets closest to the target
+        const bestMove = moves
+          .sort((a, b) => calculateDistance(a, closestPlayer.position) - calculateDistance(b, closestPlayer.position))[0];
+        
         const updatedEnemies = enemyUnits.map(enemy => 
           enemy.id === aiUnit.id 
             ? { ...enemy, position: bestMove }
             : enemy
         );
         setEnemyUnits(updatedEnemies);
-        addToLog(`${aiUnit.name} moves closer!`);
+        addToLog(`${aiUnit.name} moves closer to ${closestPlayer.name}!`);
+      } else {
+        // No valid moves, wait
+        addToLog(`${aiUnit.name} waits for an opportunity...`);
       }
     }
     
@@ -307,24 +334,37 @@ export function EnhancedCombatView({
     setValidMoves([]);
     setValidTargets([]);
     
-    // Move to next unit
-    const nextIndex = (currentUnitIndex + 1) % turnOrder.length;
-    setCurrentUnitIndex(nextIndex);
-    
-    // Check victory/defeat conditions
+    // Check victory/defeat conditions first
     const activeEnemies = enemyUnits.filter(e => e.stats.currentHealth > 0);
     const activePlayers = playerUnits.filter(p => p.stats.currentHealth > 0);
     
     if (activeEnemies.length === 0) {
       // Victory!
+      addToLog('✅ All conflicts resolved! Customer satisfaction maintained.');
       setTimeout(() => {
-        onCombatEnd(true, { tips: 100, experience: 50 });
+        onCombatEnd(true, { tips: 150, experience: 75 });
       }, 1000);
+      return;
     } else if (activePlayers.length === 0) {
       // Defeat
+      addToLog('❌ All delivery partners overwhelmed. WHIX rating decreased.');
       setTimeout(() => {
         onCombatEnd(false);
       }, 1000);
+      return;
+    }
+    
+    // Move to next unit in turn order
+    const aliveTurnOrder = turnOrder.filter(unit => 
+      unit.type === 'partner' 
+        ? playerUnits.some(p => p.id === unit.id && p.stats.currentHealth > 0)
+        : enemyUnits.some(e => e.id === unit.id && e.stats.currentHealth > 0)
+    );
+    
+    if (aliveTurnOrder.length > 0) {
+      const nextIndex = (currentUnitIndex + 1) % aliveTurnOrder.length;
+      setCurrentUnitIndex(nextIndex);
+      setTurnOrder(aliveTurnOrder);
     }
   };
 
@@ -355,8 +395,8 @@ export function EnhancedCombatView({
         <div className="mb-4">
           <Card className="bg-black/50 border-gray-700">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xl">Delivery Conflict</CardTitle>
-              <CardDescription>Defend your tips and dignity!</CardDescription>
+              <CardTitle className="text-xl">Neural Delivery Conflict</CardTitle>
+              <CardDescription>Defend your earnings and maintain your WHIX rating!</CardDescription>
             </CardHeader>
           </Card>
         </div>
@@ -375,10 +415,11 @@ export function EnhancedCombatView({
                         key={`${x}-${y}`}
                         className={cn(
                           "w-16 h-16 border-2 rounded-lg relative cursor-pointer transition-all",
-                          "bg-gray-800/50 hover:bg-gray-700/50",
-                          selectedUnit && unit?.id === selectedUnit.id && "ring-2 ring-yellow-400",
-                          isValidMove(x, y) && "bg-green-900/50 border-green-400",
-                          unit && isValidTarget(unit) && "bg-red-900/50 border-red-400"
+                          "bg-gray-800/50 hover:bg-gray-700/50 backdrop-blur-sm",
+                          selectedUnit && unit?.id === selectedUnit.id && "ring-2 ring-yellow-400 bg-yellow-900/30",
+                          isValidMove(x, y) && "bg-green-900/50 border-green-400 animate-pulse",
+                          unit && isValidTarget(unit) && "bg-red-900/50 border-red-400 animate-pulse",
+                          "border-gray-600/50"
                         )}
                         onClick={() => unit ? handleUnitClick(unit) : handleCellClick({ x, y })}
                         whileHover={{ scale: 1.05 }}
@@ -392,10 +433,20 @@ export function EnhancedCombatView({
                           >
                             {/* Character representation */}
                             <div className={cn(
-                              "w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-xs",
-                              unit.type === 'partner' ? "bg-blue-600" : "bg-red-600"
+                              "w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs relative overflow-hidden",
+                              unit.type === 'partner' ? "bg-gradient-to-br from-blue-500 to-blue-700 border-2 border-blue-400" : "bg-gradient-to-br from-red-500 to-red-700 border-2 border-red-400",
+                              "shadow-lg"
                             )}>
-                              {unit.name.substring(0, 2).toUpperCase()}
+                              {/* Character initials with better styling */}
+                              <span className="z-10 drop-shadow-sm">
+                                {unit.name.substring(0, 2).toUpperCase()}
+                              </span>
+                              
+                              {/* Glowing effect */}
+                              <div className={cn(
+                                "absolute inset-0 rounded-lg opacity-30",
+                                unit.type === 'partner' ? "bg-blue-400" : "bg-red-400"
+                              )} />
                             </div>
                             
                             {/* Health bar */}

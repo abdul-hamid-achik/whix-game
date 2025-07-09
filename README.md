@@ -55,23 +55,36 @@ npm install
 
 3. Set up environment variables:
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 
-Edit `.env.local` with your database and Stripe credentials:
-```env
-DATABASE_URL=postgresql://...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-```
+Edit `.env.local` with your credentials. See `.env.example` for all available options.
 
-4. Run database migrations:
+4. Set up local development environment (optional):
 ```bash
-npm run db:push
+docker-compose up -d
 ```
 
-5. Start the development server:
+This starts:
+- PostgreSQL on port 5478
+- MinIO (S3-compatible storage) on ports 9100/9101
+- Mailhog (email testing) on ports 1026/8026
+- Drizzle Studio on port 4983
+
+Note: Redis is included in docker-compose.yml but commented out. Uncomment when implementing caching features.
+
+5. Run database migrations:
+```bash
+npm run db:generate
+npm run db:migrate
+```
+
+6. Seed the database with game content:
+```bash
+npm run db:seed
+```
+
+7. Start the development server:
 ```bash
 npm run dev
 ```

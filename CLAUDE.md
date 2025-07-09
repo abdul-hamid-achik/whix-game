@@ -122,3 +122,8 @@ WHIX is a cyberpunk-themed web game where players manage neurodivergent delivery
 - **Error Handling**: Wrap async operations in try-catch blocks
 - **Type Safety**: Avoid `any` types, use proper TypeScript definitions
 - **Testing**: Write tests for critical game logic and state management
+
+## Development Guidelines
+
+### Scripting and Execution
+- Do not create a script folder with scripts, always execute the solution in steps and defer to using existing @package.json scripts, dont create a new script entry everytime you need to do something

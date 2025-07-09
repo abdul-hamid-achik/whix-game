@@ -79,31 +79,51 @@ technicalSpecs:
   maintenance: "Requires periodic tuning and component replacement"
 communicationCodes:
   emergency:
-    - "Shepherd's Voice" - Mass corporate raid in progress
-    - "Lost Sheep" - Family/individual needs extraction
-    - "Wolf Pack" - Corporate forces tracking resistance members
-    - "Safe Pasture" - All clear, safe to travel
+    - code: "Shepherd's Voice"
+      meaning: "Mass corporate raid in progress"
+    - code: "Lost Sheep"
+      meaning: "Family/individual needs extraction"
+    - code: "Wolf Pack"
+      meaning: "Corporate forces tracking resistance members"
+    - code: "Safe Pasture"
+      meaning: "All clear, safe to travel"
   coordination:
-    - "Bread and Wine" - Supply drop available
-    - "Evening Prayer" - Meeting scheduled at predetermined location
-    - "Morning Glory" - Mission successful, all assets safe
-    - "Broken Cross" - Resistance cell compromised, avoid contact
+    - code: "Bread and Wine"
+      meaning: "Supply drop available"
+    - code: "Evening Prayer"
+      meaning: "Meeting scheduled at predetermined location"
+    - code: "Morning Glory"
+      meaning: "Mission successful, all assets safe"
+    - code: "Broken Cross"
+      meaning: "Resistance cell compromised, avoid contact"
   community:
-    - "Community Meal" - Public gathering with food distribution
-    - "Healing Service" - Medical assistance available
-    - "Children's Choir" - School/education activities active
-    - "Sanctuary Bell" - Chapel offering refuge
+    - code: "Community Meal"
+      meaning: "Public gathering with food distribution"
+    - code: "Healing Service"
+      meaning: "Medical assistance available"
+    - code: "Children's Choir"
+      meaning: "School/education activities active"
+    - code: "Sanctuary Bell"
+      meaning: "Chapel offering refuge"
 resistanceOperations:
   coordination:
-    - "Underground Railroad" - Guide families fleeing neural harvesting
-    - "Supply Network" - Distribute medicine and food outside corporate control
-    - "Early Warning System" - Alert communities to corporate raids
-    - "Evacuation Protocol" - Coordinate emergency population movements
+    - operation: "Underground Railroad"
+      description: "Guide families fleeing neural harvesting"
+    - operation: "Supply Network"
+      description: "Distribute medicine and food outside corporate control"
+    - operation: "Early Warning System"
+      description: "Alert communities to corporate raids"
+    - operation: "Evacuation Protocol"
+      description: "Coordinate emergency population movements"
   intelligence:
-    - "Corporate Monitoring" - Track executive movements and operations
-    - "Surveillance Mapping" - Identify corporate surveillance blind spots
-    - "Asset Protection" - Protect resistance members from detection
-    - "Counter-Intelligence" - Spread disinformation to confuse corporate forces
+    - operation: "Corporate Monitoring"
+      description: "Track executive movements and operations"
+    - operation: "Surveillance Mapping"
+      description: "Identify corporate surveillance blind spots"
+    - operation: "Asset Protection"
+      description: "Protect resistance members from detection"
+    - operation: "Counter-Intelligence"
+      description: "Spread disinformation to confuse corporate forces"
 historicalSignificance: |
   The analog radio network represents continuity with pre-corporate community organizing traditions. Before WHIX, churches, community groups, and neighborhood organizations used radio to coordinate mutual aid and emergency response.
   

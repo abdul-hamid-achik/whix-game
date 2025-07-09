@@ -155,7 +155,7 @@ export function Panel({
         variants={getAnimationVariants()}
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className={cn(
-          'fixed bg-gray-900/95 backdrop-blur-md border border-cyan-500/30 shadow-2xl',
+          'fixed bg-gray-900/98 backdrop-blur-lg border border-cyan-500/40 shadow-2xl',
           position === 'fullscreen' ? 'rounded-none' : 'rounded-lg',
           getPositionClasses(),
           getSizeClasses()

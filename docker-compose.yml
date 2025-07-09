@@ -1,105 +1,96 @@
-# 2025 Unified Docker Compose for WHIX Game
+# Docker Compose for WHIX Game Development
+# Provides local alternatives to production services
+
 services:
-  # PostgreSQL Database
+  # PostgreSQL Database (mimicking Neon)
   postgres:
     image: postgres:16-alpine
-    container_name: whix-postgres
+    container_name: whix-postgres-dev
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-whixuser}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-whixpassword}
-      POSTGRES_DB: ${POSTGRES_DB:-whixgame}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: whixgame
+      # This will be available to containers in the same network
+      DATABASE_URL_DOCKER: postgresql://postgres:postgres@postgres:5432/whixgame
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "5478:5432"  # Creative port to avoid conflicts
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-whixuser}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Next.js Application (dev by default, prod with --profile prod)
-  app:
-    build:
-      context: .
-      target: ${BUILD_TARGET:-dev}
-    container_name: whix-app
+  # MinIO for local blob storage (Vercel Blob alternative)
+  minio:
+    image: minio/minio:latest
+    container_name: whix-minio-dev
     restart: unless-stopped
     environment:
-      # Database
-      DATABASE_URL: postgresql://${POSTGRES_USER:-whixuser}:${POSTGRES_PASSWORD:-whixpassword}@postgres:5432/${POSTGRES_DB:-whixgame}?schema=public
-      
-      # Next.js
-      NODE_ENV: ${NODE_ENV:-development}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
-      
-      # Auth
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-your-secret-key-here}
-      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
-      
-      # Stripe
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
-      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
-      
-      # Game
-      GAME_VERSION: ${GAME_VERSION:-0.1.0}
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      # Note: Buckets must be created via application code on first use
+      # MinIO doesn't support auto-creating buckets via env vars
     volumes:
-      - .:/app:cached
-      - /app/node_modules
-      - /app/.next
+      - minio_data:/data
     ports:
-      - "${APP_PORT:-3000}:3000"
+      - "9100:9000"     # API port (creative)
+      - "9101:9001"     # Console port (creative)
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Drizzle Studio for database management
+  drizzle-studio:
+    image: node:22-alpine
+    container_name: whix-drizzle-studio
+    restart: unless-stopped
+    working_dir: /app
+    ports:
+      - "4983:4983"  # Default Drizzle Studio port
+    volumes:
+      - ./:/app:ro
+      - ./drizzle:/app/drizzle:ro
+      - ./lib/db:/app/lib/db:ro
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/whixgame?schema=public"
+    command: sh -c "npm install && npm run db:studio"
     depends_on:
       postgres:
         condition: service_healthy
-    profiles:
-      - dev
 
-  # Production app service
-  app-prod:
-    extends:
-      service: app
-    build:
-      target: prod
-    volumes: []
-    profiles:
-      - prod
-
-  # Adminer for database management
-  adminer:
-    image: adminer:latest
-    container_name: whix-adminer
+  # Mailhog for email testing (if you add email features)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: whix-mailhog-dev
     restart: unless-stopped
     ports:
-      - "${ADMINER_PORT:-8080}:8080"
-    depends_on:
-      - postgres
-    environment:
-      ADMINER_DEFAULT_SERVER: postgres
-      ADMINER_DESIGN: dracula
-    profiles:
-      - dev
-      - tools
+      - "1026:1025"     # SMTP port (creative)
+      - "8026:8025"     # Web UI port (creative)
 
-  # Redis for caching/sessions (optional)
-  redis:
-    image: redis:7-alpine
-    container_name: whix-redis
-    restart: unless-stopped
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
-    volumes:
-      - redis_data:/data
-    profiles:
-      - cache
-      - prod
+  # Redis for caching/sessions (optional - uncomment when needed)
+  # Note: Redis integration not yet implemented in the application
+  # When implementing Redis, ensure to handle connection in application code
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: whix-redis-dev
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6385:6379"  # Creative port
+  #   volumes:
+  #     - redis_data:/data
+  #   command: redis-server --save 20 1 --loglevel warning
 
 volumes:
   postgres_data:
+  minio_data:
   redis_data:
 
 networks:
   default:
-    name: whix_network
+    name: whix_dev_network

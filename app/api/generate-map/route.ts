@@ -7,7 +7,7 @@ import {
   MapWeatherSchema,
   BackgroundTypeSchema
 } from '@/lib/services/mapGenerationService';
-import { put } from '@vercel/blob';
+import { blobStorage } from '@/lib/services/blob-storage';
 
 const MapImageParamsSchema = z.object({
   theme: MapThemeSchema,
@@ -68,10 +68,13 @@ export async function POST(request: NextRequest) {
     const imageResponse = await fetch(imageUrl);
     const imageBlob = await imageResponse.blob();
     
-    const { url: blobUrl } = await put(
+    const { url: blobUrl } = await blobStorage.put(
       `maps/${type}_${Date.now()}.png`,
       imageBlob,
-      { access: 'public' }
+      { 
+        access: 'public',
+        contentType: 'image/png'
+      }
     );
     
     return NextResponse.json({

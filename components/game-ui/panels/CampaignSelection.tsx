@@ -328,7 +328,7 @@ export function CampaignSelection({ onSelectCampaign }: CampaignSelectionProps) 
               onClick={() => onSelectCampaign(selectedCampaign)}
               disabled={selectedCampaign.state === 'locked'}
             >
-              {selectedCampaign.state === 'active' ? 'Continue' : 'Start'} Campaign
+              {selectedCampaign.state === 'active' ? 'Continue' : 'Start'} Run
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
           </CardContent>
@@ -340,9 +340,8 @@ export function CampaignSelection({ onSelectCampaign }: CampaignSelectionProps) 
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="mb-6">
-        <h2 className="text-3xl font-bold mb-2">Select Campaign</h2>
         <p className="text-gray-400">
-          Choose your next challenge in the dystopian streets of Neo-Tokyo
+          Choose your next WHIX delivery run in the neon-lit streets of Neo-Tokyo
         </p>
       </div>
 

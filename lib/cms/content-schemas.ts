@@ -13,19 +13,11 @@ const baseMetadataSchema = z.object({
 
 // Character Schema
 export const characterMetadataSchema = baseMetadataSchema.extend({
-  type: z.literal('character'),
+  type: z.literal('character').optional(),
   name: z.string(),
-  role: z.enum(['protagonist', 'partner', 'npc', 'antagonist']),
-  class: z.enum(['courier', 'analyst', 'negotiator', 'specialist', 'investigator']),
-  traits: z.array(z.enum([
-    'hyperfocus',
-    'pattern_recognition',
-    'enhanced_senses',
-    'systematic_thinking',
-    'attention_to_detail',
-    'routine_mastery',
-    'sensory_processing'
-  ])).optional(),
+  role: z.enum(['protagonist', 'partner', 'npc', 'antagonist', 'enemy']).optional(),
+  class: z.enum(['courier', 'analyst', 'negotiator', 'specialist', 'investigator']).optional(),
+  traits: z.array(z.string()).optional(), // Allow any trait string
   stats: z.object({
     level: z.number().default(1),
     health: z.number().default(100),
@@ -33,16 +25,16 @@ export const characterMetadataSchema = baseMetadataSchema.extend({
     efficiency: z.number().default(10),
     humanity: z.number().default(50),
   }).optional(),
-  relationships: z.record(z.string(), z.number()).optional(),
+  relationships: z.record(z.string(), z.union([z.number(), z.string()])).optional(), // Allow string or number
   backStory: z.string().optional(),
-  abilities: z.array(z.string()).optional(),
+  abilities: z.array(z.union([z.string(), z.object({name: z.string(), description: z.string().optional()})])).optional(),
   portrait: z.string().optional(),
   sprite: z.string().optional(),
 });
 
 // Level Schema
 export const levelMetadataSchema = baseMetadataSchema.extend({
-  type: z.literal('level'),
+  type: z.literal('level').optional(),
   difficulty: z.enum(['easy', 'normal', 'hard', 'extreme']),
   missionType: z.enum([
     'standard_delivery',
@@ -93,9 +85,14 @@ export const levelMetadataSchema = baseMetadataSchema.extend({
 
 // Item Schema
 export const itemMetadataSchema = baseMetadataSchema.extend({
-  type: z.literal('item'),
-  category: z.enum(['consumable', 'equipment', 'key', 'collectible', 'currency']),
-  rarity: z.enum(['common', 'rare', 'epic', 'legendary']),
+  type: z.literal('item').optional(),
+  category: z.enum([
+    'consumable', 'equipment', 'key', 'collectible', 'currency',
+    'medicine', 'transport', 'storage', 'cultural_item', 'religious_item',
+    'corporate_equipment', 'food', 'weapon', 'accessory', 'headgear',
+    'armor', 'material'
+  ]),
+  rarity: z.enum(['common', 'uncommon', 'rare', 'epic', 'legendary', 'restricted']).optional(),
   value: z.number(),
   stackable: z.boolean().default(true),
   maxStack: z.number().default(99),
@@ -114,7 +111,7 @@ export const itemMetadataSchema = baseMetadataSchema.extend({
 
 // Map Schema
 export const mapMetadataSchema = baseMetadataSchema.extend({
-  type: z.literal('map'),
+  type: z.literal('map').optional(),
   zone: z.enum([
     'downtown',
     'industrial',
@@ -155,7 +152,7 @@ export const mapMetadataSchema = baseMetadataSchema.extend({
 
 // Chapter Schema
 export const chapterMetadataSchema = baseMetadataSchema.extend({
-  type: z.literal('chapter'),
+  type: z.literal('chapter').optional(),
   chapterNumber: z.number(),
   setting: z.string(),
   timeOfDay: z.enum(['dawn', 'morning', 'afternoon', 'evening', 'night', 'midnight']),
@@ -186,20 +183,20 @@ export const chapterMetadataSchema = baseMetadataSchema.extend({
 
 // Trait Schema
 export const traitMetadataSchema = baseMetadataSchema.extend({
-  type: z.literal('trait'),
+  type: z.literal('trait').optional(),
   name: z.string(),
-  category: z.enum(['cognitive', 'sensory', 'social', 'physical']),
-  rarity: z.enum(['common', 'rare', 'epic', 'legendary']),
+  category: z.enum(['cognitive', 'sensory', 'social', 'physical', 'neurodivergent']).optional(), // Allow more categories
+  rarity: z.enum(['common', 'rare', 'epic', 'legendary']).optional(),
   statBonus: z.record(z.string(), z.number()).optional(),
   compatibleClasses: z.array(z.string()).optional(),
-  abilityUnlocks: z.array(z.string()).optional(),
+  abilityUnlocks: z.array(z.union([z.string(), z.object({name: z.string(), description: z.string().optional()})])).optional(),
   synergyTraits: z.array(z.string()).optional(),
   icon: z.string().optional(),
 });
 
 // Dialog Schema
 export const dialogMetadataSchema = baseMetadataSchema.extend({
-  type: z.literal('dialogue'),
+  type: z.literal('dialogue').optional(),
   speaker: z.string(),
   location: z.string().optional(),
   conditions: z.object({
@@ -229,7 +226,7 @@ export const dialogMetadataSchema = baseMetadataSchema.extend({
 
 // UI Content Schema
 export const uiContentMetadataSchema = baseMetadataSchema.extend({
-  type: z.literal('ui-content'),
+  type: z.literal('ui-content').optional(),
   version: z.string(),
   category: z.enum(['loading', 'login', 'error', 'general']),
   screens: z.record(z.string(), z.any()).optional(),
@@ -251,7 +248,8 @@ export const uiContentMetadataSchema = baseMetadataSchema.extend({
 });
 
 // Union type for all content metadata
-export const contentMetadataSchema = z.discriminatedUnion('type', [
+// Using z.union instead of discriminatedUnion since type field is optional
+export const contentMetadataSchema = z.union([
   characterMetadataSchema,
   levelMetadataSchema,
   itemMetadataSchema,

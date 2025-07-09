@@ -229,7 +229,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
                   })}
                 >
                   <Sword className="w-4 h-4 mr-2" />
-                  {appMode === 'delivery' ? 'Route Planning' : 'Campaign Mode'}
+                  {appMode === 'delivery' ? 'Delivery Routes' : 'Neural Runs'}
                   <ChevronRight className="w-4 h-4 ml-auto" />
                 </NeuraButton>
                 
@@ -255,7 +255,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
                   })}
                 >
                   <Trophy className="w-4 h-4 mr-2" />
-                  Arena Mode
+                  Neural Arena
                   <ChevronRight className="w-4 h-4 ml-auto" />
                 </NeuraButton>
               </div>
@@ -367,7 +367,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
               className="px-8"
             >
               <Play className="w-5 h-5 mr-2" />
-              {appMode === 'delivery' ? 'START DELIVERY' : 'START MISSION'}
+              {appMode === 'delivery' ? 'BEGIN DELIVERY' : 'INITIATE RUN'}
             </NeuraButton>
             
             <NeuraButton 
@@ -387,7 +387,7 @@ export function HubLayout({ children: _children }: HubLayoutProps) {
               onClick={() => showPanel('neuralSettings', { position: 'overlay', size: 'large' })}
             >
               <Settings className="w-5 h-5 mr-2" />
-              NEURAL SETTINGS
+              WHIX NEURAL LINK
             </NeuraButton>
           </div>
         </div>

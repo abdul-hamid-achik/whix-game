@@ -5,15 +5,15 @@ import { remark } from 'remark';
 import html from 'remark-html';
 import { 
   ContentMetadata, 
-  ContentMetadataSchema,
+  flexibleContentMetadataSchema as ContentMetadataSchema,
   CharacterMetadata,
   LevelMetadata,
   ChapterMetadata,
   MapMetadata,
   ItemMetadata,
   TraitMetadata,
-  DialogueMetadata
-} from './content-types';
+  DialogMetadata
+} from './flexible-content-schemas';
 
 // Base content directory
 const CONTENT_DIR = path.join(process.cwd(), 'content');
@@ -58,7 +58,7 @@ function getAllFiles(dirPath: string, arrayOfFiles: string[] = []): string[] {
       const filePath = path.join(dirPath, file);
       if (fs.statSync(filePath).isDirectory()) {
         arrayOfFiles = getAllFiles(filePath, arrayOfFiles);
-      } else if (file.endsWith('.md')) {
+      } else if (file.endsWith('.md') && !file.startsWith('.')) {
         arrayOfFiles.push(filePath);
       }
     });
@@ -102,7 +102,7 @@ export async function loadContentFile<T extends ContentMetadata>(
 
 // Load all content files of a specific type
 export async function loadContentByType<T extends ContentMetadata>(
-  type: T['type']
+  type: keyof typeof CONTENT_DIRECTORIES
 ): Promise<ContentFile<T>[]> {
   const contentDir = path.join(CONTENT_DIR, CONTENT_DIRECTORIES[type]);
   const files = getAllFiles(contentDir);
@@ -111,14 +111,15 @@ export async function loadContentByType<T extends ContentMetadata>(
     files.map(file => loadContentFile<T>(file))
   );
   
-  return contentFiles.filter((file): file is ContentFile<T> => 
-    file !== null && file.metadata.type === type
-  );
+  // Filter out null files and unknown content types
+  return contentFiles.filter((file): file is ContentFile<T> => {
+    return file !== null && file.metadata.type !== 'unknown';
+  });
 }
 
 // Load a specific content file by type and slug
 export async function loadContentBySlug<T extends ContentMetadata>(
-  type: T['type'],
+  type: keyof typeof CONTENT_DIRECTORIES,
   slug: string
 ): Promise<ContentFile<T> | null> {
   const filePath = path.join(CONTENT_DIR, CONTENT_DIRECTORIES[type], `${slug}.md`);
@@ -177,21 +178,21 @@ export const loadAllTraits = () =>
   loadContentByType<TraitMetadata>('trait');
 
 export const loadDialogue = (slug: string) => 
-  loadContentBySlug<DialogueMetadata>('dialogue', slug);
+  loadContentBySlug<DialogMetadata>('dialogue', slug);
 
 export const loadAllDialogues = () => 
-  loadContentByType<DialogueMetadata>('dialogue');
+  loadContentByType<DialogMetadata>('dialogue');
 
 // Search content across all types
 export async function searchContent(
   query: string,
-  types?: ContentMetadata['type'][]
+  types?: (keyof typeof CONTENT_DIRECTORIES)[]
 ): Promise<ContentFile[]> {
-  const typesToSearch = types || Object.keys(CONTENT_DIRECTORIES) as ContentMetadata['type'][];
+  const typesToSearch = types || Object.keys(CONTENT_DIRECTORIES) as (keyof typeof CONTENT_DIRECTORIES)[];
   const allContent: ContentFile[] = [];
   
   for (const type of typesToSearch) {
-    const content = await loadContentByType(type);
+    const content = await loadContentByType(type as any);
     allContent.push(...content);
   }
   
